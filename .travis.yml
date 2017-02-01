@@ -1,6 +1,6 @@
 before_install:
  - chmod +x gradlew
- 
+  
 language: android
 jdk: oraclejdk8
 android:
@@ -10,16 +10,16 @@ android:
     - tools
     - platform-tools
     - tools
-    
+
     # The BuildTools version used by your project
     - build-tools-25.0.2
-    
+
     # The SDK version used to compile your project
     - android-25
-    
+
     # Additional components
     - extra-google-google_play_services
     - extra-google-m2repository
     - extra-android-m2repository
-    
+
 script: "./gradlew build"
