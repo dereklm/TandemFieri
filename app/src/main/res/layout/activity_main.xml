@@ -10,8 +10,60 @@
     android:paddingTop="@dimen/activity_vertical_margin"
     tools:context="com.gmail.dleemcewen.tandemfieri.MainActivity">
 
+
     <TextView
+        android:text="@string/signInTitle"
+        android:textSize="30sp"
+        android:layout_marginTop="50dp"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Hello World!" />
+        android:layout_centerHorizontal="true"
+        android:id="@+id/signInTitle" />
+
+    <EditText
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:inputType="textEmailAddress"
+        android:ems="10"
+        android:layout_marginTop="40dp"
+        android:hint="@string/hintEmail"
+        android:id="@+id/username"
+        android:layout_below="@+id/signInTitle"
+        android:layout_alignLeft="@+id/signInTitle"
+        android:layout_alignStart="@+id/signInTitle"
+        android:layout_alignRight="@+id/signInTitle"
+        android:layout_alignEnd="@+id/signInTitle" />
+
+    <EditText
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:inputType="textEmailAddress"
+        android:ems="10"
+        android:layout_marginTop="20dp"
+        android:hint="@string/hintPassword"
+        android:id="@+id/password"
+        android:layout_below="@+id/username"
+        android:layout_alignLeft="@+id/signInTitle"
+        android:layout_alignStart="@+id/signInTitle"
+        android:layout_alignRight="@+id/signInTitle"
+        android:layout_alignEnd="@+id/signInTitle" />
+
+    <Button
+        android:text="@string/signInButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/password"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="40dp"
+        android:id="@+id/signInButton" />
+
+    <TextView
+        android:text="@string/createAccount"
+        android:textColor="#3975ff"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/signInButton"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="34dp"
+        android:id="@+id/createAccount" />
 </RelativeLayout>

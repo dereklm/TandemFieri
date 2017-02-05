@@ -1,3 +1,25 @@
 <resources>
     <string name="app_name">Tandem Fieri</string>
+    <string name="signInTitle">Tandem Fieri</string>
+    <string name="hintEmail">Email</string>
+    <string name="hintPassword">Password</string>
+    <string name="signInButton">Sign In</string>
+    <string name="createAccount">Create Account</string>
+    <string name="signupTitle">Sign Up</string>
+    <string name="hintFirstName">First Name</string>
+    <string name="hintLastName">Last Name</string>
+    <string name="hintAddress">Address</string>
+    <string name="hintCity">City</string>
+    <string name="hintState">State</string>
+    <string name="hintZip">Zip</string>
+    <string name="hintPhone">Phone Number</string>
+    <string name="nextButton">Next</string>
+    <string name="almostDoneTitle">Almost Done!</string>
+    <string name="hintUsername">User name</string>
+    <string name="hintPasswordConfirm">Confirm Password</string>
+    <string name="userFilter">What will you use this app for?</string>
+    <string name="dining">Dining</string>
+    <string name="restaurant">Restaurant Owner</string>
+    <string name="driver">Driver</string>
+    <string name="createButton">Create</string>
 </resources>
