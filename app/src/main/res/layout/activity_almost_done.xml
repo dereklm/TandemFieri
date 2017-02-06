@@ -73,6 +73,7 @@
         android:id="@+id/userFilter" />
 
     <RadioGroup
+        android:id="@+id/radioFilter"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_below="@id/userFilter"

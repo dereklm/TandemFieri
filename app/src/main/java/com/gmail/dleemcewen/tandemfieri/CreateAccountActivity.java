@@ -35,6 +35,14 @@ public class CreateAccountActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 Intent intent = new Intent(CreateAccountActivity.this, AlmostDoneActivity.class);
+                intent.putExtra("firstName", firstName.getText().toString());
+                intent.putExtra("lastName", lastName.getText().toString());
+                intent.putExtra("address", address.getText().toString());
+                intent.putExtra("city", city.getText().toString());
+                intent.putExtra("zip", zip.getText().toString());
+                intent.putExtra("phoneNumber", phoneNumber.getText().toString());
+                intent.putExtra("email", email.getText().toString());
+
                 intent.putExtra("firstName", firstName.toString());
                 intent.putExtra("lastName", lastName.toString());
                 intent.putExtra("address", address.toString());
