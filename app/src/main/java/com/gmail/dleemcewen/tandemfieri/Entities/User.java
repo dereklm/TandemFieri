@@ -1,6 +1,8 @@
-package com.gmail.dleemcewen.tandemfieri;
+package com.gmail.dleemcewen.tandemfieri.Entities;
 
 import android.widget.EditText;
+
+import com.gmail.dleemcewen.tandemfieri.Abstracts.Entity;
 
 import static com.gmail.dleemcewen.tandemfieri.R.id.firstName;
 
@@ -8,7 +10,7 @@ import static com.gmail.dleemcewen.tandemfieri.R.id.firstName;
  * Created by Nexusrex on 2/5/2017.
  */
 
-public class User {
+public class User extends Entity {
 
     private String firstName;
     private String lastName;
