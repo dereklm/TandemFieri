@@ -1,5 +1,5 @@
 before_install:
- - chmod +x gradlew
+ - chmod +x ./gradlew
   
 language: android
 jdk: oraclejdk8
