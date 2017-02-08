@@ -68,12 +68,12 @@ public class MainActivity extends AppCompatActivity {
                     public void onComplete(@NonNull Task<AuthResult> task) {
                         if (task.isSuccessful()) {
                             Toast
-                                .makeText(getApplicationContext(), task.getResult().getUser().getEmail() +" was successfully signed in", Toast.LENGTH_LONG)
-                                .show();
+                                    .makeText(getApplicationContext(), task.getResult().getUser().getEmail() +" was successfully signed in", Toast.LENGTH_LONG)
+                                    .show();
                         } else {
                             Toast
-                                .makeText(getApplicationContext(), "Sign in was not successful", Toast.LENGTH_LONG)
-                                .show();
+                                    .makeText(getApplicationContext(), "Sign in was not successful", Toast.LENGTH_LONG)
+                                    .show();
                         }
                     }
                 });
