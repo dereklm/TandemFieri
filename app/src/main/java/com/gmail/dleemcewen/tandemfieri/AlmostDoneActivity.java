@@ -60,7 +60,8 @@ public class AlmostDoneActivity extends AppCompatActivity{
             public void onClick(View view) {
                 if (password.getText().toString()
                         .equals(confirmPassword.getText().toString())
-                        && password.getText().toString().matches(".*\\w.*"))
+                        && password.getText().toString().matches(".*\\w.*")
+                        && password.getText().toString().length() >= 6)
                     createUser();
                 else {
                     if (!password.getText().toString()
@@ -71,6 +72,10 @@ public class AlmostDoneActivity extends AppCompatActivity{
                         Toast.makeText(AlmostDoneActivity.this,
                                 "Please use characters and not only whitespace.", Toast.LENGTH_SHORT)
                         .show();
+                    else if (password.getText().toString().length() < 6)
+                        Toast.makeText(AlmostDoneActivity.this,
+                                "Please enter a password with 6 or more characters.",
+                                Toast.LENGTH_SHORT).show();
                     password.setText("");
                     confirmPassword.setText("");
                     password.requestFocus();
