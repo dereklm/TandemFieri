@@ -18,8 +18,6 @@ import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 
-import static com.gmail.dleemcewen.tandemfieri.R.id.phone;
-
 public class AlmostDoneActivity extends AppCompatActivity{
 
     public String firstName, lastName, address, city, state, zip, phoneNumber, email;
@@ -60,7 +58,23 @@ public class AlmostDoneActivity extends AppCompatActivity{
         createButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                createUser();
+                if (password.getText().toString()
+                        .equals(confirmPassword.getText().toString())
+                        && password.getText().toString().matches(".*\\w.*"))
+                    createUser();
+                else {
+                    if (!password.getText().toString()
+                            .equals(confirmPassword.getText().toString()))
+                        Toast.makeText(AlmostDoneActivity.this,
+                                "Please input two matching passwords.", Toast.LENGTH_SHORT).show();
+                    else if (!password.getText().toString().matches(".*\\w.*"))
+                        Toast.makeText(AlmostDoneActivity.this,
+                                "Please use characters and not only whitespace.", Toast.LENGTH_SHORT)
+                        .show();
+                    password.setText("");
+                    confirmPassword.setText("");
+                    password.requestFocus();
+                }
             }
         });
 
