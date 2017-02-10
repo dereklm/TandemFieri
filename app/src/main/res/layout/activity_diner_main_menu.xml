@@ -8,6 +8,19 @@
     android:paddingLeft="@dimen/activity_horizontal_margin"
     android:paddingRight="@dimen/activity_horizontal_margin"
     android:paddingTop="@dimen/activity_vertical_margin"
-    tools:context="com.gmail.dleemcewen.tandemfieri.DinerActivity">
+    tools:context="com.gmail.dleemcewen.tandemfieri.DinerMainMenu">
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Diner Main Menu"
+        android:textSize="35sp"/>
+
+    <Button
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Sign Out"
+        android:layout_alignParentBottom="true"
+        android:id="@+id/sign_out_button"/>
 
 </RelativeLayout>

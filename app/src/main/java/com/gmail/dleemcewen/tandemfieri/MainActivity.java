@@ -74,6 +74,7 @@ public class MainActivity extends AppCompatActivity {
         signInButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+
                 mAuth.signInWithEmailAndPassword(email.getText().toString(), password.getText().toString()).addOnCompleteListener(new OnCompleteListener<AuthResult>() {
                     @Override
                     public void onComplete(@NonNull Task<AuthResult> task) {
@@ -89,10 +90,8 @@ public class MainActivity extends AppCompatActivity {
                             dBase.addListenerForSingleValueEvent(new ValueEventListener() {
                                 @Override
                                 public void onDataChange(DataSnapshot dataSnapshot) {
-                                    user = dataSnapshot.child("Diner").child(mAuth.getCurrentUser().getUid()).getValue(User.class);
+                                    navigateToMenu(dataSnapshot);
                                 }
-
-
 
                                 @Override
                                 public void onCancelled(DatabaseError databaseError) {
@@ -111,13 +110,46 @@ public class MainActivity extends AppCompatActivity {
                             Toast
                                     .makeText(getApplicationContext(), "Sign in was not successful", Toast.LENGTH_LONG)
                                     .show();
-                        }
-                    }
-                });
+                        }//end if task.successful
+                    }//end onComplete
+                });//end sign in
 
 
-            }
-        });
+            }//end on click
+        });//end sign in button
+    }//end onCreate
+
+    public void navigateToMenu(DataSnapshot dataSnapshot) {
+       // user = dataSnapshot.child("Diner").child(mAuth.getCurrentUser().getUid()).getValue(User.class);
+        //Toast.makeText(getApplicationContext(),"Does this work " + user.getFirstName(),Toast.LENGTH_LONG).show();
+
+        Bundle bundle = new Bundle();
+
+        User diner = dataSnapshot.child("Diner").child(mAuth.getCurrentUser().getUid()).getValue(User.class);
+        User driver = dataSnapshot.child("Driver").child(mAuth.getCurrentUser().getUid()).getValue(User.class);
+        User restaurantOwner = dataSnapshot.child("Restaurant").child(mAuth.getCurrentUser().getUid()).getValue(User.class);
+
+        Intent intent = null;
+
+        if(diner != null){
+            intent = new Intent(MainActivity.this, DinerMainMenu.class);
+            bundle.putSerializable("User", diner);
+        }else if(driver != null){
+            intent = new Intent(MainActivity.this, DriverMainMenu.class);
+            bundle.putSerializable("User", driver);
+        }else if(restaurantOwner != null){
+            intent = new Intent(MainActivity.this, RestaurantMainMenu.class);
+            bundle.putSerializable("User", restaurantOwner);
+        }
+
+        intent.putExtras(bundle);
+        startActivity(intent);
+
+    }
+
+    private void clear(){
+        email.setText("");
+        password.setText("");
     }
 
     @Override
@@ -128,7 +160,21 @@ public class MainActivity extends AppCompatActivity {
 
     @Override
     protected void onStop() {
-        super.onStop();
         mAuth.removeAuthStateListener(authenticatorListener);
+        super.onStop();
     }
-}
+
+    @Override
+    protected void onPause(){
+        mAuth.removeAuthStateListener(authenticatorListener);
+        clear();
+        super.onPause();
+
+    }
+
+    @Override
+    protected void onResume(){
+        super.onResume();
+        mAuth.addAuthStateListener(authenticatorListener);
+    }
+}//end activity

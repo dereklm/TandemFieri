@@ -1,5 +1,6 @@
 package com.gmail.dleemcewen.tandemfieri;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
@@ -22,11 +23,13 @@ public class AlmostDoneActivity extends AppCompatActivity{
 
     public String firstName, lastName, address, city, state, zip, phoneNumber, email;
     public Button createButton;
+    public Button cancelButton;
     public EditText username, password, confirmPassword;
     public User newUser;
     private DatabaseReference mDatabase;
     public RadioButton radioDining, radioRestaurant, radioDriver;
     FirebaseAuth user = FirebaseAuth.getInstance();
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -45,6 +48,7 @@ public class AlmostDoneActivity extends AppCompatActivity{
         confirmPassword = (EditText) findViewById(R.id.confrimPassword);
 
         createButton = (Button) findViewById(R.id.createButton);
+        cancelButton = (Button) findViewById(R.id.cancelButton);
 
         firstName = getIntent().getStringExtra("firstName");
         lastName = getIntent().getStringExtra("lastName");
@@ -61,9 +65,9 @@ public class AlmostDoneActivity extends AppCompatActivity{
                 if (password.getText().toString()
                         .equals(confirmPassword.getText().toString())
                         && password.getText().toString().matches(".*\\w.*")
-                        && password.getText().toString().length() >= 6)
+                        && password.getText().toString().length() >= 6){
                     createUser();
-                else {
+            }else {
                     if (!password.getText().toString()
                             .equals(confirmPassword.getText().toString()))
                         Toast.makeText(AlmostDoneActivity.this,
@@ -80,18 +84,29 @@ public class AlmostDoneActivity extends AppCompatActivity{
                     confirmPassword.setText("");
                     password.requestFocus();
                 }
+
             }
         });
 
-    }
+        cancelButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                finish();
+                CreateAccountActivity.getInstance().finish();
+            }
+        });
 
+    }//end on create
 
     public void createUser (){
         user.createUserWithEmailAndPassword(email, password.getText().toString()).addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
             @Override
             public void onComplete(@NonNull Task<AuthResult> task) {
                 if (task.isSuccessful()) {
+                    Bundle bundle = new Bundle();
+                    Intent intent = null;
                     FirebaseUser user = task.getResult().getUser();
+
                     newUser = new User();
                     newUser.setFirstName(firstName);
                     newUser.setLastName(lastName);
@@ -105,17 +120,25 @@ public class AlmostDoneActivity extends AppCompatActivity{
                     newUser.setState(state);
                     if (radioDining.isChecked() == true) {
                         mDatabase.child("User").child("Diner").child(user.getUid()).setValue(newUser);
+                        intent = new Intent(AlmostDoneActivity.this, DinerMainMenu.class);
                     } else if (radioRestaurant.isChecked() == true){
                         mDatabase.child("User").child("Restaurant").child(user.getUid()).setValue(newUser);
+                        intent = new Intent(AlmostDoneActivity.this, RestaurantMainMenu.class);
                     } else if (radioDriver.isChecked() == true){
                         mDatabase.child("User").child("Driver").child(user.getUid()).setValue(newUser);
+                        intent = new Intent(AlmostDoneActivity.this, DriverMainMenu.class);
                     }
-
+                    bundle.putSerializable("User", newUser);
+                    intent.putExtras(bundle);
+                    startActivity(intent);
+                    finish();
+                    CreateAccountActivity.getInstance().finish();
                     Toast.makeText(getApplicationContext(), "Successfully created user.", Toast.LENGTH_LONG).show();
                 } else {
                     Toast.makeText(getApplicationContext(), "Unable to create user.", Toast.LENGTH_LONG).show();
                 }
             }
         });
+
     }
 }
