@@ -1,16 +1,14 @@
 package com.gmail.dleemcewen.tandemfieri.Entities;
 
-import android.widget.EditText;
-
 import com.gmail.dleemcewen.tandemfieri.Abstracts.Entity;
 
-import static com.gmail.dleemcewen.tandemfieri.R.id.firstName;
+import java.io.Serializable;
 
 /**
  * Created by Nexusrex on 2/5/2017.
  */
 
-public class User extends Entity {
+public class User extends Entity implements Serializable{
 
     private String firstName;
     private String lastName;
@@ -26,18 +24,10 @@ public class User extends Entity {
 
     private String authUserID;
 
-    public User(String firstName, String lastName, String address, String city, String state, String zip, String phoneNumber, String email, String username, String authUserID){
-        this.firstName = firstName;
-        this.lastName = lastName;
-        this.address = address;
-        this.city = city;
-        this.state = state;
-        this.zip = zip;
-        this.phoneNumber = phoneNumber;
-        this.email = email;
-        this.username = username;
-        this.authUserID = authUserID;
+    public User(){
+
     }
+
 
 
     public void setAuthUserID(String authuserID) {

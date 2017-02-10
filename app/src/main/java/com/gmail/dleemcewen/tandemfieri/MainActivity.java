@@ -11,11 +11,17 @@ import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.gmail.dleemcewen.tandemfieri.Entities.User;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -25,6 +31,8 @@ public class MainActivity extends AppCompatActivity {
 
     private FirebaseAuth mAuth;
     private FirebaseAuth.AuthStateListener authenticatorListener;
+    private DatabaseReference dBase;
+    private User user;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -36,6 +44,9 @@ public class MainActivity extends AppCompatActivity {
         email = (EditText) findViewById(R.id.email);
         password = (EditText) findViewById(R.id.password);
 
+        dBase = FirebaseDatabase.getInstance().getReference().child("User");
+
+        user = new User();
         mAuth = FirebaseAuth.getInstance();
         authenticatorListener = new FirebaseAuth.AuthStateListener() {
             @Override
@@ -70,6 +81,29 @@ public class MainActivity extends AppCompatActivity {
                             Toast
                                     .makeText(getApplicationContext(), task.getResult().getUser().getEmail() +" was successfully signed in", Toast.LENGTH_LONG)
                                     .show();
+
+
+                            dBase.addListenerForSingleValueEvent(new ValueEventListener() {
+                                @Override
+                                public void onDataChange(DataSnapshot dataSnapshot) {
+                                    user = dataSnapshot.child("Diner").child(mAuth.getCurrentUser().getUid()).getValue(User.class);
+                                }
+
+
+
+                                @Override
+                                public void onCancelled(DatabaseError databaseError) {
+
+                                }
+                            });
+
+
+                            //Toast.makeText(getApplicationContext(),"Does this work" + user.getEmail(),Toast.LENGTH_LONG).show();
+                            Intent intent = new Intent(MainActivity.this, DinerActivity.class);
+                            Bundle bundle = new Bundle();
+                            bundle.putSerializable("User", user);
+                            intent.putExtras(bundle);
+                            startActivity(intent);
                         } else {
                             Toast
                                     .makeText(getApplicationContext(), "Sign in was not successful", Toast.LENGTH_LONG)
@@ -77,6 +111,8 @@ public class MainActivity extends AppCompatActivity {
                         }
                     }
                 });
+
+
             }
         });
     }

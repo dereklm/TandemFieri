@@ -92,13 +92,23 @@ public class AlmostDoneActivity extends AppCompatActivity{
             public void onComplete(@NonNull Task<AuthResult> task) {
                 if (task.isSuccessful()) {
                     FirebaseUser user = task.getResult().getUser();
-                    newUser = new User(firstName, lastName, address, city, state, zip, phoneNumber, email, username.getText().toString(), user.getUid());
+                    newUser = new User();
+                    newUser.setFirstName(firstName);
+                    newUser.setLastName(lastName);
+                    newUser.setUsername(username.getText().toString());
+                    newUser.setCity(city);
+                    newUser.setAuthUserID(user.getUid());
+                    newUser.setEmail(email);
+                    newUser.setAddress(address);
+                    newUser.setZip(zip);
+                    newUser.setPhoneNumber(phoneNumber);
+                    newUser.setState(state);
                     if (radioDining.isChecked() == true) {
-                        mDatabase.child("User").child("Diner").push().setValue(newUser);
+                        mDatabase.child("User").child("Diner").child(user.getUid()).setValue(newUser);
                     } else if (radioRestaurant.isChecked() == true){
-                        mDatabase.child("User").child("Restaurant").push().setValue(newUser);
+                        mDatabase.child("User").child("Restaurant").child(user.getUid()).setValue(newUser);
                     } else if (radioDriver.isChecked() == true){
-                        mDatabase.child("User").child("Driver").push().setValue(newUser);
+                        mDatabase.child("User").child("Driver").child(user.getUid()).setValue(newUser);
                     }
 
                     Toast.makeText(getApplicationContext(), "Successfully created user.", Toast.LENGTH_LONG).show();
