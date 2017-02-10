@@ -82,7 +82,10 @@ public class MainActivity extends AppCompatActivity {
                                     .makeText(getApplicationContext(), task.getResult().getUser().getEmail() +" was successfully signed in", Toast.LENGTH_LONG)
                                     .show();
 
-
+                            //TODO:  this needs to be moved to the restaurant owner main menu when that is ready
+                            // right now it is just here for testing the CreateRestaurant activity
+                            Intent intent = new Intent(MainActivity.this, CreateRestaurant.class);
+                            intent.putExtra("ownerId", task.getResult().getUser().getUid());
                             dBase.addListenerForSingleValueEvent(new ValueEventListener() {
                                 @Override
                                 public void onDataChange(DataSnapshot dataSnapshot) {
@@ -99,11 +102,11 @@ public class MainActivity extends AppCompatActivity {
 
 
                             //Toast.makeText(getApplicationContext(),"Does this work" + user.getEmail(),Toast.LENGTH_LONG).show();
-                            Intent intent = new Intent(MainActivity.this, DinerActivity.class);
+                            Intent diner = new Intent(MainActivity.this, DinerActivity.class);
                             Bundle bundle = new Bundle();
                             bundle.putSerializable("User", user);
-                            intent.putExtras(bundle);
-                            startActivity(intent);
+                            diner.putExtras(bundle);
+                            startActivity(diner);
                         } else {
                             Toast
                                     .makeText(getApplicationContext(), "Sign in was not successful", Toast.LENGTH_LONG)

@@ -15,13 +15,18 @@ import java.util.List;
  * Repository defines the abstract class that all repositories extend
  */
 public abstract class Repository<T extends Entity> {
+    private DatabaseReference dataContext;
+
     /**
      * add a single entity to the database
      * @param entity indicates the entity to add
      * @param childNodes indicates the variable number of string arguments that identify the
      *                         child nodes that identify the location of the desired data
      */
-    public abstract void add(T entity, String... childNodes);
+    public void add(T entity, String... childNodes) {
+        dataContext = getDataContext(entity.getClass().getSimpleName(), childNodes);
+        dataContext.child(entity.getKey().toString()).setValue(entity);
+    }
 
     /**
      * add multiple entities to the database
@@ -29,7 +34,12 @@ public abstract class Repository<T extends Entity> {
      * @param childNodes indicates the variable number of string arguments that identify the
      *                         child nodes that identify the location of the desired data
      */
-    public abstract void add(ArrayList<T> entities, String... childNodes);
+    public void add(ArrayList<T> entities, String... childNodes) {
+        dataContext = getDataContext(entities.get(0).getClass().getSimpleName(), childNodes);
+        for (T entity : entities) {
+            dataContext.child(entity.getKey().toString()).setValue(entity);
+        }
+    }
 
     /**
      * updates the specified entity
@@ -37,7 +47,10 @@ public abstract class Repository<T extends Entity> {
      * @param childNodes indicates the variable number of string arguments that identify the
      *                         child nodes that identify the location of the desired data
      */
-    public abstract void update(T entity, String... childNodes);
+    public void update(T entity, String... childNodes) {
+        dataContext = getDataContext(entity.getClass().getSimpleName(), childNodes);
+        dataContext.child(entity.getKey().toString()).setValue(entity);
+    }
 
     /**
      * remove a single entity from the database
@@ -45,7 +58,10 @@ public abstract class Repository<T extends Entity> {
      * @param childNodes indicates the variable number of string arguments that identify the
      *                         child nodes that identify the location of the desired data
      */
-    public abstract void remove(T entity, String... childNodes);
+    public void remove(T entity, String... childNodes) {
+        dataContext = getDataContext(entity.getClass().getSimpleName(), childNodes);
+        dataContext.child(entity.getKey().toString()).removeValue();
+    }
 
     /**
      * remove multiple entities from the database
@@ -53,7 +69,12 @@ public abstract class Repository<T extends Entity> {
      * @param childNodes indicates the variable number of string arguments that identify the
      *                         child nodes that identify the location of the desired data
      */
-    public abstract void remove(ArrayList<T> entities, String... childNodes);
+    public void remove(ArrayList<T> entities, String... childNodes) {
+        dataContext = getDataContext(entities.get(0).getClass().getSimpleName(), childNodes);
+        for (T entity : entities) {
+            dataContext.child(entity.getKey().toString()).removeValue();
+        }
+    }
 
     /**
      * find entities from the database
