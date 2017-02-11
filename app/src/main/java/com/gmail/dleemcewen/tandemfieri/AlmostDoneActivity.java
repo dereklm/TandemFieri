@@ -118,24 +118,26 @@ public class AlmostDoneActivity extends AppCompatActivity{
                     newUser.setZip(zip);
                     newUser.setPhoneNumber(phoneNumber);
                     newUser.setState(state);
+                    //TODO: Remove the following intents when they are no longer needed for testing
                     if (radioDining.isChecked() == true) {
                         mDatabase.child("User").child("Diner").child(user.getUid()).setValue(newUser);
-                        intent = new Intent(AlmostDoneActivity.this, DinerMainMenu.class);
+                        //intent = new Intent(AlmostDoneActivity.this, DinerMainMenu.class);
                     } else if (radioRestaurant.isChecked() == true){
                         mDatabase.child("User").child("Restaurant").child(user.getUid()).setValue(newUser);
-                        intent = new Intent(AlmostDoneActivity.this, RestaurantMainMenu.class);
+                        //intent = new Intent(AlmostDoneActivity.this, RestaurantMainMenu.class);
                     } else if (radioDriver.isChecked() == true){
                         mDatabase.child("User").child("Driver").child(user.getUid()).setValue(newUser);
-                        intent = new Intent(AlmostDoneActivity.this, DriverMainMenu.class);
+                        //intent = new Intent(AlmostDoneActivity.this, DriverMainMenu.class);
                     }
-                    bundle.putSerializable("User", newUser);
-                    intent.putExtras(bundle);
-                    startActivity(intent);
+                    //bundle.putSerializable("User", newUser);
+                    //intent.putExtras(bundle);
+                    //startActivity(intent);
+                    user.sendEmailVerification();
                     finish();
                     CreateAccountActivity.getInstance().finish();
-                    Toast.makeText(getApplicationContext(), "Successfully created user.", Toast.LENGTH_LONG).show();
+                    Toast.makeText(getApplicationContext(), "Successfully created user. Email Verification Sent", Toast.LENGTH_LONG).show();
                 } else {
-                    Toast.makeText(getApplicationContext(), "Unable to create user.", Toast.LENGTH_LONG).show();
+                    Toast.makeText(getApplicationContext(), "Unable to create user. Exception was " + task.getException().toString(), Toast.LENGTH_LONG).show();
                 }
             }
         });
