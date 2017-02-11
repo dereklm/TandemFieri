@@ -99,16 +99,6 @@ public class MainActivity extends AppCompatActivity {
                                 }
                             });
 
-
-                            //Toast.makeText(getApplicationContext(),"Does this work" + user.getEmail(),Toast.LENGTH_LONG).show();
-                            // No Diner Activity?
-                            /*
-                            Intent diner = new Intent(MainActivity.this, DinerActivity.class);
-                            Bundle bundle = new Bundle();
-                            bundle.putSerializable("User", user);
-                            diner.putExtras(bundle);
-                            startActivity(diner); 
-                            */
                         } else {
                             Toast
                                     .makeText(getApplicationContext(), "Sign in was not successful", Toast.LENGTH_LONG)
