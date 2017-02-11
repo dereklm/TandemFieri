@@ -101,7 +101,8 @@ public class MainActivity extends AppCompatActivity {
 
 
                             //Toast.makeText(getApplicationContext(),"Does this work" + user.getEmail(),Toast.LENGTH_LONG).show();
-                            Intent diner = new Intent(MainActivity.this, DinerActivity.class);
+                            // No Diner Activity?
+                            //Intent diner = new Intent(MainActivity.this, DinerActivity.class);
                             Bundle bundle = new Bundle();
                             bundle.putSerializable("User", user);
                             diner.putExtras(bundle);
