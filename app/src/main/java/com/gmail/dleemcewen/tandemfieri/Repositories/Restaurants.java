@@ -128,7 +128,7 @@ public class Restaurants<T extends Entity> extends Repository<Restaurant> {
     private void search(List<String> childNodes, String value, QueryCompleteListener<Restaurant> onQueryComplete) {
         DatabaseReference dataContext = FirebaseDatabase
                 .getInstance()
-                .getReference(User.class.getSimpleName());
+                .getReference(Restaurant.class.getSimpleName());
 
         Query query = buildQuery(dataContext, childNodes, value);
         final QueryCompleteListener<Restaurant> finalQueryCompleteListener = onQueryComplete;

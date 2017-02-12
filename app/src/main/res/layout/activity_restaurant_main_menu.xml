@@ -23,4 +23,13 @@
         android:layout_alignParentBottom="true"
         android:id="@+id/sign_out_button"/>
 
+    <Button
+        android:text="Manage restaurants (for testing)"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_above="@+id/sign_out_button"
+        android:layout_centerHorizontal="true"
+        android:layout_marginBottom="61dp"
+        android:id="@+id/manageRestaurants" />
+
 </RelativeLayout>

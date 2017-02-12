@@ -30,7 +30,7 @@ public class User extends Entity implements Serializable{
 
 
 
-    public void setAuthUserID(String authuserID) {
+    public void setAuthUserID(String authUserID) {
         this.authUserID = authUserID;
     }
 

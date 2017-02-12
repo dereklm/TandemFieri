@@ -22,7 +22,7 @@
     <EditText
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:inputType="textPersonName"
+        android:inputType="textCapWords"
         android:id="@+id/restaurantName"
         android:textSize="@dimen/regular_text_size"
         android:hint="@string/hintRestaurantName"
@@ -42,23 +42,23 @@
     <EditText
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:inputType="textPersonName"
         android:textSize="@dimen/regular_text_size"
         android:id="@+id/street"
         android:hint="@string/hintStreet"
         android:layout_below="@+id/address"
         android:layout_alignParentLeft="true"
-        android:layout_alignParentStart="true" />
+        android:layout_alignParentStart="true"
+        android:inputType="textPostalAddress" />
     <EditText
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:inputType="textPersonName"
         android:textSize="@dimen/regular_text_size"
         android:id="@+id/city"
         android:hint="@string/hintCity"
         android:layout_below="@+id/street"
         android:layout_alignParentLeft="true"
-        android:layout_alignParentStart="true" />
+        android:layout_alignParentStart="true"
+        android:inputType="textCapWords" />
     <LinearLayout
         android:id="@+id/cityStateContainer"
         android:layout_width="match_parent"
@@ -70,7 +70,7 @@
         <EditText
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:inputType="textPersonName"
+            android:inputType="textCapWords"
             android:layout_weight="2"
             android:textSize="@dimen/regular_text_size"
             android:id="@+id/state"
@@ -78,11 +78,11 @@
         <EditText
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:inputType="textPersonName"
             android:layout_weight="1"
             android:textSize="@dimen/regular_text_size"
             android:id="@+id/zipcode"
-            android:hint="@string/hintZipcode" />
+            android:hint="@string/hintZipcode"
+            android:inputType="number" />
     </LinearLayout>
     <TextView
         android:layout_width="match_parent"

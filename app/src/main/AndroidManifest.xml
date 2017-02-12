@@ -19,9 +19,9 @@
         <activity android:name=".AlmostDoneActivity" />
         <activity android:name=".DinerMainMenu" />
         <activity android:name=".RestaurantMainMenu" />
-        <activity android:name=".DriverMainMenu"></activity>
-        <activity android:name=".CreateRestaurant"></activity>
-        <activity android:name=".DinerActivity"></activity>
+        <activity android:name=".DriverMainMenu" />
+        <activity android:name=".CreateRestaurant" />
+        <activity android:name=".ManageRestaurants"></activity>
     </application>
 
 </manifest>

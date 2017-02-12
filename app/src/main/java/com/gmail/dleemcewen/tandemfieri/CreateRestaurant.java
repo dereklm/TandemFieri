@@ -1,5 +1,6 @@
 package com.gmail.dleemcewen.tandemfieri;
 
+import android.content.Intent;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -118,6 +119,10 @@ public class CreateRestaurant extends AppCompatActivity {
                                 Toast
                                     .makeText(CreateRestaurant.this, toastMessage.toString(), Toast.LENGTH_LONG)
                                     .show();
+
+                                Intent intent=new Intent();
+                                setResult(RESULT_OK,intent);
+                                finish();
 
                                 return taskCompletionSource.getTask();
                             }

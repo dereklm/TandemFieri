@@ -1,6 +1,7 @@
 package com.gmail.dleemcewen.tandemfieri;
 
 import android.content.Intent;
+import android.content.res.Resources;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
@@ -33,11 +34,17 @@ public class MainActivity extends AppCompatActivity {
     private FirebaseAuth.AuthStateListener authenticatorListener;
     private DatabaseReference dBase;
     private User user;
+    private Resources resources;
+
+    private boolean verifiedEmailNotRequiredForLogin;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        resources = getResources();
+        verifiedEmailNotRequiredForLogin = resources.getBoolean(R.bool.verified_email_not_required_for_login);
 
         createAccount = (TextView) findViewById(R.id.createAccount);
         signInButton = (Button) findViewById(R.id.signInButton);
@@ -79,14 +86,10 @@ public class MainActivity extends AppCompatActivity {
                     @Override
                     public void onComplete(@NonNull Task<AuthResult> task) {
                         if (task.isSuccessful()) {
-                            if (task.getResult().getUser().isEmailVerified()) {
+                            if (verifiedEmailNotRequiredForLogin || task.getResult().getUser().isEmailVerified()) {
                                 Toast.makeText(getApplicationContext(), task.getResult().getUser().getEmail() + " was successfully signed in", Toast.LENGTH_LONG)
                                         .show();
 
-                                //TODO:  this needs to be moved to the restaurant owner main menu when that is ready
-                                // right now it is just here for testing the CreateRestaurant activity
-                                Intent intent = new Intent(MainActivity.this, CreateRestaurant.class);
-                                intent.putExtra("ownerId", task.getResult().getUser().getUid());
                                 dBase.addListenerForSingleValueEvent(new ValueEventListener() {
                                     @Override
                                     public void onDataChange(DataSnapshot dataSnapshot) {
@@ -116,7 +119,7 @@ public class MainActivity extends AppCompatActivity {
     }//end onCreate
 
     public void navigateToMenu(DataSnapshot dataSnapshot) {
-       // user = dataSnapshot.child("Diner").child(mAuth.getCurrentUser().getUid()).getValue(User.class);
+        // user = dataSnapshot.child("Diner").child(mAuth.getCurrentUser().getUid()).getValue(User.class);
         //Toast.makeText(getApplicationContext(),"Does this work " + user.getFirstName(),Toast.LENGTH_LONG).show();
 
         Bundle bundle = new Bundle();

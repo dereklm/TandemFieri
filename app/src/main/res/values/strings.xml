@@ -36,4 +36,12 @@
     <string name="cityRequired">City is required!</string>
     <string name="stateRequired">State is required!</string>
     <string name="zipRequired">Zipcode is required!</string>
+    <string name="addButton">Add</string>
+    <string name="manageMenuItemsButton">Manage menu items</string>
+    <string name="viewSalesButton">View sales/products</string>
+    <string name="rateDriversButton">Rate drivers</string>
+    <string name="manageRestaurantsActivityTitle">Managing restaurants</string>
+    <string name="removeConfirmationQuestion">Are you sure you want to remove</string>
+    <string name="yes">Yes</string>
+    <string name="no">No</string>
 </resources>
