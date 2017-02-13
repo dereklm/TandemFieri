@@ -1,0 +1,4 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <bool name="verified_email_not_required_for_login">true</bool>
+</resources>

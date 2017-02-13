@@ -14,11 +14,14 @@ public class CreateAccountActivity extends AppCompatActivity {
     public Button nextButton;
 
     public EditText firstName, lastName, address, city, state, zip, phoneNumber, email;
+    private static CreateAccountActivity activityInstance;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_create_account);
+
+        activityInstance = this;
 
         nextButton = (Button)findViewById(R.id.nextButton);
 
@@ -47,5 +50,9 @@ public class CreateAccountActivity extends AppCompatActivity {
                 startActivity(intent);
             }
         });
+    }
+
+    public static CreateAccountActivity getInstance() {
+        return activityInstance;
     }
 }
