@@ -130,7 +130,10 @@ public class Restaurants<T extends Entity> extends Repository<Restaurant> {
                 .getInstance()
                 .getReference(Restaurant.class.getSimpleName());
 
-        Query query = buildQuery(dataContext, childNodes, value);
+        String[] childNodesArray = new String[childNodes.size()];
+        childNodesArray = childNodes.toArray(childNodesArray);
+
+        Query query = buildEqualsQuery(dataContext, value, childNodesArray);
         final QueryCompleteListener<Restaurant> finalQueryCompleteListener = onQueryComplete;
 
         query.addListenerForSingleValueEvent(new ValueEventListener() {
@@ -155,5 +158,4 @@ public class Restaurants<T extends Entity> extends Repository<Restaurant> {
             }
         });
     }
-
 }

@@ -19,7 +19,7 @@ public class User extends Entity implements Serializable{
     private String phoneNumber;
     private String email;
     private String username;
-
+    private Boolean active;
 
 
     private String authUserID;
@@ -76,6 +76,10 @@ public class User extends Entity implements Serializable{
         return username;
     }
 
+    public Boolean getActive() {
+        return active;
+    }
+
     public void setFirstName(String firstName) {
         this.firstName = firstName;
     }
@@ -112,7 +116,9 @@ public class User extends Entity implements Serializable{
         this.username = username;
     }
 
-
+    public void setActive(Boolean active) {
+        this.active = active;
+    }
 
 
 }

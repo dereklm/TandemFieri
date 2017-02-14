@@ -23,7 +23,8 @@
         <activity android:name=".RestaurantMainMenu" />
         <activity android:name=".DriverMainMenu" />
         <activity android:name=".CreateRestaurant" />
-        <activity android:name=".ManageRestaurants"></activity>
+        <activity android:name=".ManageRestaurants" />
+        <activity android:name=".DriverRatings"></activity>
         <activity android:name=".RestaurantMapActivity" />
 
         <meta-data

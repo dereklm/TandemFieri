@@ -36,12 +36,12 @@ public class Users<T extends Entity> extends Repository<User> {
      * @param value indicates the data value to search for
      * @param onQueryComplete identifies the QueryCompleteListener to push results back to
      * ex: to find a user driver with the first name of "Joe":
-           users.find(Arrays.asList("Driver"), "Joe", new QueryCompleteListener<User>() {
-                @Override
-                public void onQueryComplete(ArrayList<User> entities) {
-                    // ...
-                }
-           });
+    users.find(Arrays.asList("Driver"), "Joe", new QueryCompleteListener<User>() {
+    @Override
+    public void onQueryComplete(ArrayList<User> entities) {
+    // ...
+    }
+    });
      */
     @Override
     public void find(List<String> childNodes, String value, QueryCompleteListener<User> onQueryComplete) {
@@ -90,7 +90,10 @@ public class Users<T extends Entity> extends Repository<User> {
                 .getInstance()
                 .getReference(User.class.getSimpleName());
 
-        Query query = buildQuery(dataContext, childNodes, value);
+        String[] childNodesArray = new String[childNodes.size()];
+        childNodesArray = childNodes.toArray(childNodesArray);
+
+        Query query = buildEqualsQuery(dataContext, value, childNodesArray);
         final QueryCompleteListener<User> finalQueryCompleteListener = onQueryComplete;
 
         query.addListenerForSingleValueEvent(new ValueEventListener() {
@@ -116,3 +119,6 @@ public class Users<T extends Entity> extends Repository<User> {
         });
     }
 }
+
+
+
