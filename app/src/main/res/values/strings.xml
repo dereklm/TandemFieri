@@ -44,4 +44,6 @@
     <string name="removeConfirmationQuestion">Are you sure you want to remove</string>
     <string name="yes">Yes</string>
     <string name="no">No</string>
+    <string name="updateButton">Update</string>
+    <string name="deliveryRadius">Delivery Radius (mi)</string>
 </resources>

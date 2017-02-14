@@ -69,7 +69,7 @@ public class MainActivity extends AppCompatActivity {
             }
         };
 
-        createAccount.setOnClickListener(new View.OnClickListener(){
+        createAccount.setOnClickListener(new View.OnClickListener() {
 
             @Override
             public void onClick(View view) {
