@@ -101,7 +101,7 @@ public class MenuItemEditActivity extends AppCompatActivity {
                         parentCat.getSubItems().add(temp);
                     }
                     else{
-                        parentCat.getSubItems().add(new MenuCatagory(name.getText().toString()));
+                        parentCat.getSubCategories().add(new MenuCatagory(name.getText().toString()));
                     }
                 }
                 Intent resultIntent = new Intent();

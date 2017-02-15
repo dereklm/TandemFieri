@@ -11,6 +11,10 @@ public class MenuItem extends MenuCompenet {
     private double basePrice;
     private ArrayList<ItemOption> options;
 
+    public MenuItem(){
+
+    }
+
 
     public double getBasePrice() {
         return basePrice;

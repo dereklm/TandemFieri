@@ -15,10 +15,13 @@ import android.widget.TextView;
 import com.gmail.dleemcewen.tandemfieri.Entities.Restaurant;
 import com.gmail.dleemcewen.tandemfieri.R;
 
+import java.util.ArrayList;
+
 public class MenuBuilderActivity extends AppCompatActivity {
 
     private MenuCatagory current;
     private  MenuItemAdapter adapter;
+    private ArrayList<MenuCompenet> allItems;
     private ListView listView;
     private Context context;
     private Restaurant owner;
@@ -33,7 +36,11 @@ public class MenuBuilderActivity extends AppCompatActivity {
         current = (MenuCatagory) bundle.getSerializable("menu");
 
         owner = (Restaurant) bundle.getSerializable("resturaunt");
-        adapter = new MenuItemAdapter(this,current.getSubItems());
+        allItems = new ArrayList<>();
+        allItems.addAll(current.getSubCategories());
+        allItems.addAll(current.getSubItems());
+
+        adapter = new MenuItemAdapter(this,allItems);
         listView = (ListView) findViewById(R.id.menuItems);
         listView.setAdapter(adapter);
         context= this;
@@ -60,8 +67,12 @@ public class MenuBuilderActivity extends AppCompatActivity {
             @Override
             public boolean onItemLongClick(AdapterView<?> adapterView, View view, int i, long l) {
                 MenuCompenet compenet = adapter.getItem(i);
-                current.getSubItems().remove(compenet);
-                adapter = new MenuItemAdapter(context,current.getSubItems());
+                if(compenet instanceof MenuCatagory){
+                    current.getSubCategories().remove(compenet);
+                }
+                else current.getSubItems().remove(compenet);
+                updatAllItems();
+                adapter = new MenuItemAdapter(context,allItems);
                 listView.setAdapter(adapter);
                 return true;
             }
@@ -76,6 +87,7 @@ public class MenuBuilderActivity extends AppCompatActivity {
             public void onClick(View view) {
                 Intent resultIntent = new Intent();
                 resultIntent.putExtra("now",current);
+                resultIntent.putExtra("resturaunt",owner);
                 setResult(Activity.RESULT_OK,resultIntent);
                 finish();
             }
@@ -83,10 +95,16 @@ public class MenuBuilderActivity extends AppCompatActivity {
 
     }
 
+    private void updatAllItems() {
+        allItems = new ArrayList<>();
+        allItems.addAll(current.getSubCategories());
+        allItems.addAll(current.getSubItems());
+    }
+
     @Override
     public void onResume(){
         super.onResume();
-        adapter = new MenuItemAdapter(this,current.getSubItems());
+        adapter = new MenuItemAdapter(this,allItems);
         listView = (ListView) findViewById(R.id.menuItems);
         listView.setAdapter(adapter);
     }
@@ -117,20 +135,22 @@ public class MenuBuilderActivity extends AppCompatActivity {
             case (666) : {
                 if (resultCode == Activity.RESULT_OK) {
                     current = (MenuCatagory) data.getSerializableExtra("current");
+                    updatAllItems();
                 }
                 break;
             }
             case(999) : {
                 if(resultCode==Activity.RESULT_OK){
                     MenuCatagory temp = (MenuCatagory) data.getSerializableExtra("now");
-                    MenuCompenet toRemove = new MenuCatagory("");
-                    for(MenuCompenet mc : current.getSubItems()){
+                    MenuCatagory toRemove = new MenuCatagory("");
+                    for(MenuCatagory mc : current.getSubCategories()){
                         if(mc.getName().equals(temp.getName())){
                             toRemove=mc;
                         }
                     }
-                    current.getSubItems().remove(toRemove);
-                    current.getSubItems().add(temp);
+                    current.getSubCategories().remove(toRemove);
+                    current.getSubCategories().add(temp);
+                    updatAllItems();
                 }
             }
         }

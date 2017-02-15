@@ -8,19 +8,36 @@ import java.util.ArrayList;
 
 public class MenuCatagory extends MenuCompenet {
 
-    private ArrayList<MenuCompenet> subItems;
+    private ArrayList<MenuItem> subItems;
+    private ArrayList<MenuCatagory> subCategories;
 
 
-    public ArrayList<MenuCompenet> getSubItems() {
-        return subItems;
-    }
 
-    public void setSubItems(ArrayList<MenuCompenet> subItems) {
-        this.subItems = subItems;
+    public MenuCatagory(){
+
     }
 
     public MenuCatagory(String name){
         this.name=name;
         subItems= new ArrayList<>();
+        subCategories=new ArrayList<>();
+    }
+
+    public ArrayList<MenuItem> getSubItems() {
+        return subItems;
+    }
+
+    public void setSubItems(ArrayList<MenuItem> subItems) {
+        this.subItems = subItems;
+    }
+
+    public ArrayList<MenuCatagory> getSubCategories() {
+        if(subCategories!=null)return subCategories;
+        subCategories= new ArrayList<>();
+        return  subCategories;
+    }
+
+    public void setSubCategories(ArrayList<MenuCatagory> subCategories) {
+        this.subCategories = subCategories;
     }
 }

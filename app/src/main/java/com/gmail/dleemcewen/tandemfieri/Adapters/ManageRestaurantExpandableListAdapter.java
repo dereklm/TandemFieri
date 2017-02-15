@@ -295,4 +295,12 @@ public class ManageRestaurantExpandableListAdapter extends BaseExpandableListAda
         return true;
     }
 
+    public Restaurant findRefrenceToUpdate(Restaurant restaurant) {
+        for (Restaurant inList : restaurantsList) {
+            if(restaurant.getOwnerId().equals(inList.getOwnerId())
+                    &&restaurant.getName().equals(inList.getName())&&
+                    restaurant.getStreet().equals(inList.getStreet())) return inList;
+        }
+        return null; //something went horribly wrong
+    }
 }
