@@ -4,7 +4,6 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
-import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -141,25 +140,6 @@ public class AlmostDoneActivity extends AppCompatActivity{
                     finish();
                     CreateAccountActivity.getInstance().finish();
                     Toast.makeText(getApplicationContext(), "Successfully created user. Email Verification Sent", Toast.LENGTH_LONG).show();
-
-
-                    if (radioDining.isChecked() == true) {
-                        mDatabase.child("User").child("Diner").child(user.getUid()).setValue(newUser);
-                        intent = new Intent(AlmostDoneActivity.this, DinerMainMenu.class);
-                    } else if (radioRestaurant.isChecked() == true){
-                        mDatabase.child("User").child("Restaurant").child(user.getUid()).setValue(newUser);
-                        intent = new Intent(AlmostDoneActivity.this, RestaurantMainMenu.class);
-                    } else if (radioDriver.isChecked() == true){
-                        mDatabase.child("User").child("Driver").child(user.getUid()).setValue(newUser);
-                        intent = new Intent(AlmostDoneActivity.this, DriverMainMenu.class);
-                    }
-
-                    bundle.putSerializable("User", newUser);
-                    intent.putExtras(bundle);
-                    startActivity(intent);
-                    finish();
-                    CreateAccountActivity.getInstance().finish();
-                    Toast.makeText(getApplicationContext(), "Successfully created user.", Toast.LENGTH_LONG).show();
                 } else {
                     Toast.makeText(getApplicationContext(), "Unable to create user. Exception was " + task.getException().toString(), Toast.LENGTH_LONG).show();
                 }
