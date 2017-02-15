@@ -248,7 +248,8 @@ public class ManageRestaurantExpandableListAdapter extends BaseExpandableListAda
                 }
 
                 intent.putExtra("menu",selectedChild.getMenu());
-                context.startActivity(intent);
+                intent.putExtra("resturaunt",selectedChild);
+                context.startActivityForResult(intent,111);
 
                 Toast
                     .makeText(context, "Managing menu items for " + selectedChild.getName(), Toast.LENGTH_SHORT)
@@ -286,4 +287,5 @@ public class ManageRestaurantExpandableListAdapter extends BaseExpandableListAda
     public boolean isChildSelectable(int groupPosition, int childPosition) {
         return true;
     }
+
 }

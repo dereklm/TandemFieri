@@ -51,6 +51,10 @@ public class ManageRestaurants extends AppCompatActivity {
             //A new restaurant was added, so reload the restaurants data
             retrieveData();
         }
+        if(requestCode==111 && resultCode==RESULT_OK){
+            //update main menu
+
+        }
     }
 
     /**

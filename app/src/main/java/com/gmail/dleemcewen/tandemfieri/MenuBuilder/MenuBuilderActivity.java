@@ -12,6 +12,7 @@ import android.widget.Button;
 import android.widget.ListView;
 import android.widget.TextView;
 
+import com.gmail.dleemcewen.tandemfieri.Entities.Restaurant;
 import com.gmail.dleemcewen.tandemfieri.R;
 
 public class MenuBuilderActivity extends AppCompatActivity {
@@ -20,6 +21,7 @@ public class MenuBuilderActivity extends AppCompatActivity {
     private  MenuItemAdapter adapter;
     private ListView listView;
     private Context context;
+    private Restaurant owner;
 
 
     @Override
@@ -30,6 +32,7 @@ public class MenuBuilderActivity extends AppCompatActivity {
         Bundle bundle = this.getIntent().getExtras();
         current = (MenuCatagory) bundle.getSerializable("menu");
 
+        owner = (Restaurant) bundle.getSerializable("resturaunt");
         adapter = new MenuItemAdapter(this,current.getSubItems());
         listView = (ListView) findViewById(R.id.menuItems);
         listView.setAdapter(adapter);
