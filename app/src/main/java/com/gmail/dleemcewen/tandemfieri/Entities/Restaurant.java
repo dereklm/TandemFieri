@@ -1,6 +1,7 @@
 package com.gmail.dleemcewen.tandemfieri.Entities;
 
 import com.gmail.dleemcewen.tandemfieri.Abstracts.Entity;
+import com.gmail.dleemcewen.tandemfieri.MenuBuilder.MenuCatagory;
 
 import java.io.Serializable;
 import java.util.Map;
@@ -17,6 +18,8 @@ public class Restaurant extends Entity implements Serializable {
     private Double charge;
     private String ownerId;
     private Map<String, String> drivers;
+
+    private MenuCatagory menu;
 
     /**
      * Default constructor
@@ -150,6 +153,14 @@ public class Restaurant extends Entity implements Serializable {
      */
     public void setOwnerId(String ownerId) {
         this.ownerId = ownerId;
+    }
+
+    public MenuCatagory getMenu() {
+        return menu;
+    }
+
+    public void setMenu(MenuCatagory menu) {
+        this.menu = menu;
     }
 
     /**

@@ -3,11 +3,10 @@ package com.gmail.dleemcewen.tandemfieri;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.widget.Button;
-import android.widget.ExpandableListAdapter;
 import android.widget.ExpandableListView;
 import android.widget.TextView;
 
@@ -15,6 +14,7 @@ import com.gmail.dleemcewen.tandemfieri.Adapters.ManageRestaurantExpandableListA
 import com.gmail.dleemcewen.tandemfieri.Entities.Restaurant;
 import com.gmail.dleemcewen.tandemfieri.Entities.User;
 import com.gmail.dleemcewen.tandemfieri.EventListeners.QueryCompleteListener;
+import com.gmail.dleemcewen.tandemfieri.MenuBuilder.MenuCatagory;
 import com.gmail.dleemcewen.tandemfieri.Repositories.Restaurants;
 
 import java.util.ArrayList;
@@ -27,7 +27,7 @@ public class ManageRestaurants extends AppCompatActivity {
     private TextView header;
     private Button addRestaurant;
     private ExpandableListView restaurantsList;
-    private ExpandableListAdapter listAdapter;
+    private ManageRestaurantExpandableListAdapter listAdapter;
     private Restaurants<Restaurant> restaurants;
     private User currentUser;
     private Context context;
@@ -50,6 +50,47 @@ public class ManageRestaurants extends AppCompatActivity {
         if (requestCode == CREATE_RESTAURANT && resultCode == RESULT_OK) {
             //A new restaurant was added, so reload the restaurants data
             retrieveData();
+        }
+        if(requestCode==111 && resultCode==RESULT_OK){
+            //update main menu
+            MenuCatagory temp = (MenuCatagory) data.getSerializableExtra("now");
+            Restaurant restaurant = (Restaurant) data.getSerializableExtra("resturaunt");
+            restaurant = listAdapter.findRefrenceToUpdate(restaurant);
+            restaurant.setMenu(temp);
+
+            Restaurants<Restaurant> restaurantsRepository = new Restaurants<>();
+
+            restaurantsRepository
+                    .update(restaurant);
+//                    .continueWith(new Continuation<AbstractMap.SimpleEntry<Boolean ,DatabaseError>,
+//                            Task<AbstractMap.SimpleEntry<Boolean, DatabaseError>>>() {
+//                        @Override
+//                        public Task<AbstractMap.SimpleEntry<Boolean, DatabaseError>> then(@NonNull Task<AbstractMap.SimpleEntry<Boolean, DatabaseError>> task)
+//                                throws Exception {
+//                            TaskCompletionSource<AbstractMap.SimpleEntry<Boolean, DatabaseError>> taskCompletionSource =
+//                                    new TaskCompletionSource<>();
+//
+//                            AbstractMap.SimpleEntry<Boolean, DatabaseError> taskResult = task.getResult();
+//                            StringBuilder toastMessage = new StringBuilder();
+//
+//                            if (taskResult.getKey()) {
+//                                toastMessage.append("Restaurant updated successfully");
+//                            } else {
+//                                toastMessage.append(taskResult.getValue().getMessage());
+//                                toastMessage.append(". The restaurant was not created correctly");
+//                            }
+//
+//                            Toast
+//                                    .makeText(ManageRestaurants.this, toastMessage.toString(), Toast.LENGTH_LONG)
+//                                    .show();
+//
+//                            Intent intent=new Intent();
+//                            setResult(RESULT_OK,intent);
+//                            finish();
+//
+//                            return taskCompletionSource.getTask();
+//                        }
+//                    });
         }
     }
 
