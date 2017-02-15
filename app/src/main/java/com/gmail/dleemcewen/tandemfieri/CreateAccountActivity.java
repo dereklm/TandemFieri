@@ -6,6 +6,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.Toast;
 
 import static com.gmail.dleemcewen.tandemfieri.R.id.phone;
 
@@ -46,7 +47,11 @@ public class CreateAccountActivity extends AppCompatActivity {
                 intent.putExtra("zip", zip.getText().toString());
                 intent.putExtra("phoneNumber", phoneNumber.getText().toString());
                 intent.putExtra("email", email.getText().toString());
-
+                if(email.getText().toString().isEmpty()){
+                    Toast.makeText(getApplicationContext(), "Do not leave email blank", Toast.LENGTH_LONG).show();
+                } else if(!email.getText().toString().contains("@")){
+                    Toast.makeText(getApplicationContext(), "Email must contain an @", Toast.LENGTH_LONG).show();
+                }
                 startActivity(intent);
             }
         });
