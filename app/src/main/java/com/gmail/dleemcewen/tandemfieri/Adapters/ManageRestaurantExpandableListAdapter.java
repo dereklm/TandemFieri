@@ -7,6 +7,7 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.res.Resources;
 import android.graphics.Typeface;
+import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -15,6 +16,7 @@ import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.gmail.dleemcewen.tandemfieri.DriverRatings;
 import com.gmail.dleemcewen.tandemfieri.Entities.Restaurant;
 import com.gmail.dleemcewen.tandemfieri.MenuBuilder.MenuBuilderActivity;
 import com.gmail.dleemcewen.tandemfieri.MenuBuilder.MenuCatagory;
@@ -267,9 +269,14 @@ public class ManageRestaurantExpandableListAdapter extends BaseExpandableListAda
         rateDrivers.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Toast
-                    .makeText(context, "Rating drivers for " + selectedChild.getName(), Toast.LENGTH_SHORT)
-                    .show();
+                //Android assigns a new key to the restaurant when deserializing
+                //so send the existing key along as well so the new key can be replaced
+                Bundle bundle = new Bundle();
+                Intent intent = new Intent(context, DriverRatings.class);
+                bundle.putSerializable("Restaurant", selectedChild);
+                bundle.putString("key", selectedChild.getKey());
+                intent.putExtras(bundle);
+                context.startActivity(intent);
             }
         });
 

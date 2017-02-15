@@ -33,19 +33,28 @@
     <string name="deliveryArea">Delivery Area</string>
     <string name="nameRequired">Name is required!</string>
     <string name="streetRequired">Street address is required!</string>
+    <string name="manage_restaurants">Manage restaurants (for testing)</string>
+    <string name="restaurant_main_menu">Restaurant Owner Main Menu</string>
     <string name="cityRequired">City is required!</string>
     <string name="stateRequired">State is required!</string>
     <string name="zipRequired">Zipcode is required!</string>
     <string name="addButton">Add</string>
     <string name="manageMenuItemsButton">Manage menu items</string>
     <string name="viewSalesButton">View sales/products</string>
-    <string name="rateDriversButton">Rate drivers</string>
+    <string name="rateDriversButton">View driver ratings</string>
     <string name="manageRestaurantsActivityTitle">Managing restaurants</string>
     <string name="removeConfirmationQuestion">Are you sure you want to remove</string>
     <string name="yes">Yes</string>
     <string name="no">No</string>
-
-    <!-- TODO: Remove or change this placeholder text -->
-    <string name="hello_blank_fragment">Hello blank fragment</string>
-    <string name="title_activity_menu_options">MenuOptionsActivity</string>
+    <string name="ok">Ok</string>
+    <string name="cancel">Cancel</string>
+    <string name="startDate">Start date</string>
+    <string name="endDate">End date</string>
+    <string name="hintStartDate">Select start date</string>
+    <string name="hintEndDate">Select end date</string>
+    <string name="averageRating">Average rating</string>
+    <string name="invalidEndDate">The selected end date cannot occur before the selected start date.</string>
+    <string name="driverRatingsActivityTitle">Driver ratings</string>
+    <string name="updateButton">Update</string>
+    <string name="deliveryRadius">Delivery Radius (mi)</string>
 </resources>
