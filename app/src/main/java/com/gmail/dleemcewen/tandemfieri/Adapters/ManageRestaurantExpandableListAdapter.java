@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.content.res.Resources;
 import android.graphics.Typeface;
 import android.view.LayoutInflater;
@@ -15,6 +16,8 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.gmail.dleemcewen.tandemfieri.Entities.Restaurant;
+import com.gmail.dleemcewen.tandemfieri.MenuBuilder.MenuBuilderActivity;
+import com.gmail.dleemcewen.tandemfieri.MenuBuilder.MenuCatagory;
 import com.gmail.dleemcewen.tandemfieri.R;
 import com.gmail.dleemcewen.tandemfieri.Repositories.Restaurants;
 
@@ -239,6 +242,14 @@ public class ManageRestaurantExpandableListAdapter extends BaseExpandableListAda
         manageMenuItems.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                Intent intent = new Intent(context, MenuBuilderActivity.class);
+                if (selectedChild.getMenu()==null){
+                    selectedChild.setMenu(new MenuCatagory("Main"));
+                }
+
+                intent.putExtra("menu",selectedChild.getMenu());
+                context.startActivity(intent);
+
                 Toast
                     .makeText(context, "Managing menu items for " + selectedChild.getName(), Toast.LENGTH_SHORT)
                     .show();

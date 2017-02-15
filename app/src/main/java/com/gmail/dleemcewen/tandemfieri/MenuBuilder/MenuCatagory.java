@@ -18,4 +18,9 @@ public class MenuCatagory extends MenuCompenet {
     public void setSubItems(ArrayList<MenuCompenet> subItems) {
         this.subItems = subItems;
     }
+
+    public MenuCatagory(String name){
+        this.name=name;
+        subItems= new ArrayList<>();
+    }
 }

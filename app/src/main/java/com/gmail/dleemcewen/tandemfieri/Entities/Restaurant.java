@@ -1,6 +1,7 @@
 package com.gmail.dleemcewen.tandemfieri.Entities;
 
 import com.gmail.dleemcewen.tandemfieri.Abstracts.Entity;
+import com.gmail.dleemcewen.tandemfieri.MenuBuilder.MenuCatagory;
 
 /**
  * Restaurant defines all the properties and behaviors for a Restaurant entity
@@ -13,6 +14,8 @@ public class Restaurant extends Entity {
     private String zipcode;
     private Double charge;
     private String ownerId;
+
+    private MenuCatagory menu;
 
     /**
      * Default constructor
@@ -145,5 +148,13 @@ public class Restaurant extends Entity {
      */
     public void setOwnerId(String ownerId) {
         this.ownerId = ownerId;
+    }
+
+    public MenuCatagory getMenu() {
+        return menu;
+    }
+
+    public void setMenu(MenuCatagory menu) {
+        this.menu = menu;
     }
 }

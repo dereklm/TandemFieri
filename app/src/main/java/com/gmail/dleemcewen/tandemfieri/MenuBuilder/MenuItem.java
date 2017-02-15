@@ -27,4 +27,6 @@ public class MenuItem extends MenuCompenet {
     public void setOptions(ArrayList<ItemOption> options) {
         this.options = options;
     }
+
+
 }

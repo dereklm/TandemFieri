@@ -21,7 +21,11 @@
         <activity android:name=".RestaurantMainMenu" />
         <activity android:name=".DriverMainMenu" />
         <activity android:name=".CreateRestaurant" />
-        <activity android:name=".ManageRestaurants"></activity>
+        <activity android:name=".ManageRestaurants" />
+        <activity android:name=".MenuBuilder.MenuBuilderActivity" />
+        <activity android:name=".MenuBuilder.MenuItemEditActivity" />
+        <activity android:name=".MenuBuilder.MenuOptionsActivity" />
+        <activity android:name=".MenuBuilder.OptionAddActivity"></activity>
     </application>
 
 </manifest>
