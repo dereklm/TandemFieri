@@ -13,23 +13,16 @@
     <TextView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Restaurant Owner Main Menu"
+        android:text="@string/restaurant_main_menu"
+	android:id="@+id/restaurant_text_view"
         android:textSize="35sp"/>
 
     <Button
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="Sign Out"
-        android:layout_alignParentBottom="true"
-        android:id="@+id/sign_out_button"/>
-
-    <Button
-        android:text="Manage restaurants (for testing)"
+        android:text="@string/manage_restaurants"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_above="@+id/sign_out_button"
+        android:layout_below="@id/restaurant_text_view"
         android:layout_centerHorizontal="true"
         android:layout_marginBottom="61dp"
         android:id="@+id/manageRestaurants" />
-
 </RelativeLayout>

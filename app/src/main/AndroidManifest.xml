@@ -26,6 +26,8 @@
         <activity android:name=".ManageRestaurants" />
         <activity android:name=".DriverRatings"></activity>
         <activity android:name=".RestaurantMapActivity" />
+        <activity android:name=".EditAccountActivity" />
+        <activity android:name=".EditPasswordActivity"></activity>
 
         <meta-data
             android:name="com.google.android.geo.API_KEY"

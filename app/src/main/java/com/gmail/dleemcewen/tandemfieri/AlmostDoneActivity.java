@@ -12,6 +12,7 @@ import android.widget.RadioButton;
 import android.widget.Toast;
 
 import com.gmail.dleemcewen.tandemfieri.Entities.User;
+import com.gmail.dleemcewen.tandemfieri.Repositories.Users;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
@@ -31,6 +32,7 @@ public class AlmostDoneActivity extends AppCompatActivity{
     public RadioButton radioDining, radioRestaurant, radioDriver;
     FirebaseAuth user = FirebaseAuth.getInstance();
 
+    private Users<User> usersRepo = new Users<User>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -103,7 +105,9 @@ public class AlmostDoneActivity extends AppCompatActivity{
         user.createUserWithEmailAndPassword(email, password.getText().toString()).addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
             @Override
             public void onComplete(@NonNull Task<AuthResult> task) {
+                //Toast.makeText(getApplicationContext(), "In create user.", Toast.LENGTH_LONG).show();
                 if (task.isSuccessful()) {
+                    //Toast.makeText(getApplicationContext(), "Task was successful.", Toast.LENGTH_LONG).show();
                     Bundle bundle = new Bundle();
                     Intent intent = null;
                     FirebaseUser user = task.getResult().getUser();
@@ -137,6 +141,25 @@ public class AlmostDoneActivity extends AppCompatActivity{
                     finish();
                     CreateAccountActivity.getInstance().finish();
                     Toast.makeText(getApplicationContext(), "Successfully created user. Email Verification Sent", Toast.LENGTH_LONG).show();
+
+
+                    if (radioDining.isChecked() == true) {
+                        mDatabase.child("User").child("Diner").child(user.getUid()).setValue(newUser);
+                        intent = new Intent(AlmostDoneActivity.this, DinerMainMenu.class);
+                    } else if (radioRestaurant.isChecked() == true){
+                        mDatabase.child("User").child("Restaurant").child(user.getUid()).setValue(newUser);
+                        intent = new Intent(AlmostDoneActivity.this, RestaurantMainMenu.class);
+                    } else if (radioDriver.isChecked() == true){
+                        mDatabase.child("User").child("Driver").child(user.getUid()).setValue(newUser);
+                        intent = new Intent(AlmostDoneActivity.this, DriverMainMenu.class);
+                    }
+
+                    bundle.putSerializable("User", newUser);
+                    intent.putExtras(bundle);
+                    startActivity(intent);
+                    finish();
+                    CreateAccountActivity.getInstance().finish();
+                    Toast.makeText(getApplicationContext(), "Successfully created user.", Toast.LENGTH_LONG).show();
                 } else {
                     Toast.makeText(getApplicationContext(), "Unable to create user. Exception was " + task.getException().toString(), Toast.LENGTH_LONG).show();
                 }

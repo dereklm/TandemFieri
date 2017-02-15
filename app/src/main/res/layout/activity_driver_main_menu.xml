@@ -16,11 +16,4 @@
         android:text="Driver Main Menu"
         android:textSize="35sp"/>
 
-    <Button
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="Sign Out"
-        android:layout_alignParentBottom="true"
-        android:id="@+id/sign_out_button"/>
-
 </RelativeLayout>

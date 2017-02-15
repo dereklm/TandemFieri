@@ -33,6 +33,8 @@
     <string name="deliveryArea">Delivery Area</string>
     <string name="nameRequired">Name is required!</string>
     <string name="streetRequired">Street address is required!</string>
+    <string name="manage_restaurants">Manage restaurants (for testing)</string>
+    <string name="restaurant_main_menu">Restaurant Owner Main Menu</string>
     <string name="cityRequired">City is required!</string>
     <string name="stateRequired">State is required!</string>
     <string name="zipRequired">Zipcode is required!</string>
