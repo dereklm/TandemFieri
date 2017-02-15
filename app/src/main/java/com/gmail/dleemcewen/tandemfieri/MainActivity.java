@@ -24,6 +24,8 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
+import static android.widget.Toast.makeText;
+
 public class MainActivity extends AppCompatActivity {
 
     public TextView createAccount;
@@ -45,6 +47,12 @@ public class MainActivity extends AppCompatActivity {
 
         resources = getResources();
         verifiedEmailNotRequiredForLogin = resources.getBoolean(R.bool.verified_email_not_required_for_login);
+        //this if statement is used when the user clicks the sign out option from the drop down menu
+        //it closed all open activities and then the main activity.
+        if( getIntent().getBooleanExtra("Exit me", false)){
+            finish();
+            return; // add this to prevent from doing unnecessary stuffs
+        }
 
         createAccount = (TextView) findViewById(R.id.createAccount);
         signInButton = (Button) findViewById(R.id.signInButton);
@@ -69,7 +77,7 @@ public class MainActivity extends AppCompatActivity {
             }
         };
 
-        createAccount.setOnClickListener(new View.OnClickListener(){
+        createAccount.setOnClickListener(new View.OnClickListener() {
 
             @Override
             public void onClick(View view) {
@@ -88,7 +96,7 @@ public class MainActivity extends AppCompatActivity {
                         if (task.isSuccessful()) {
                             if (verifiedEmailNotRequiredForLogin || task.getResult().getUser().isEmailVerified()) {
                                 Toast.makeText(getApplicationContext(), task.getResult().getUser().getEmail() + " was successfully signed in", Toast.LENGTH_LONG)
-                                        .show();
+                                      .show();
 
                                 dBase.addListenerForSingleValueEvent(new ValueEventListener() {
                                     @Override
@@ -119,11 +127,9 @@ public class MainActivity extends AppCompatActivity {
     }//end onCreate
 
     public void navigateToMenu(DataSnapshot dataSnapshot) {
-        // user = dataSnapshot.child("Diner").child(mAuth.getCurrentUser().getUid()).getValue(User.class);
-        //Toast.makeText(getApplicationContext(),"Does this work " + user.getFirstName(),Toast.LENGTH_LONG).show();
 
         Bundle bundle = new Bundle();
-
+                           
         User diner = dataSnapshot.child("Diner").child(mAuth.getCurrentUser().getUid()).getValue(User.class);
         User driver = dataSnapshot.child("Driver").child(mAuth.getCurrentUser().getUid()).getValue(User.class);
         User restaurantOwner = dataSnapshot.child("Restaurant").child(mAuth.getCurrentUser().getUid()).getValue(User.class);
@@ -143,7 +149,6 @@ public class MainActivity extends AppCompatActivity {
 
         intent.putExtras(bundle);
         startActivity(intent);
-
     }
 
     private void clear(){
@@ -177,3 +182,85 @@ public class MainActivity extends AppCompatActivity {
         mAuth.addAuthStateListener(authenticatorListener);
     }
 }//end activity
+
+
+    /* example finding user and navigating to appropriate main menu with repository */
+    /*private void signInTest()
+    {
+        // this would be a variable accessible from the entire activity
+        final Users<User> usersRepo = new Users<User>();
+
+        signInButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                mAuth.signInWithEmailAndPassword(email.getText().toString(), password.getText().toString()).addOnCompleteListener(new OnCompleteListener<AuthResult>() {
+                    @Override
+                    public void onComplete(@NonNull Task<AuthResult> task) {
+                        if (task.isSuccessful()) {
+                            Toast
+                                    .makeText(getApplicationContext(), task.getResult().getUser().getEmail() +" was successfully signed in", Toast.LENGTH_LONG)
+                                    .show();
+
+                            final String uid = task.getResult().getUser().getUid();
+
+                            usersRepo.find(Arrays.asList("Diner"), uid, new QueryCompleteListener<User>() {
+                                Bundle bundle = new Bundle();
+                                Intent intent = null;
+
+                                @Override
+                                public void onQueryComplete(ArrayList<User> entities) {
+                                    if (entities.isEmpty()) {
+                                        usersRepo.find(Arrays.asList("Driver"), uid, new QueryCompleteListener<User>() {
+                                            @Override
+                                            public void onQueryComplete(ArrayList<User> entities) {
+                                                if (entities.isEmpty()) {
+                                                    usersRepo.find(Arrays.asList("Restaurant"), uid, new QueryCompleteListener<User>() {
+                                                        @Override
+                                                        public void onQueryComplete(ArrayList<User> entities) {
+                                                            if (entities.isEmpty()) {
+                                                                //no user found
+                                                                Toast
+                                                                        .makeText(getApplicationContext(), "Invalid user.  The authorities have been notified.", Toast.LENGTH_LONG)
+                                                                        .show();
+
+                                                            } else {
+                                                                //found restaurant
+                                                                intent = new Intent(MainActivity.this, RestaurantMainMenu.class);
+                                                                bundle.putSerializable("User", entities.get(0));
+                                                                intent.putExtras(bundle);
+                                                                startActivity(intent);
+                                                            } //end restaurant find
+                                                        }
+                                                    });
+                                                } else {
+                                                    //found driver
+                                                    intent = new Intent(MainActivity.this, DriverMainMenu.class);
+                                                    bundle.putSerializable("User", entities.get(0));
+                                                    intent.putExtras(bundle);
+                                                    startActivity(intent);
+
+                                                }  //end driver find
+                                            }
+                                        });
+                                    } else {
+                                        //found diner!
+                                        intent = new Intent(MainActivity.this, DinerMainMenu.class);
+                                        bundle.putSerializable("User", entities.get(0));
+                                        intent.putExtras(bundle);
+                                        startActivity(intent);
+                                    }   // end diner find
+                                }
+                            });
+
+                        } else {
+                            Toast
+                                    .makeText(getApplicationContext(), "Sign in was not successful", Toast.LENGTH_LONG)
+                                    .show();
+                        }//end if task.successful
+                    }//end onComplete
+                });//end sign in
+
+
+            }//end on click
+        });//end sign in button
+ */

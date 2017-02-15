@@ -9,6 +9,7 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.Query;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 /**
@@ -112,13 +113,55 @@ public abstract class Repository<T extends Entity> {
     }
 
     /**
+     * buildEqualsQuery builds the appropriate query that defines that the data at the provided childnodes
+     * should be equal to the provided equalsValue
+     * @param dataContext indicates the data context
+     * @param equalsValue indicates the value to equal (optional)
+     * @param childNodes indicates the array of child nodes that indicate the location
+     *                         of the desired data (optional)
+     * @return query that can be executed by firebase to find desired records
+     */
+    protected Query buildEqualsQuery(DatabaseReference dataContext, String equalsValue, String... childNodes) {
+       Query query = buildQuery(dataContext, Arrays.asList(childNodes));
+
+        if (!equalsValue.equals("")) {
+            query = query.equalTo(equalsValue);
+        }
+
+        return query;
+    }
+
+    /**
+     * buildRangeQuery builds the appropriate query that defines that the data at the provided childnodes
+     * should be bounded by the provided startingRangeValue and the provided endingRangeValue
+     * @param dataContext indicates the data context
+     * @param startingRangeValue indicates the starting range value (optional)
+     * @param endingRangeValue indicates the starting range value (optional)
+     * @param childNodes indicates the array of child nodes that indicate the location
+     *                         of the desired data (optional)
+     * @return query that can be executed by firebase to find desired records
+     */
+    protected Query buildRangeQuery(DatabaseReference dataContext, String startingRangeValue, String endingRangeValue, String... childNodes) {
+        Query query = buildQuery(dataContext, Arrays.asList(childNodes));
+
+        if (!startingRangeValue.equals("")) {
+            query = query.startAt(startingRangeValue);
+        }
+
+        if (!endingRangeValue.equals("")) {
+            query = query.endAt(endingRangeValue);
+        }
+
+        return query;
+    }
+
+    /**
      * buildQuery builds the appropriate query based on the provided childNodes and value
      * @param dataContext indicates the data context
      * @param childNodes indicates the list of child nodes to query (optional)
-     * @param value indicates the value to search for (optional)
      * @return query that can be executed by firebase to find desired records
      */
-    protected Query buildQuery(DatabaseReference dataContext, List<String> childNodes, String value) {
+    private Query buildQuery(DatabaseReference dataContext, List<String> childNodes) {
         Query query;
 
         String childNodesPath = "";
@@ -130,10 +173,6 @@ public abstract class Repository<T extends Entity> {
             query = dataContext.orderByChild(childNodesPath);
         } else {
             query = dataContext.orderByKey();
-        }
-
-        if (!value.equals("")) {
-            query = query.equalTo(value);
         }
 
         return query;
