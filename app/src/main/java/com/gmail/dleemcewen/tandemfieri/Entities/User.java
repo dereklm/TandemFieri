@@ -120,4 +120,5 @@ public class User extends Entity implements Serializable{
         this.active = active;
     }
 
+
 }

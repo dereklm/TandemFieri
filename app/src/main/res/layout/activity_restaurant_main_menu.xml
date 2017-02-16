@@ -17,12 +17,4 @@
 	android:id="@+id/restaurant_text_view"
         android:textSize="35sp"/>
 
-    <Button
-        android:text="@string/manage_restaurants"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_below="@id/restaurant_text_view"
-        android:layout_centerHorizontal="true"
-        android:layout_marginBottom="61dp"
-        android:id="@+id/manageRestaurants" />
 </RelativeLayout>

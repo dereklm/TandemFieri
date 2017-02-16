@@ -89,7 +89,10 @@ public class CreateRestaurant extends AppCompatActivity {
                     && Validator.isValid(street, getString(R.string.streetRequired))
                     && Validator.isValid(city, getString(R.string.cityRequired))
                     && Validator.isValid(state, getString(R.string.stateRequired))
-                    && Validator.isValid(zipCode, getString(R.string.zipRequired))) {
+                    && Validator.isValid(zipCode, getString(R.string.zipRequired))
+                    && Validator.isValid(deliveryCharge, getString(R.string.deliveryChargeRequired))
+                    && Validator.isValid(deliveryCharge, "^(0*[1-9][0-9]*(\\.[0-9]+)?|0+\\.[0-9]*[1-9][0-9]*)$",
+                        getString(R.string.deliveryChargeGreaterThanZero))) {
 
                     //build a new restaurant
                     Restaurant restaurant = buildNewRestaurant();

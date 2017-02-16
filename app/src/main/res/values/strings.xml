@@ -38,6 +38,8 @@
     <string name="cityRequired">City is required!</string>
     <string name="stateRequired">State is required!</string>
     <string name="zipRequired">Zipcode is required!</string>
+    <string name="deliveryChargeRequired">A delivery charge amount is required!</string>
+    <string name="deliveryChargeGreaterThanZero">Delivery charge amount must be greater than zero!</string>
     <string name="addButton">Add</string>
     <string name="manageMenuItemsButton">Manage menu items</string>
     <string name="viewSalesButton">View sales/products</string>

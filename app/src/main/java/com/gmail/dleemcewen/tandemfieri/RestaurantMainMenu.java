@@ -16,34 +16,17 @@ import com.google.firebase.auth.FirebaseAuth;
 
 public class RestaurantMainMenu extends AppCompatActivity {
 
-    Button manageRestaurants;
-    User user;
+    private User user;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_restaurant_main_menu);
 
-        Bundle bundle = new Bundle();
-        bundle = this.getIntent().getExtras();
-        final User user = (User) bundle.getSerializable("User");
+        Bundle bundle = this.getIntent().getExtras();
+        user = (User) bundle.getSerializable("User");
 
         Toast.makeText(getApplicationContext(),"The user is " + user.getEmail(), Toast.LENGTH_LONG).show();
-
-        //TODO: remove this, just for testing
-        manageRestaurants = (Button)findViewById(R.id.manageRestaurants);
-        manageRestaurants.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                //TODO: undo this!  just for testing....
-                Bundle bundle = new Bundle();
-                Intent intent = new Intent(RestaurantMainMenu.this, ManageRestaurants.class);
-                bundle.putSerializable("User", user);
-                intent.putExtras(bundle);
-                startActivity(intent);
-
-            }
-        });
     }//end onCreate
 
     //create menu
@@ -112,7 +95,7 @@ public class RestaurantMainMenu extends AppCompatActivity {
     //for now this goes to main menu until I get the name of the activity - look on git hub?
     private void goToManageRestaurants(){
         Bundle bundle = new Bundle();
-        Intent intent = new Intent(RestaurantMainMenu.this, MainActivity.class);
+        Intent intent = new Intent(RestaurantMainMenu.this, ManageRestaurants.class);
         bundle.putSerializable("User", user);
         intent.putExtras(bundle);
         startActivity(intent);
