@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <integer name="deliveryRadiusMin">1</integer>
+    <integer name="deliveryRadiusMax">50</integer>
+    <integer name="defaultDeliveryRadius">1</integer>
+    <integer name="defaultMapPadding">100</integer>
+</resources>

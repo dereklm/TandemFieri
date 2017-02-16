@@ -18,6 +18,8 @@ public class Restaurant extends Entity implements Serializable {
     private Double charge;
     private String ownerId;
     private Map<String, String> drivers;
+    private Integer deliveryRadius;
+    private String id;
 
     private MenuCatagory menu;
 
@@ -42,6 +44,8 @@ public class Restaurant extends Entity implements Serializable {
     public String getId() {
         return getKey();
     }
+
+    public String getRestaurantKey() { return id; }
 
     /**
      * get the restaurant name
@@ -178,4 +182,16 @@ public class Restaurant extends Entity implements Serializable {
     public void setDrivers(Map<String, String> drivers) {
         this.drivers = drivers;
     }
+
+    /**
+     * gets the restaurant delivery radius
+     * @return restaurant delivery radius
+     */
+    public Integer getDeliveryRadius() { return deliveryRadius; }
+
+    /**
+     * sets the restaurant delivery radius
+     * @param deliveryRadius identifies the restaurant delivery radius
+     */
+    public void setDeliveryRadius(Integer deliveryRadius) { this.deliveryRadius = deliveryRadius;}
 }

@@ -15,7 +15,11 @@ import com.gmail.dleemcewen.tandemfieri.Entities.Restaurant;
 import com.gmail.dleemcewen.tandemfieri.Entities.User;
 import com.gmail.dleemcewen.tandemfieri.EventListeners.QueryCompleteListener;
 import com.gmail.dleemcewen.tandemfieri.MenuBuilder.MenuCatagory;
+import com.gmail.dleemcewen.tandemfieri.Events.ActivityEvent;
 import com.gmail.dleemcewen.tandemfieri.Repositories.Restaurants;
+
+import org.greenrobot.eventbus.EventBus;
+import org.greenrobot.eventbus.Subscribe;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -51,7 +55,7 @@ public class ManageRestaurants extends AppCompatActivity {
             //A new restaurant was added, so reload the restaurants data
             retrieveData();
         }
-        if(requestCode==111 && resultCode==RESULT_OK){
+        if (requestCode == 111 && resultCode == RESULT_OK) {
             //update main menu
             MenuCatagory temp = (MenuCatagory) data.getSerializableExtra("now");
             Restaurant restaurant = (Restaurant) data.getSerializableExtra("resturaunt");
@@ -94,6 +98,12 @@ public class ManageRestaurants extends AppCompatActivity {
         }
     }
 
+    @Override
+    public void onDestroy() {
+        EventBus.getDefault().unregister(this);
+        super.onDestroy();
+    }
+
     /**
      * initialize all necessary variables
      */
@@ -103,6 +113,8 @@ public class ManageRestaurants extends AppCompatActivity {
 
         Bundle bundle = this.getIntent().getExtras();
         currentUser = (User)bundle.getSerializable("User");
+
+        EventBus.getDefault().register(this);
     }
 
     /**
@@ -165,5 +177,12 @@ public class ManageRestaurants extends AppCompatActivity {
     private void finalizeLayout() {
         //set header value
         header.setText(currentUser.getFirstName() + " " + currentUser.getLastName());
+    }
+
+    @Subscribe
+    public void onEvent(ActivityEvent event) {
+        if (event.result == ActivityEvent.Result.REFRESH_RESTAURANT_LIST) {
+            retrieveData();
+        }
     }
 }

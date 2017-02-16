@@ -17,7 +17,7 @@
             android:id="@+id/tv_area"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:textSize="20sp"
+            android:textSize="@dimen/title_text_size"
             android:text="@string/deliveryRadius"
             android:layout_marginLeft="10dp"
             android:layout_centerVertical="true" />
@@ -29,8 +29,8 @@
             android:layout_toRightOf="@id/tv_area"
             app:np_orientation="horizontal"
             app:np_dividerColor="@color/colorPrimary"
-            app:np_max="50"
-            app:np_min="1"
+            app:np_max="@integer/deliveryRadiusMax"
+            app:np_min="@integer/deliveryRadiusMin"
             app:np_textColor="@color/colorPrimary"
             app:np_textSize="20dp" />
 
@@ -40,7 +40,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="@string/updateButton"
-            android:textSize="20sp"
+            android:textSize="@dimen/button_text_size"
             android:layout_toRightOf="@id/radius"
             android:layout_centerVertical="true" />
     </RelativeLayout>

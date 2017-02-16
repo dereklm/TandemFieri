@@ -1,9 +1,8 @@
 package com.gmail.dleemcewen.tandemfieri;
 
-import android.content.Intent;
+import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
-import android.os.Bundle;
 import android.text.SpannableString;
 import android.text.style.UnderlineSpan;
 import android.view.View;
@@ -13,13 +12,15 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.gmail.dleemcewen.tandemfieri.Entities.Restaurant;
-import com.gmail.dleemcewen.tandemfieri.Entities.User;
+import com.gmail.dleemcewen.tandemfieri.Events.ActivityEvent;
 import com.gmail.dleemcewen.tandemfieri.Repositories.Restaurants;
 import com.gmail.dleemcewen.tandemfieri.Validator.Validator;
 import com.google.android.gms.tasks.Continuation;
 import com.google.android.gms.tasks.Task;
 import com.google.android.gms.tasks.TaskCompletionSource;
 import com.google.firebase.database.DatabaseError;
+
+import org.greenrobot.eventbus.EventBus;
 
 import java.util.AbstractMap;
 import java.util.ArrayList;
@@ -38,7 +39,6 @@ public class CreateRestaurant extends AppCompatActivity {
     private EditText zipCode;
     private EditText deliveryCharge;
     private Button businessHours;
-    private Button deliveryArea;
     private Button createRestaurant;
     private String restaurantOwnerId;
 
@@ -75,7 +75,6 @@ public class CreateRestaurant extends AppCompatActivity {
         zipCode = (EditText)findViewById(R.id.zipcode);
         deliveryCharge = (EditText)findViewById(R.id.deliveryCharge);
         businessHours = (Button)findViewById(R.id.businessHours);
-        deliveryArea = (Button)findViewById(R.id.deliveryArea);
         createRestaurant = (Button)findViewById(R.id.createRestaurant);
     }
 
@@ -121,8 +120,7 @@ public class CreateRestaurant extends AppCompatActivity {
                                     .makeText(CreateRestaurant.this, toastMessage.toString(), Toast.LENGTH_LONG)
                                     .show();
 
-                                Intent intent=new Intent();
-                                setResult(RESULT_OK,intent);
+                                EventBus.getDefault().post(new ActivityEvent(ActivityEvent.Result.REFRESH_RESTAURANT_LIST));
                                 finish();
 
                                 return taskCompletionSource.getTask();
@@ -167,6 +165,7 @@ public class CreateRestaurant extends AppCompatActivity {
         restaurant.setZipcode(zipCode.getText().toString());
         restaurant.setCharge(Double.valueOf(deliveryCharge.getText().toString()));
         restaurant.setOwnerId(restaurantOwnerId);
+        restaurant.setDeliveryRadius(getBaseContext().getResources().getInteger(R.integer.defaultDeliveryRadius));
 
         return restaurant;
     }

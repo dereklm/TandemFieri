@@ -22,6 +22,7 @@ import com.gmail.dleemcewen.tandemfieri.MenuBuilder.MenuBuilderActivity;
 import com.gmail.dleemcewen.tandemfieri.MenuBuilder.MenuCatagory;
 import com.gmail.dleemcewen.tandemfieri.R;
 import com.gmail.dleemcewen.tandemfieri.Repositories.Restaurants;
+import com.gmail.dleemcewen.tandemfieri.RestaurantMapActivity;
 
 import java.util.Arrays;
 import java.util.List;
@@ -239,6 +240,7 @@ public class ManageRestaurantExpandableListAdapter extends BaseExpandableListAda
         //TODO: add click events for buttons
         Button manageMenuItems = (Button)convertView.findViewById(R.id.manageMenuItems);
         Button viewSales = (Button)convertView.findViewById(R.id.viewSales);
+        Button viewDeliveryArea = (Button)convertView.findViewById(R.id.viewDeliveryArea);
         Button rateDrivers = (Button)convertView.findViewById(R.id.rateDrivers);
 
         manageMenuItems.setOnClickListener(new View.OnClickListener() {
@@ -264,6 +266,14 @@ public class ManageRestaurantExpandableListAdapter extends BaseExpandableListAda
                 Toast
                     .makeText(context, "Viewing sales for " + selectedChild.getName(), Toast.LENGTH_SHORT)
                     .show();
+            }
+        });
+        viewDeliveryArea.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent(context, RestaurantMapActivity.class);
+                intent.putExtra("restaurant", selectedChild);
+                context.startActivity(intent);
             }
         });
         rateDrivers.setOnClickListener(new View.OnClickListener() {
