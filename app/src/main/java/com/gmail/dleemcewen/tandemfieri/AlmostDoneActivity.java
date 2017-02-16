@@ -67,8 +67,7 @@ public class AlmostDoneActivity extends AppCompatActivity{
             public void onClick(View view) {
                 if (password.getText().toString()
                         .equals(confirmPassword.getText().toString())
-                        && password.getText().toString().matches(".*\\w.*")
-                        && password.getText().toString().length() >= 6){
+                        && password.getText().toString().matches(FormConstants.REG_EX_PASSWORD)) {
                     createUser();
             }else {
                     if (!password.getText().toString()
