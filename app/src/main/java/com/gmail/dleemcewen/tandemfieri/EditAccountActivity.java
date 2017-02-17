@@ -139,6 +139,7 @@ public class EditAccountActivity extends AppCompatActivity {
         changedUser.setZip(zip.getText().toString());
         changedUser.setPhoneNumber(phoneNumber.getText().toString());
         changedUser.setEmail(email.getText().toString());
+        changedUser.setAuthUserID(currentUser.getAuthUserID());
     }
 
     //edits the current user's info in the database with the new User information

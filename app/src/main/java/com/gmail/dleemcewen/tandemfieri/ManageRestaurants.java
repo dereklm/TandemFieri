@@ -9,13 +9,14 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.ExpandableListView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.gmail.dleemcewen.tandemfieri.Adapters.ManageRestaurantExpandableListAdapter;
 import com.gmail.dleemcewen.tandemfieri.Entities.Restaurant;
 import com.gmail.dleemcewen.tandemfieri.Entities.User;
 import com.gmail.dleemcewen.tandemfieri.EventListeners.QueryCompleteListener;
-import com.gmail.dleemcewen.tandemfieri.MenuBuilder.MenuCatagory;
 import com.gmail.dleemcewen.tandemfieri.Events.ActivityEvent;
+import com.gmail.dleemcewen.tandemfieri.MenuBuilder.MenuCatagory;
 import com.gmail.dleemcewen.tandemfieri.Repositories.Restaurants;
 
 import org.greenrobot.eventbus.EventBus;
@@ -113,6 +114,12 @@ public class ManageRestaurants extends AppCompatActivity {
 
         Bundle bundle = this.getIntent().getExtras();
         currentUser = (User)bundle.getSerializable("User");
+        Toast.makeText(getApplicationContext(),"The user is " + currentUser.getEmail(), Toast.LENGTH_LONG).show();
+        if(currentUser.getAuthUserID() != null){
+            Toast.makeText(getApplicationContext(),"The id is " + currentUser.getAuthUserID(), Toast.LENGTH_LONG).show();
+        }else{
+            Toast.makeText(getApplicationContext(),"The id is null", Toast.LENGTH_LONG).show();
+        }
 
         EventBus.getDefault().register(this);
     }
