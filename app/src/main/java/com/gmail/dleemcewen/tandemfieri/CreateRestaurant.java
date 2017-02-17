@@ -82,6 +82,13 @@ public class CreateRestaurant extends AppCompatActivity {
      * bind required event handlers
      */
     private void bindEventHandlers() {
+        businessHours.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Toast.makeText(CreateRestaurant.this, "Opening soon!", Toast.LENGTH_SHORT).show();
+            }
+        });
+
         createRestaurant.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -91,7 +98,7 @@ public class CreateRestaurant extends AppCompatActivity {
                     && Validator.isValid(state, getString(R.string.stateRequired))
                     && Validator.isValid(zipCode, getString(R.string.zipRequired))
                     && Validator.isValid(deliveryCharge, getString(R.string.deliveryChargeRequired))
-                    && Validator.isValid(deliveryCharge, "^(0*[1-9][0-9]*(\\.[0-9]+)?|0+\\.[0-9]*[1-9][0-9]*)$",
+                    && Validator.isValid(deliveryCharge, "^(0*[1-9][0-9]*(\\.[0-9]{0,2})?|0+\\.[0-9][1-9])$",
                         getString(R.string.deliveryChargeGreaterThanZero))) {
 
                     //build a new restaurant
