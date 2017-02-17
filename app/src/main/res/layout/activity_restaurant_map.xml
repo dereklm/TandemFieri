@@ -17,9 +17,9 @@
             android:id="@+id/tv_area"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:textSize="@dimen/title_text_size"
+            android:textSize="@dimen/regular_text_size"
             android:text="@string/deliveryRadius"
-            android:layout_marginLeft="10dp"
+            android:layout_marginLeft="5dp"
             android:layout_centerVertical="true" />
 
         <com.shawnlin.numberpicker.NumberPicker
@@ -32,7 +32,8 @@
             app:np_max="@integer/deliveryRadiusMax"
             app:np_min="@integer/deliveryRadiusMin"
             app:np_textColor="@color/colorPrimary"
-            app:np_textSize="20dp" />
+            app:np_textSize="@dimen/title_text_size"
+            app:np_height="50dp"/>
 
         <Button
             android:id="@+id/update"
@@ -42,7 +43,8 @@
             android:text="@string/updateButton"
             android:textSize="@dimen/button_text_size"
             android:layout_toRightOf="@id/radius"
-            android:layout_centerVertical="true" />
+            android:layout_centerVertical="true"
+            android:layout_marginRight="5dp"/>
     </RelativeLayout>
 
     <fragment
