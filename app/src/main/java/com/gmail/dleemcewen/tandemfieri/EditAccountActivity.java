@@ -10,6 +10,8 @@ import android.widget.EditText;
 import android.widget.Toast;
 
 import com.gmail.dleemcewen.tandemfieri.Entities.User;
+import com.gmail.dleemcewen.tandemfieri.EventListeners.QueryCompleteListener;
+import com.gmail.dleemcewen.tandemfieri.Repositories.Users;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
@@ -17,12 +19,19 @@ import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+
+import static com.gmail.dleemcewen.tandemfieri.Validator.Validator.isValid;
+
 public class EditAccountActivity extends AppCompatActivity {
 
     private User currentUser;
     private User changedUser;
     private String type = "";
     private String uid = "";
+    private Users<User> users;
+    public boolean emailListIsEmpty;
 
     private DatabaseReference mDatabase;
     private FirebaseUser fireuser;
@@ -39,6 +48,7 @@ public class EditAccountActivity extends AppCompatActivity {
         Bundle bundle = this.getIntent().getExtras();
         currentUser = (User) bundle.getSerializable("User");
         type = this.getIntent().getStringExtra("UserType");
+        users = new Users<>();
 
 
         /*For the code I currently have, the key stored in the User object is not the same as the id in the database.
@@ -107,24 +117,28 @@ public class EditAccountActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 getChangedUserInformation();
-                saveUserToDatabase();
+                if(valid()) {
+                    saveUserToDatabase();
 
-                //send new user info to the proper menu activity
-                Bundle bundle1 = new Bundle();
-                Intent intent = null;
+                    //send new user info to the proper menu activity
+                    Bundle bundle1 = new Bundle();
+                    Intent intent = null;
 
-                if(type.equals("Restaurant"))
-                    intent = new Intent(EditAccountActivity.this, RestaurantMainMenu.class);
-                else if(type.equals("Diner"))
-                    intent = new Intent(EditAccountActivity.this, DinerMainMenu.class);
-                else if(type.equals("Driver"))
-                    intent = new Intent(EditAccountActivity.this, DriverMainMenu.class);
+                    if (type.equals("Restaurant"))
+                        intent = new Intent(EditAccountActivity.this, RestaurantMainMenu.class);
+                    else if (type.equals("Diner"))
+                        intent = new Intent(EditAccountActivity.this, DinerMainMenu.class);
+                    else if (type.equals("Driver"))
+                        intent = new Intent(EditAccountActivity.this, DriverMainMenu.class);
 
-                bundle1.putSerializable("User", changedUser);
-                intent.putExtras(bundle1);
-                intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-                startActivity(intent);
-                finish();
+                    bundle1.putSerializable("User", changedUser);
+                    intent.putExtras(bundle1);
+                    intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                    startActivity(intent);
+                    finish();
+                }else{
+                    Toast.makeText(getApplicationContext(),"Unable to update." , Toast.LENGTH_LONG).show();
+                }
             }
         });
     }//end onCreate
@@ -140,6 +154,54 @@ public class EditAccountActivity extends AppCompatActivity {
         changedUser.setPhoneNumber(phoneNumber.getText().toString());
         changedUser.setEmail(email.getText().toString());
         changedUser.setAuthUserID(currentUser.getAuthUserID());
+    }
+
+    public boolean valid(){
+        boolean result = false; //return value
+
+        boolean firstNameValid = isValid(firstName, FormConstants.REG_EX_FIRSTNAME, FormConstants.ERROR_TAG_FIRSTNAME);
+        boolean lastNameValid = isValid(lastName, FormConstants.REG_EX_LASTNAME, FormConstants.ERROR_TAG_LASTNAME);
+        boolean addressValid = isValid(address, FormConstants.REG_EX_ADDRESS, FormConstants.ERROR_TAG_ADDRESS);
+        boolean cityValid = isValid(city, FormConstants.REG_EX_CITY, FormConstants.ERROR_TAG_CITY);
+        boolean stateValid = isValid(state, FormConstants.REG_EX_STATE, FormConstants.ERROR_TAG_STATE);
+        boolean emailValid = isValid(email, FormConstants.REG_EX_EMAIL, FormConstants.ERROR_TAG_EMAIL);
+        boolean phoneNumberValid = isValid(phoneNumber, FormConstants.REG_EX_PHONE, FormConstants.ERROR_TAG_PHONE);
+        boolean zipValid = isValid(zip, FormConstants.REG_EX_ZIP, FormConstants.ERROR_TAG_ZIP);
+
+        if (    firstNameValid      &&
+                lastNameValid       &&
+                addressValid        &&
+                cityValid           &&
+                stateValid          &&
+                zipValid            &&
+                phoneNumberValid    &&
+                emailValid          &&
+                emailNotDuplicated() ) {
+
+            result = true;
+        }
+        return result;
+    }
+
+    public boolean emailNotDuplicated(){
+
+        users.find(
+                Arrays.asList("email"),
+                currentUser.getAuthUserID(),
+                new QueryCompleteListener<User>() {
+                    @Override
+                    public void onQueryComplete(ArrayList<User> entities) {
+
+                        if(entities.size() == 0) {
+                           
+                            emailListIsEmpty = true;
+                        }else{
+
+                            emailListIsEmpty = false;
+                        }
+                    }
+                });
+        return emailListIsEmpty;
     }
 
     //edits the current user's info in the database with the new User information
