@@ -23,7 +23,6 @@ public class Restaurant extends Entity implements Serializable {
 
     private MenuCatagory menu;
 
-    private MenuCatagory menu;
 
     /**
      * Default constructor
