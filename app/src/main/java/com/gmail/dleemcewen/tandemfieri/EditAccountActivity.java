@@ -36,8 +36,7 @@ public class EditAccountActivity extends AppCompatActivity {
         setContentView(R.layout.activity_edit_account);
 
         currentUser = new User();
-        Bundle bundle = new Bundle();
-        bundle = this.getIntent().getExtras();
+        Bundle bundle = this.getIntent().getExtras();
         currentUser = (User) bundle.getSerializable("User");
         type = this.getIntent().getStringExtra("UserType");
 
@@ -111,7 +110,7 @@ public class EditAccountActivity extends AppCompatActivity {
                 saveUserToDatabase();
 
                 //send new user info to the proper menu activity
-                Bundle bundle = new Bundle();
+                Bundle bundle1 = new Bundle();
                 Intent intent = null;
 
                 if(type.equals("Restaurant"))
@@ -121,8 +120,8 @@ public class EditAccountActivity extends AppCompatActivity {
                 else if(type.equals("Driver"))
                     intent = new Intent(EditAccountActivity.this, DriverMainMenu.class);
 
-                bundle.putSerializable("User", changedUser);
-                intent.putExtras(bundle);
+                bundle1.putSerializable("User", changedUser);
+                intent.putExtras(bundle1);
                 intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
                 startActivity(intent);
                 finish();

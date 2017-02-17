@@ -1,6 +1,5 @@
 package com.gmail.dleemcewen.tandemfieri;
 
-import android.os.Bundle;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
@@ -21,10 +20,7 @@ public class DriverMainMenu extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_driver_main_menu);
 
-        User user = new User();
-
-        Bundle bundle = new Bundle();
-        bundle = this.getIntent().getExtras();
+        Bundle bundle = this.getIntent().getExtras();
         user = (User) bundle.getSerializable("User");
 
         Toast.makeText(getApplicationContext(),"The user is " + user.getEmail(), Toast.LENGTH_LONG).show();
