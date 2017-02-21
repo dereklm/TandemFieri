@@ -1,4 +1,5 @@
 <resources>
+    <string name="minimum_logging_level">INFO</string>
     <string name="app_name">Tandem Fieri</string>
     <string name="signInTitle">Tandem Fieri</string>
     <string name="hintEmail">Email</string>

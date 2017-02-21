@@ -5,7 +5,6 @@ import android.content.res.Resources;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
-import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -13,6 +12,8 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.gmail.dleemcewen.tandemfieri.Entities.User;
+import com.gmail.dleemcewen.tandemfieri.Logging.LogWriter;
+import com.gmail.dleemcewen.tandemfieri.Logging.ToastLogger;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
@@ -24,7 +25,7 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
-import static android.widget.Toast.makeText;
+import java.util.logging.Level;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -45,6 +46,7 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
 
         resources = getResources();
+        setupLogging();
         verifiedEmailNotRequiredForLogin = resources.getBoolean(R.bool.verified_email_not_required_for_login);
         //this if statement is used when the user clicks the sign out option from the drop down menu
         //it closed all open activities and then the main activity.
@@ -67,10 +69,10 @@ public class MainActivity extends AppCompatActivity {
                 FirebaseUser user = firebaseAuth.getCurrentUser();
                 if (user != null) {
                     // User is signed in
-                    Log.d("AUTH", "onAuthStateChanged:signed_in:" + user.getUid());
+                    LogWriter.log(getApplicationContext(), Level.FINEST, "onAuthStateChanged:signed_in:" + user.getUid());
                 } else {
                     // User is signed out
-                    Log.d("AUTH", "onAuthStateChanged:signed_out");
+                    LogWriter.log(getApplicationContext(), Level.FINEST, "onAuthStateChanged:signed_out");
                 }
             }
         };
@@ -151,6 +153,11 @@ public class MainActivity extends AppCompatActivity {
 
         intent.putExtras(bundle);
         startActivity(intent);
+    }
+
+    private void setupLogging() {
+        LogWriter.setMinimumLoggingLevel(resources.getString(R.string.minimum_logging_level));
+        LogWriter.addLogger(new ToastLogger());
     }
 
     private void clear(){

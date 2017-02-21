@@ -46,7 +46,7 @@ public class ManageRestaurantExpandableListAdapter extends BaseExpandableListAda
         this.restaurantsList = restaurantsList;
         this.childDataList = childDataList;
         resources = context.getResources();
-        restaurantsRepository = new Restaurants<>();
+        restaurantsRepository = new Restaurants<>(context);
     }
 
     /**

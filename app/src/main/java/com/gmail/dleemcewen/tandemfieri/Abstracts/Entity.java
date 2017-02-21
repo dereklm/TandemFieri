@@ -13,11 +13,14 @@ public abstract class Entity {
      * Default constructor
      */
     public Entity() {
-        key = UUID.randomUUID().toString();
     }
 
     @Exclude
     public String getKey() {
+        if (key == null) {
+            key = UUID.randomUUID().toString();
+        }
+
         return key.toString();
     }
 

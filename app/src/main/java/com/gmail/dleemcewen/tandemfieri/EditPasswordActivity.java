@@ -10,10 +10,13 @@ import android.widget.EditText;
 import android.widget.Toast;
 
 import com.gmail.dleemcewen.tandemfieri.Entities.User;
+import com.gmail.dleemcewen.tandemfieri.Logging.LogWriter;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+
+import java.util.logging.Level;
 
 public class EditPasswordActivity extends AppCompatActivity {
 
@@ -115,7 +118,7 @@ public class EditPasswordActivity extends AppCompatActivity {
                     @Override
                     public void onComplete(@NonNull Task<Void> task) {
                         if (task.isSuccessful()) {
-                           // Log.d(TAG, "User password updated.");
+                            LogWriter.log(getApplicationContext(), Level.INFO, "User password updated.");
                         }
                     }
                 });

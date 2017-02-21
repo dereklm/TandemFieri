@@ -31,8 +31,6 @@ public class AlmostDoneActivity extends AppCompatActivity{
     public RadioButton radioDining, radioRestaurant, radioDriver;
     FirebaseAuth user = FirebaseAuth.getInstance();
 
-    private Users<User> usersRepo = new Users<User>();
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -103,9 +101,7 @@ public class AlmostDoneActivity extends AppCompatActivity{
         user.createUserWithEmailAndPassword(email, password.getText().toString()).addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
             @Override
             public void onComplete(@NonNull Task<AuthResult> task) {
-                //Toast.makeText(getApplicationContext(), "In create user.", Toast.LENGTH_LONG).show();
                 if (task.isSuccessful()) {
-                    //Toast.makeText(getApplicationContext(), "Task was successful.", Toast.LENGTH_LONG).show();
                     Bundle bundle = new Bundle();
                     Intent intent = null;
                     FirebaseUser user = task.getResult().getUser();
@@ -122,22 +118,16 @@ public class AlmostDoneActivity extends AppCompatActivity{
                     newUser.setPhoneNumber(phoneNumber);
                     newUser.setState(state);
                     newUser.setAuthUserID(user.getUid());
-                    Toast.makeText(getApplicationContext(),"The new user id is " + newUser.getAuthUserID(), Toast.LENGTH_LONG).show();
 
                     //TODO: Remove the following intents when they are no longer needed for testing
                     if (radioDining.isChecked() == true) {
                         mDatabase.child("User").child("Diner").child(user.getUid()).setValue(newUser);
-                        //intent = new Intent(AlmostDoneActivity.this, DinerMainMenu.class);
                     } else if (radioRestaurant.isChecked() == true){
                         mDatabase.child("User").child("Restaurant").child(user.getUid()).setValue(newUser);
-                        //intent = new Intent(AlmostDoneActivity.this, RestaurantMainMenu.class);
                     } else if (radioDriver.isChecked() == true){
                         mDatabase.child("User").child("Driver").child(user.getUid()).setValue(newUser);
-                        //intent = new Intent(AlmostDoneActivity.this, DriverMainMenu.class);
                     }
-                    //bundle.putSerializable("User", newUser);
-                    //intent.putExtras(bundle);
-                    //startActivity(intent);
+
                     user.sendEmailVerification();
                     finish();
                     CreateAccountActivity.getInstance().finish();
