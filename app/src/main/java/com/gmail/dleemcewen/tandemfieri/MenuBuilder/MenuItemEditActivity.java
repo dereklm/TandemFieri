@@ -10,7 +10,6 @@ import android.widget.EditText;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.gmail.dleemcewen.tandemfieri.R;
 import com.gmail.dleemcewen.tandemfieri.Utilities.MoneyTextWatcher;
@@ -51,10 +50,6 @@ public class MenuItemEditActivity extends AppCompatActivity {
             price.setText(temp.getBasePrice()+"");
             isCat=false;
         }
-        else{
-            TextView title = (TextView) findViewById(R.id.title);
-            title.setText("Add Item");
-        }
 
         isCat=false;
         ((RadioButton)findViewById(R.id.itemRadio)).setChecked(true);
@@ -84,15 +79,7 @@ public class MenuItemEditActivity extends AppCompatActivity {
                 if(editing){
                     if(!isCat) {
                         MenuItem temp = (MenuItem) item;
-                        if(price.getText().toString().isEmpty()) {
-                            Toast
-                                    .makeText(MenuItemEditActivity.this, "Price can not be empty", Toast.LENGTH_SHORT)
-                                    .show();
-                            return;
-                        }
-                        String toConvert = price.getText().toString().replace("$","");
-                        toConvert = toConvert.replace(",","");
-                        temp.setBasePrice(Double.parseDouble(toConvert));
+                        temp.setBasePrice(Double.parseDouble(price.getText().toString().substring(1)));
                         temp.setName(name.getText().toString());
                         for(MenuCompenet mc : parentCat.getSubItems()){
                             if(mc.name.equals(item.getName())){
@@ -109,15 +96,7 @@ public class MenuItemEditActivity extends AppCompatActivity {
                 else{
                     if(!isCat) {
                         MenuItem temp = new MenuItem();
-                        if(price.getText().toString().isEmpty()) {
-                            Toast
-                                    .makeText(MenuItemEditActivity.this, "Price can not be empty", Toast.LENGTH_SHORT)
-                                    .show();
-                            return;
-                        }
-                        String toConvert = price.getText().toString().replace("$","");
-                        toConvert = toConvert.replace(",","");
-                        temp.setBasePrice(Double.parseDouble(toConvert));
+                        temp.setBasePrice(Double.parseDouble(price.getText().toString().substring(1)));
                         temp.setName(name.getText().toString());
                         parentCat.getSubItems().add(temp);
                     }

@@ -10,9 +10,6 @@ import android.widget.EditText;
 import android.widget.Toast;
 
 import com.gmail.dleemcewen.tandemfieri.Entities.User;
-import com.gmail.dleemcewen.tandemfieri.EventListeners.QueryCompleteListener;
-import com.gmail.dleemcewen.tandemfieri.Logging.LogWriter;
-import com.gmail.dleemcewen.tandemfieri.Repositories.Users;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
@@ -20,20 +17,12 @@ import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.logging.Level;
-
-import static com.gmail.dleemcewen.tandemfieri.Validator.Validator.isValid;
-
 public class EditAccountActivity extends AppCompatActivity {
 
     private User currentUser;
     private User changedUser;
     private String type = "";
     private String uid = "";
-    private Users<User> users;
-    public boolean emailListIsEmpty;
 
     private DatabaseReference mDatabase;
     private FirebaseUser fireuser;
@@ -47,10 +36,10 @@ public class EditAccountActivity extends AppCompatActivity {
         setContentView(R.layout.activity_edit_account);
 
         currentUser = new User();
-        Bundle bundle = this.getIntent().getExtras();
+        Bundle bundle = new Bundle();
+        bundle = this.getIntent().getExtras();
         currentUser = (User) bundle.getSerializable("User");
         type = this.getIntent().getStringExtra("UserType");
-        users = new Users<>(this);
 
 
         /*For the code I currently have, the key stored in the User object is not the same as the id in the database.
@@ -74,14 +63,14 @@ public class EditAccountActivity extends AppCompatActivity {
         mDatabase = FirebaseDatabase.getInstance().getReference().child("User").child(type).child(uid);
 
         if(currentUser != null) {
-            LogWriter.log(getApplicationContext(), Level.INFO, "The user is " + currentUser.getEmail());
+            Toast.makeText(getApplicationContext(), "The user is " + currentUser.getEmail(), Toast.LENGTH_LONG).show();
         }
         else{
-            LogWriter.log(getApplicationContext(), Level.WARNING, "The user is null");
+            Toast.makeText(getApplicationContext(), "The user is null" , Toast.LENGTH_LONG).show();
             finish();
         }
-        LogWriter.log(getApplicationContext(), Level.INFO, "The user key is " + currentUser.getKey());
-        LogWriter.log(getApplicationContext(), Level.INFO, "The user id is " + uid);
+        //Toast.makeText(getApplicationContext(),"The user key is " + currentUser.getKey(), Toast.LENGTH_LONG).show();
+        //Toast.makeText(getApplicationContext(),"The user id is " + uid, Toast.LENGTH_LONG).show();
 
         //get handles to view
         firstName = (EditText) findViewById(R.id.firstName);
@@ -119,28 +108,24 @@ public class EditAccountActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 getChangedUserInformation();
-                if(valid()) {
-                    saveUserToDatabase();
+                saveUserToDatabase();
 
-                    //send new user info to the proper menu activity
-                    Bundle bundle1 = new Bundle();
-                    Intent intent = null;
+                //send new user info to the proper menu activity
+                Bundle bundle = new Bundle();
+                Intent intent = null;
 
-                    if (type.equals("Restaurant"))
-                        intent = new Intent(EditAccountActivity.this, RestaurantMainMenu.class);
-                    else if (type.equals("Diner"))
-                        intent = new Intent(EditAccountActivity.this, DinerMainMenu.class);
-                    else if (type.equals("Driver"))
-                        intent = new Intent(EditAccountActivity.this, DriverMainMenu.class);
+                if(type.equals("Restaurant"))
+                    intent = new Intent(EditAccountActivity.this, RestaurantMainMenu.class);
+                else if(type.equals("Diner"))
+                    intent = new Intent(EditAccountActivity.this, DinerMainMenu.class);
+                else if(type.equals("Driver"))
+                    intent = new Intent(EditAccountActivity.this, DriverMainMenu.class);
 
-                    bundle1.putSerializable("User", changedUser);
-                    intent.putExtras(bundle1);
-                    intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-                    startActivity(intent);
-                    finish();
-                }else{
-                    Toast.makeText(getApplicationContext(),"Unable to update." , Toast.LENGTH_LONG).show();
-                }
+                bundle.putSerializable("User", changedUser);
+                intent.putExtras(bundle);
+                intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                startActivity(intent);
+                finish();
             }
         });
     }//end onCreate
@@ -155,55 +140,6 @@ public class EditAccountActivity extends AppCompatActivity {
         changedUser.setZip(zip.getText().toString());
         changedUser.setPhoneNumber(phoneNumber.getText().toString());
         changedUser.setEmail(email.getText().toString());
-        changedUser.setAuthUserID(currentUser.getAuthUserID());
-    }
-
-    public boolean valid(){
-        boolean result = false; //return value
-
-        boolean firstNameValid = isValid(firstName, FormConstants.REG_EX_FIRSTNAME, FormConstants.ERROR_TAG_FIRSTNAME);
-        boolean lastNameValid = isValid(lastName, FormConstants.REG_EX_LASTNAME, FormConstants.ERROR_TAG_LASTNAME);
-        boolean addressValid = isValid(address, FormConstants.REG_EX_ADDRESS, FormConstants.ERROR_TAG_ADDRESS);
-        boolean cityValid = isValid(city, FormConstants.REG_EX_CITY, FormConstants.ERROR_TAG_CITY);
-        boolean stateValid = isValid(state, FormConstants.REG_EX_STATE, FormConstants.ERROR_TAG_STATE);
-        boolean emailValid = isValid(email, FormConstants.REG_EX_EMAIL, FormConstants.ERROR_TAG_EMAIL);
-        boolean phoneNumberValid = isValid(phoneNumber, FormConstants.REG_EX_PHONE, FormConstants.ERROR_TAG_PHONE);
-        boolean zipValid = isValid(zip, FormConstants.REG_EX_ZIP, FormConstants.ERROR_TAG_ZIP);
-
-        if (    firstNameValid      &&
-                lastNameValid       &&
-                addressValid        &&
-                cityValid           &&
-                stateValid          &&
-                zipValid            &&
-                phoneNumberValid    &&
-                emailValid          &&
-                emailNotDuplicated() ) {
-
-            result = true;
-        }
-        return result;
-    }
-
-    public boolean emailNotDuplicated(){
-
-        users.find(
-                Arrays.asList("email"),
-                currentUser.getAuthUserID(),
-                new QueryCompleteListener<User>() {
-                    @Override
-                    public void onQueryComplete(ArrayList<User> entities) {
-
-                        if(entities.size() == 0) {
-                           
-                            emailListIsEmpty = true;
-                        }else{
-
-                            emailListIsEmpty = false;
-                        }
-                    }
-                });
-        return emailListIsEmpty;
     }
 
     //edits the current user's info in the database with the new User information
@@ -223,7 +159,7 @@ public class EditAccountActivity extends AppCompatActivity {
                     @Override
                     public void onComplete(@NonNull Task<Void> task) {
                         if (task.isSuccessful()) {
-                            LogWriter.log(getApplicationContext(), Level.INFO, "User email address updated.");
+                           // Log.d(TAG, "User email address updated.");
                         }
                     }
                 });

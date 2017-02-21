@@ -1,6 +1,5 @@
 package com.gmail.dleemcewen.tandemfieri.Repositories;
 
-import android.content.Context;
 import android.support.annotation.NonNull;
 import android.util.Log;
 
@@ -8,7 +7,6 @@ import com.gmail.dleemcewen.tandemfieri.Abstracts.Entity;
 import com.gmail.dleemcewen.tandemfieri.Entities.User;
 import com.gmail.dleemcewen.tandemfieri.EventListeners.QueryCompleteListener;
 import com.gmail.dleemcewen.tandemfieri.Abstracts.Repository;
-import com.gmail.dleemcewen.tandemfieri.Logging.LogWriter;
 import com.google.android.gms.tasks.Continuation;
 import com.google.android.gms.tasks.Task;
 
@@ -23,7 +21,6 @@ import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.logging.Level;
 
 /**
  * Users repository defines the database logic to use when adding, removing, or updating a User
@@ -31,15 +28,6 @@ import java.util.logging.Level;
 
 public class Users<T extends Entity> extends Repository<User> {
     private DatabaseReference dataContext;
-    private Context context;
-
-    /**
-     * Default constructor
-     * @param context indicates the current application context
-     */
-    public Users(Context context) {
-        this.context = context;
-    }
 
     /**
      * find users from the database
@@ -126,7 +114,7 @@ public class Users<T extends Entity> extends Repository<User> {
             @Override
             public void onCancelled(DatabaseError databaseError) {
                 // Getting User failed, log a message
-                LogWriter.log(context, Level.FINE, "Users.find:onCancelled " + databaseError.toException());
+                Log.w("Users", "Users.find:onCancelled", databaseError.toException());
             }
         });
     }

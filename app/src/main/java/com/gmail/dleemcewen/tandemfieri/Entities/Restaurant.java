@@ -20,6 +20,7 @@ public class Restaurant extends Entity implements Serializable {
     private Map<String, String> drivers;
     private Integer deliveryRadius;
     private String id;
+
     private MenuCatagory menu;
 
     /**

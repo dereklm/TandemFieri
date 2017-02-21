@@ -4,6 +4,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -30,6 +31,8 @@ public class AlmostDoneActivity extends AppCompatActivity{
     private DatabaseReference mDatabase;
     public RadioButton radioDining, radioRestaurant, radioDriver;
     FirebaseAuth user = FirebaseAuth.getInstance();
+
+    private Users<User> usersRepo = new Users<User>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -64,7 +67,8 @@ public class AlmostDoneActivity extends AppCompatActivity{
             public void onClick(View view) {
                 if (password.getText().toString()
                         .equals(confirmPassword.getText().toString())
-                        && password.getText().toString().matches(FormConstants.REG_EX_PASSWORD)) {
+                        && password.getText().toString().matches(".*\\w.*")
+                        && password.getText().toString().length() >= 6){
                     createUser();
             }else {
                     if (!password.getText().toString()
@@ -101,7 +105,9 @@ public class AlmostDoneActivity extends AppCompatActivity{
         user.createUserWithEmailAndPassword(email, password.getText().toString()).addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
             @Override
             public void onComplete(@NonNull Task<AuthResult> task) {
+                //Toast.makeText(getApplicationContext(), "In create user.", Toast.LENGTH_LONG).show();
                 if (task.isSuccessful()) {
+                    //Toast.makeText(getApplicationContext(), "Task was successful.", Toast.LENGTH_LONG).show();
                     Bundle bundle = new Bundle();
                     Intent intent = null;
                     FirebaseUser user = task.getResult().getUser();
@@ -117,17 +123,20 @@ public class AlmostDoneActivity extends AppCompatActivity{
                     newUser.setZip(zip);
                     newUser.setPhoneNumber(phoneNumber);
                     newUser.setState(state);
-                    newUser.setAuthUserID(user.getUid());
-
                     //TODO: Remove the following intents when they are no longer needed for testing
                     if (radioDining.isChecked() == true) {
                         mDatabase.child("User").child("Diner").child(user.getUid()).setValue(newUser);
+                        //intent = new Intent(AlmostDoneActivity.this, DinerMainMenu.class);
                     } else if (radioRestaurant.isChecked() == true){
                         mDatabase.child("User").child("Restaurant").child(user.getUid()).setValue(newUser);
+                        //intent = new Intent(AlmostDoneActivity.this, RestaurantMainMenu.class);
                     } else if (radioDriver.isChecked() == true){
                         mDatabase.child("User").child("Driver").child(user.getUid()).setValue(newUser);
+                        //intent = new Intent(AlmostDoneActivity.this, DriverMainMenu.class);
                     }
-
+                    //bundle.putSerializable("User", newUser);
+                    //intent.putExtras(bundle);
+                    //startActivity(intent);
                     user.sendEmailVerification();
                     finish();
                     CreateAccountActivity.getInstance().finish();

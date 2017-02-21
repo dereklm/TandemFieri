@@ -24,8 +24,6 @@ public class MenuCatagory extends MenuCompenet {
     }
 
     public ArrayList<MenuItem> getSubItems() {
-        if(subItems!=null)return subItems;
-        subItems= new ArrayList<>();
         return subItems;
     }
 

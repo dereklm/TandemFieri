@@ -2,9 +2,11 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.gmail.dleemcewen.tandemfieri">
 
-    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
-    <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+    <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="com.google.android.providers.gsf.permission.READ_GSERVICES" />
+    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
 
     <application
         android:allowBackup="true"
@@ -12,6 +14,7 @@
         android:label="@string/app_name"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
+        <meta-data android:name="android.support.multidex.MultiDexApplication" />
         <activity android:name=".MainActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -28,12 +31,12 @@
         <activity android:name=".MenuBuilder.MenuBuilderActivity" />
         <activity android:name=".MenuBuilder.MenuItemEditActivity" />
         <activity android:name=".MenuBuilder.MenuOptionsActivity" />
-        <activity android:name=".MenuBuilder.OptionAddActivity"></activity>
+        <activity android:name=".MenuBuilder.OptionAddActivity" />
         <activity android:name=".ManageRestaurants" />
-        <activity android:name=".DriverRatings"></activity>
+        <activity android:name=".DriverRatings" />
         <activity android:name=".RestaurantMapActivity" />
         <activity android:name=".EditAccountActivity" />
-        <activity android:name=".EditPasswordActivity"></activity>
+        <activity android:name=".EditPasswordActivity" />
 
         <meta-data
             android:name="com.google.android.geo.API_KEY"
@@ -41,6 +44,10 @@
         <meta-data
             android:name="com.google.android.gms.version"
             android:value="@integer/google_play_services_version" />
+
+        <activity
+            android:name=".DinerMapActivity"
+            android:label="@string/title_activity_diner_map"></activity>
     </application>
 
 </manifest>

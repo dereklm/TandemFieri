@@ -1,8 +1,5 @@
 package com.gmail.dleemcewen.tandemfieri.Repositories;
 
-import android.content.Context;
-import android.net.ConnectivityManager;
-import android.net.NetworkInfo;
 import android.support.annotation.NonNull;
 import android.util.Log;
 
@@ -11,9 +8,6 @@ import com.gmail.dleemcewen.tandemfieri.Abstracts.Repository;
 import com.gmail.dleemcewen.tandemfieri.Entities.Restaurant;
 import com.gmail.dleemcewen.tandemfieri.Entities.User;
 import com.gmail.dleemcewen.tandemfieri.EventListeners.QueryCompleteListener;
-import com.gmail.dleemcewen.tandemfieri.Logging.LogWriter;
-import com.gmail.dleemcewen.tandemfieri.Tasks.AddRestaurantTask;
-import com.gmail.dleemcewen.tandemfieri.Tasks.NetworkConnectivityCheckTask;
 import com.google.android.gms.tasks.Continuation;
 import com.google.android.gms.tasks.Task;
 import com.google.android.gms.tasks.TaskCompletionSource;
@@ -28,23 +22,13 @@ import com.google.firebase.database.ValueEventListener;
 import java.util.AbstractMap;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
-import java.util.logging.Level;
 
 /**
  * Restaurants repository defines the database logic to use when adding, removing, or updating a Restaurant
  */
 
 public class Restaurants<T extends Entity> extends Repository<Restaurant> {
-    private Context context;
-
-    /**
-     * Default constructor
-     * @param context indicates the current application context
-     */
-    public Restaurants(Context context) {
-        this.context = context;
-    }
+    private DatabaseReference dataContext;
 
     /**
      * add adds a new restaurant and then returns the value as a task so that some other action
@@ -52,12 +36,37 @@ public class Restaurants<T extends Entity> extends Repository<Restaurant> {
      * @param entity indicates the entity to add
      * @return Task containing the results of the find that can be chained to other tasks
      */
-    public Task<Map.Entry<Boolean, DatabaseError>> add(Restaurant entity) {
-        DatabaseReference dataContext = getDataContext(entity.getClass().getSimpleName(), new String[]{});
+    public Task<AbstractMap.SimpleEntry<Boolean, DatabaseError>> add(Restaurant entity) {
+        final Restaurant entityReference = entity;
 
         return Tasks.<Void>forResult(null)
-            .continueWithTask(new NetworkConnectivityCheckTask(context))
-            .continueWithTask(new AddRestaurantTask(dataContext, entity));
+                .continueWithTask(new Continuation<Void, Task<AbstractMap.SimpleEntry<Boolean, DatabaseError>>>() {
+                    @Override
+                    public Task<AbstractMap.SimpleEntry<Boolean, DatabaseError>> then(@NonNull Task<Void> task) throws Exception {
+                        final TaskCompletionSource<AbstractMap.SimpleEntry<Boolean, DatabaseError>> taskCompletionSource = new TaskCompletionSource<>();
+
+                        dataContext = getDataContext(entityReference.getClass().getSimpleName(), new String[]{});
+                        dataContext.child(entityReference.getKey().toString()).setValue(entityReference);
+
+                        dataContext.addListenerForSingleValueEvent(new ValueEventListener() {
+                            AbstractMap.SimpleEntry<Boolean, DatabaseError> listenerResult;
+
+                            @Override
+                            public void onDataChange(DataSnapshot dataSnapshot) {
+                                listenerResult = new AbstractMap.SimpleEntry(true, null);
+                                taskCompletionSource.setResult(listenerResult);
+                            }
+
+                            @Override
+                            public void onCancelled(DatabaseError databaseError) {
+                                listenerResult = new AbstractMap.SimpleEntry(false, databaseError);
+                                taskCompletionSource.setResult(listenerResult);
+                            }
+                        });
+
+                        return taskCompletionSource.getTask();
+                    }
+                });
     }
 
     /**
@@ -145,7 +154,7 @@ public class Restaurants<T extends Entity> extends Repository<Restaurant> {
             @Override
             public void onCancelled(DatabaseError databaseError) {
                 // Getting Restaurant failed, log a message
-                LogWriter.log(context, Level.FINE, "Restaurants.find:onCancelled " + databaseError.toException());
+                Log.w("Restaurants", "Restaurants.find:onCancelled", databaseError.toException());
             }
         });
     }

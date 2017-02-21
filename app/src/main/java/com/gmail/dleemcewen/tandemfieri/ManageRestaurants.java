@@ -14,9 +14,8 @@ import com.gmail.dleemcewen.tandemfieri.Adapters.ManageRestaurantExpandableListA
 import com.gmail.dleemcewen.tandemfieri.Entities.Restaurant;
 import com.gmail.dleemcewen.tandemfieri.Entities.User;
 import com.gmail.dleemcewen.tandemfieri.EventListeners.QueryCompleteListener;
-import com.gmail.dleemcewen.tandemfieri.Events.ActivityEvent;
-import com.gmail.dleemcewen.tandemfieri.Logging.LogWriter;
 import com.gmail.dleemcewen.tandemfieri.MenuBuilder.MenuCatagory;
+import com.gmail.dleemcewen.tandemfieri.Events.ActivityEvent;
 import com.gmail.dleemcewen.tandemfieri.Repositories.Restaurants;
 
 import org.greenrobot.eventbus.EventBus;
@@ -27,7 +26,6 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.logging.Level;
 
 public class ManageRestaurants extends AppCompatActivity {
     private TextView header;
@@ -64,7 +62,39 @@ public class ManageRestaurants extends AppCompatActivity {
             restaurant = listAdapter.findRefrenceToUpdate(restaurant);
             restaurant.setMenu(temp);
 
-            restaurants.update(restaurant);
+            Restaurants<Restaurant> restaurantsRepository = new Restaurants<>();
+
+            restaurantsRepository
+                    .update(restaurant);
+//                    .continueWith(new Continuation<AbstractMap.SimpleEntry<Boolean ,DatabaseError>,
+//                            Task<AbstractMap.SimpleEntry<Boolean, DatabaseError>>>() {
+//                        @Override
+//                        public Task<AbstractMap.SimpleEntry<Boolean, DatabaseError>> then(@NonNull Task<AbstractMap.SimpleEntry<Boolean, DatabaseError>> task)
+//                                throws Exception {
+//                            TaskCompletionSource<AbstractMap.SimpleEntry<Boolean, DatabaseError>> taskCompletionSource =
+//                                    new TaskCompletionSource<>();
+//
+//                            AbstractMap.SimpleEntry<Boolean, DatabaseError> taskResult = task.getResult();
+//                            StringBuilder toastMessage = new StringBuilder();
+//
+//                            if (taskResult.getKey()) {
+//                                toastMessage.append("Restaurant updated successfully");
+//                            } else {
+//                                toastMessage.append(taskResult.getValue().getMessage());
+//                                toastMessage.append(". The restaurant was not created correctly");
+//                            }
+//
+//                            Toast
+//                                    .makeText(ManageRestaurants.this, toastMessage.toString(), Toast.LENGTH_LONG)
+//                                    .show();
+//
+//                            Intent intent=new Intent();
+//                            setResult(RESULT_OK,intent);
+//                            finish();
+//
+//                            return taskCompletionSource.getTask();
+//                        }
+//                    });
         }
     }
 
@@ -79,17 +109,10 @@ public class ManageRestaurants extends AppCompatActivity {
      */
     private void initialize() {
         context = this;
-        restaurants = new Restaurants<>(context);
+        restaurants = new Restaurants<>();
 
         Bundle bundle = this.getIntent().getExtras();
         currentUser = (User)bundle.getSerializable("User");
-        LogWriter.log(getApplicationContext(), Level.INFO, "The user is " + currentUser.getEmail());
-
-        if(currentUser.getAuthUserID() != null){
-            LogWriter.log(getApplicationContext(), Level.INFO, "The id is " + currentUser.getAuthUserID());
-        }else{
-            LogWriter.log(getApplicationContext(), Level.INFO, "The id is null");
-        }
 
         EventBus.getDefault().register(this);
     }

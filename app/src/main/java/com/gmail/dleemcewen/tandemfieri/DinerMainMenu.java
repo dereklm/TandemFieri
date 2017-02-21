@@ -13,10 +13,7 @@ import android.view.MenuItem;
 import android.widget.Toast;
 
 import com.gmail.dleemcewen.tandemfieri.Entities.User;
-import com.gmail.dleemcewen.tandemfieri.Logging.LogWriter;
 import com.google.firebase.auth.FirebaseAuth;
-
-import java.util.logging.Level;
 
 public class DinerMainMenu extends AppCompatActivity {
 
@@ -31,7 +28,9 @@ public class DinerMainMenu extends AppCompatActivity {
         bundle = this.getIntent().getExtras();
         user = (User) bundle.getSerializable("User");
 
-        LogWriter.log(getApplicationContext(), Level.INFO, "The user is " + user.getEmail());
+        Toast.makeText(getApplicationContext(),"The user is " + user.getEmail(), Toast.LENGTH_LONG).show();
+
+       
     }//end onCreate
 
     //create menu
@@ -55,6 +54,9 @@ public class DinerMainMenu extends AppCompatActivity {
                 return true;
             case R.id.edit_password:
                 editPassword();
+                return true;
+            case R.id.map:
+                launchMap();
                 return true;
             default:
                 return super.onOptionsItemSelected(item);
@@ -90,6 +92,16 @@ public class DinerMainMenu extends AppCompatActivity {
         dinerBundle.putSerializable("User", user);
         intent.putExtras(dinerBundle);
         intent.putExtra("UserType", "Diner");
+        startActivity(intent);
+    }
+
+    private void launchMap(){
+        //need to send user type so that the user can be located in the database
+        //Bundle dinerBundle = new Bundle();
+        Intent intent = new Intent(DinerMainMenu.this, DinerMapActivity.class);
+        //dinerBundle.putSerializable("User", user);
+        //intent.putExtras(dinerBundle);
+        //intent.putExtra("UserType", "Diner");
         startActivity(intent);
     }
 }//end Activity
