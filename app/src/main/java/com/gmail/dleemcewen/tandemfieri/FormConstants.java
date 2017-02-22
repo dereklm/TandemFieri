@@ -9,7 +9,7 @@ public final class FormConstants {
     public static final String REG_EX_STATE = "(?i)((alabama)|(alaska)|(arizona)|(arkansas)|" +
             "(california)|(colorado)|(connecticut)|(delaware)|" +
             "(florida)|(georgia)|(hawaii)|(idaho)|(illinois)|(indiana)|(iowa)|" +
-            "(kansas)|(kentucky)|(louisiana)|(maine)|(maryland)|(massechusetts)|" +
+            "(kansas)|(kentucky)|(louisiana)|(maine)|(maryland)|(massachusetts)|" +
             "(michigan)|(minnesota)|(mississippi)|(missouri)|(montana)|(nebraska)|" +
             "(nevada)|(new hampshire)|(new jersey)|(new mexico)|(new york)|(north carolina)|" +
             "(north dakota)|(ohio)|(oklahoma)|(oregon)|(pennsylvania)|(rhode island)|(south carolina)|" +

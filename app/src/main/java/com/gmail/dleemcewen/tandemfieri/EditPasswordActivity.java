@@ -20,10 +20,13 @@ public class EditPasswordActivity extends AppCompatActivity {
     private User currentUser;
     private String type = "";
     private String uid = "";
+    private boolean validPswd = false;
 
     private FirebaseUser fireuser;
+    private FirebaseAuth.AuthStateListener mAuthListener;
+    private FirebaseAuth mAuth;
 
-    private EditText password, confirmPswd;
+    private EditText password, confirmPswd, oldPassword;
     private Button saveButton, cancelButton;
 
     @Override
@@ -39,7 +42,8 @@ public class EditPasswordActivity extends AppCompatActivity {
         /*For the code I currently have, the key stored in the User object is not the same as the id in the database.
         Therefore I must use "uid = FirebaseAuth.getInstance().getCurrentUser().getUid()" to access the correct
         user in the database.*/
-        fireuser = FirebaseAuth.getInstance().getCurrentUser();
+        mAuth = FirebaseAuth.getInstance();
+        fireuser = mAuth.getCurrentUser();
         if (fireuser != null) {
             // User is signed in
             uid = fireuser.getUid();
@@ -52,11 +56,31 @@ public class EditPasswordActivity extends AppCompatActivity {
             finish();
         }
 
+        mAuthListener = new FirebaseAuth.AuthStateListener() {
+            @Override
+            public void onAuthStateChanged(@NonNull FirebaseAuth firebaseAuth) {
+                FirebaseUser user = firebaseAuth.getCurrentUser();
+                if (user != null) {
+                    // User is signed in
+                    //Log.d(TAG, "onAuthStateChanged:signed_in:" + user.getUid());
+                } else {
+                    // User is signed out
+                    //Log.d(TAG, "onAuthStateChanged:signed_out");
+                    Intent intent = new Intent(EditPasswordActivity.this, MainActivity.class);
+                    intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                    intent.putExtra("Exit me", true);
+                    startActivity(intent);
+                    finish();
+                }
+            }
+        };
+
         //Toast.makeText(getApplicationContext(),"The user is " + currentUser.getEmail(), Toast.LENGTH_LONG).show();
 
         //get handles to the view
+        oldPassword = (EditText)findViewById(R.id.old_password);
         password = (EditText)findViewById(R.id.password);
-        confirmPswd = (EditText)findViewById(R.id.confrimPassword);
+        confirmPswd = (EditText)findViewById(R.id.confirmPassword);
         saveButton = (Button) findViewById(R.id.saveButton);
         cancelButton = (Button)findViewById(R.id.cancelButton);
 
@@ -73,10 +97,14 @@ public class EditPasswordActivity extends AppCompatActivity {
         saveButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                while (!isValidPassword(password.getText().toString(), confirmPswd.getText().toString())){
+
+                while (!isValidPassword(oldPassword.getText().toString(),
+                        password.getText().toString(),
+                        confirmPswd.getText().toString())){
+                    oldPassword.setText("");
                     password.setText("");
                     confirmPswd.setText("");
-                    password.requestFocus();
+                    oldPassword.requestFocus();
                 }
                 savePassword(password.getText().toString());
                 finish();
@@ -87,12 +115,13 @@ public class EditPasswordActivity extends AppCompatActivity {
     }//end onCreate
 
     //validates the password
-    public boolean isValidPassword(String newPassword, String confirmPassword){
+    public boolean isValidPassword(String oldPassword, String newPassword, String confirmPassword){
+
         boolean result = true;
         String msg = "Password changed.";
 
-        if (!newPassword.equals(confirmPassword)) {
-            msg = "Please input two matching passwords.";
+       if (!newPassword.equals(confirmPassword)) {
+            msg = "Your password confirmation must be the same as your new password.";
             result = false;
         }
         else if (!newPassword.matches(".*\\w.*")) {
@@ -119,5 +148,19 @@ public class EditPasswordActivity extends AppCompatActivity {
                         }
                     }
                 });
+    }
+
+    @Override
+    public void onStart() {
+        super.onStart();
+        mAuth.addAuthStateListener(mAuthListener);
+    }
+
+    @Override
+    public void onStop() {
+        super.onStop();
+        if (mAuthListener != null) {
+            mAuth.removeAuthStateListener(mAuthListener);
+        }
     }
 }//end activity

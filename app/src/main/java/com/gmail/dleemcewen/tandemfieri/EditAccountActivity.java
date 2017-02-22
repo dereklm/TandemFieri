@@ -10,12 +10,18 @@ import android.widget.EditText;
 import android.widget.Toast;
 
 import com.gmail.dleemcewen.tandemfieri.Entities.User;
+import com.gmail.dleemcewen.tandemfieri.Repositories.Users;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
+
+import static com.gmail.dleemcewen.tandemfieri.Validator.Validator.isValid;
 
 public class EditAccountActivity extends AppCompatActivity {
 
@@ -23,6 +29,9 @@ public class EditAccountActivity extends AppCompatActivity {
     private User changedUser;
     private String type = "";
     private String uid = "";
+    private Users<User> users;
+    private boolean emailIsDuplicated, userIsValid;
+
 
     private DatabaseReference mDatabase;
     private FirebaseUser fireuser;
@@ -36,10 +45,10 @@ public class EditAccountActivity extends AppCompatActivity {
         setContentView(R.layout.activity_edit_account);
 
         currentUser = new User();
-        Bundle bundle = new Bundle();
-        bundle = this.getIntent().getExtras();
+        Bundle bundle = this.getIntent().getExtras();
         currentUser = (User) bundle.getSerializable("User");
         type = this.getIntent().getStringExtra("UserType");
+        users = new Users<>();
 
 
         /*For the code I currently have, the key stored in the User object is not the same as the id in the database.
@@ -62,16 +71,6 @@ public class EditAccountActivity extends AppCompatActivity {
         //reference in database to the current user
         mDatabase = FirebaseDatabase.getInstance().getReference().child("User").child(type).child(uid);
 
-        if(currentUser != null) {
-            Toast.makeText(getApplicationContext(), "The user is " + currentUser.getEmail(), Toast.LENGTH_LONG).show();
-        }
-        else{
-            Toast.makeText(getApplicationContext(), "The user is null" , Toast.LENGTH_LONG).show();
-            finish();
-        }
-        //Toast.makeText(getApplicationContext(),"The user key is " + currentUser.getKey(), Toast.LENGTH_LONG).show();
-        //Toast.makeText(getApplicationContext(),"The user id is " + uid, Toast.LENGTH_LONG).show();
-
         //get handles to view
         firstName = (EditText) findViewById(R.id.firstName);
         lastName = (EditText) findViewById(R.id.lastName);
@@ -84,7 +83,7 @@ public class EditAccountActivity extends AppCompatActivity {
         saveButton = (Button) findViewById(R.id.save_Button);
         cancelButton = (Button) findViewById(R.id.cancel_Button);
 
-        //set text in fields
+        //set text in fields using user's current information
         firstName.setText(currentUser.getFirstName());
         lastName.setText(currentUser.getLastName());
         address.setText(currentUser.getAddress());
@@ -103,29 +102,28 @@ public class EditAccountActivity extends AppCompatActivity {
             }
         });
 
-        //saves information to the database
+        //saves information to the database once validated
         saveButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                //collect information
                 getChangedUserInformation();
-                saveUserToDatabase();
+                userIsValid = validInput();
+                //emailIsDuplicated = false;
+                //Is email changed?
+                if(!currentUser.getEmail().equals(changedUser.getEmail())){
+                    //Toast.makeText(getApplicationContext(),"new Email has been entered" , Toast.LENGTH_LONG).show();
+                    //yes - is email valid?
 
-                //send new user info to the proper menu activity
-                Bundle bundle = new Bundle();
-                Intent intent = null;
+                        //yes - check for duplicate email
+                        //Toast.makeText(getApplicationContext(),"new email is valid." , Toast.LENGTH_LONG).show();
+                        DatabaseReference rodb = FirebaseDatabase.getInstance().getReference().child("User");
 
-                if(type.equals("Restaurant"))
-                    intent = new Intent(EditAccountActivity.this, RestaurantMainMenu.class);
-                else if(type.equals("Diner"))
-                    intent = new Intent(EditAccountActivity.this, DinerMainMenu.class);
-                else if(type.equals("Driver"))
-                    intent = new Intent(EditAccountActivity.this, DriverMainMenu.class);
+                        VEListener listener = new VEListener();
+                        rodb.addListenerForSingleValueEvent(listener);
+                    }
 
-                bundle.putSerializable("User", changedUser);
-                intent.putExtras(bundle);
-                intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-                startActivity(intent);
-                finish();
+
             }
         });
     }//end onCreate
@@ -140,6 +138,106 @@ public class EditAccountActivity extends AppCompatActivity {
         changedUser.setZip(zip.getText().toString());
         changedUser.setPhoneNumber(phoneNumber.getText().toString());
         changedUser.setEmail(email.getText().toString());
+        changedUser.setAuthUserID(currentUser.getAuthUserID());
+    }
+
+    public boolean validInput(){
+        boolean result = false; //return value
+
+        boolean firstNameValid = isValid(firstName, FormConstants.REG_EX_FIRSTNAME, FormConstants.ERROR_TAG_FIRSTNAME);
+        boolean lastNameValid = isValid(lastName, FormConstants.REG_EX_LASTNAME, FormConstants.ERROR_TAG_LASTNAME);
+        boolean addressValid = isValid(address, FormConstants.REG_EX_ADDRESS, FormConstants.ERROR_TAG_ADDRESS);
+        boolean cityValid = isValid(city, FormConstants.REG_EX_CITY, FormConstants.ERROR_TAG_CITY);
+        boolean stateValid = isValid(state, FormConstants.REG_EX_STATE, FormConstants.ERROR_TAG_STATE);
+        boolean emailValid = isValid(email, FormConstants.REG_EX_EMAIL, FormConstants.ERROR_TAG_EMAIL);
+        boolean phoneNumberValid = isValid(phoneNumber, FormConstants.REG_EX_PHONE, FormConstants.ERROR_TAG_PHONE);
+        boolean zipValid = isValid(zip, FormConstants.REG_EX_ZIP, FormConstants.ERROR_TAG_ZIP);
+
+        if (    firstNameValid      &&
+                lastNameValid       &&
+                addressValid        &&
+                cityValid           &&
+                stateValid          &&
+                zipValid            &&
+                phoneNumberValid    &&
+                emailValid) {
+
+            result = true;
+        }
+        return result;
+    }
+
+
+    public class VEListener implements ValueEventListener {
+
+        @Override
+        public void onDataChange(DataSnapshot dataSnapshot) {
+            emailIsDuplicated = false;
+            String msg = "Email has been changed.";
+            DataSnapshot ro = (DataSnapshot) dataSnapshot.child("Restaurant");
+            for (DataSnapshot ps : ro.getChildren()) {
+                User u = ps.getValue(User.class);
+                //Toast.makeText(getApplicationContext(), u.getEmail(), Toast.LENGTH_SHORT).show();
+                if (u.getEmail().equals(changedUser.getEmail())) {
+                    Toast.makeText(getApplicationContext(), "In u.getEmail == changeduser email", Toast.LENGTH_SHORT).show();
+                    emailIsDuplicated = true;
+                    msg = "Invalid email.";
+                }
+            }
+            DataSnapshot diner = (DataSnapshot) dataSnapshot.child("Diner");
+            for (DataSnapshot ps : diner.getChildren()) {
+                User u = ps.getValue(User.class);
+                //Toast.makeText(getApplicationContext(), u.getEmail(), Toast.LENGTH_SHORT).show();
+                if (u.getEmail().equals(changedUser.getEmail())) {
+                    Toast.makeText(getApplicationContext(), "In u.getEmail == changeduser email", Toast.LENGTH_SHORT).show();
+                    emailIsDuplicated = true;
+                    msg = "Invalid email.";
+                }
+            }
+            DataSnapshot driver = (DataSnapshot) dataSnapshot.child("Driver");
+            for (DataSnapshot ps : driver.getChildren()) {
+                User u = ps.getValue(User.class);
+                Toast.makeText(getApplicationContext(), u.getEmail(), Toast.LENGTH_SHORT).show();
+                if (u.getEmail().equals(changedUser.getEmail())) {
+                    //Toast.makeText(getApplicationContext(), "In u.getEmail == changeduser email", Toast.LENGTH_SHORT).show();
+                    emailIsDuplicated = true;
+                    msg = "Invalid email.";
+                }
+            }
+            //is all info valid?
+            if(userIsValid && !emailIsDuplicated){
+                //Toast.makeText(getApplicationContext(),"About to save" , Toast.LENGTH_LONG).show();
+                saveUserToDatabase();
+                Toast.makeText(getApplicationContext(),msg , Toast.LENGTH_LONG).show();
+                //send new user info to the proper menu activity
+                Bundle bundle1 = new Bundle();
+                Intent intent = null;
+
+                if (type.equals("Restaurant"))
+                    intent = new Intent(EditAccountActivity.this, RestaurantMainMenu.class);
+                else if (type.equals("Diner"))
+                    intent = new Intent(EditAccountActivity.this, DinerMainMenu.class);
+                else if (type.equals("Driver"))
+                    intent = new Intent(EditAccountActivity.this, DriverMainMenu.class);
+
+                bundle1.putSerializable("User", changedUser);
+                intent.putExtras(bundle1);
+                intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                startActivity(intent);
+                finish();
+            }else{
+                //something is not valid
+                if(emailIsDuplicated)
+                    Toast.makeText(getApplicationContext(),msg , Toast.LENGTH_LONG).show();
+            }
+
+        }
+
+        @Override
+        public void onCancelled(DatabaseError firebaseError) {
+            //System.out.println("The read failed: " + firebaseError.getMessage());
+        }
+
     }
 
     //edits the current user's info in the database with the new User information
