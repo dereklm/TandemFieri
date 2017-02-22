@@ -1,5 +1,6 @@
 <resources>
     <string name="app_name">Tandem Fieri</string>
+    <string name="multiDex">multidex</string>
     <string name="signInTitle">Tandem Fieri</string>
     <string name="hintEmail">Email</string>
     <string name="hintPassword">Password</string>
