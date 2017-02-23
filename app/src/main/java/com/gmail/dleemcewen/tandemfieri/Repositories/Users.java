@@ -1,5 +1,6 @@
 package com.gmail.dleemcewen.tandemfieri.Repositories;
 
+import android.content.Context;
 import android.support.annotation.NonNull;
 import android.util.Log;
 
@@ -7,6 +8,7 @@ import com.gmail.dleemcewen.tandemfieri.Abstracts.Entity;
 import com.gmail.dleemcewen.tandemfieri.Entities.User;
 import com.gmail.dleemcewen.tandemfieri.EventListeners.QueryCompleteListener;
 import com.gmail.dleemcewen.tandemfieri.Abstracts.Repository;
+import com.gmail.dleemcewen.tandemfieri.Logging.LogWriter;
 import com.google.android.gms.tasks.Continuation;
 import com.google.android.gms.tasks.Task;
 
@@ -21,6 +23,7 @@ import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.logging.Level;
 
 /**
  * Users repository defines the database logic to use when adding, removing, or updating a User
@@ -28,6 +31,15 @@ import java.util.List;
 
 public class Users<T extends Entity> extends Repository<User> {
     private DatabaseReference dataContext;
+    private Context context;
+
+    /**
+     * Default constructor
+     * @param context indicates the current application context
+     */
+    public Users(Context context) {
+        this.context = context;
+    }
 
     /**
      * find users from the database
@@ -92,9 +104,28 @@ public class Users<T extends Entity> extends Repository<User> {
 
         String[] childNodesArray = new String[childNodes.size()];
         childNodesArray = childNodes.toArray(childNodesArray);
-
-        Query query = buildEqualsQuery(dataContext, value, childNodesArray);
         final QueryCompleteListener<User> finalQueryCompleteListener = onQueryComplete;
+
+        if (value != null && !value.equals("")) {
+            performQuerySearch(dataContext, value, childNodesArray, finalQueryCompleteListener);
+        } else {
+            performDataRetrieve(dataContext, childNodesArray, finalQueryCompleteListener);
+        }
+    }
+
+    /**
+     * performQuerySearch performs a query search across all of the User entities
+     * @param dataContext identifies the data context
+     * @param value indicates the value to search for
+     * @param childNodesArray identifies the list of string arguments that indicates the
+     *                         child node(s) that identify the location of the desired data
+     * @param queryCompleteListener identifies the QueryCompleteListener to push results back to
+     */
+    private void performQuerySearch(DatabaseReference dataContext, String value,
+        String[] childNodesArray, final QueryCompleteListener<User> queryCompleteListener) {
+        Query query = buildEqualsQuery(dataContext, value, childNodesArray);
+
+        LogWriter.log(context, Level.FINE, "Searching for user data that equals " + value + " from " + query.toString());
 
         query.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
@@ -108,15 +139,54 @@ public class Users<T extends Entity> extends Repository<User> {
                     foundUsers.add(foundUser);
                 }
 
-                finalQueryCompleteListener.onQueryComplete(foundUsers);
+                queryCompleteListener.onQueryComplete(foundUsers);
             }
 
             @Override
             public void onCancelled(DatabaseError databaseError) {
                 // Getting User failed, log a message
-                Log.w("Users", "Users.find:onCancelled", databaseError.toException());
+                LogWriter.log(context, Level.FINE, "Users.find:onCancelled " + databaseError.toException());
             }
         });
+    }
+
+    /**
+     * performDataRetrieve performs a retrieval operation across all of the User entities data
+     * @param dataContext identifies the data context
+     * @param childNodesArray identifies the list of string arguments that indicates the
+     *                         child node(s) that identify the location of the desired data
+     * @param queryCompleteListener identifies the QueryCompleteListener to push results back to
+     */
+    private void performDataRetrieve(DatabaseReference dataContext,
+        String[] childNodesArray, final QueryCompleteListener<User> queryCompleteListener) {
+        for (String childNode : childNodesArray) {
+            dataContext = dataContext.child(childNode);
+        }
+
+        LogWriter.log(context, Level.FINE, "Retrieving user data for " + dataContext.toString());
+
+        dataContext.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                ArrayList<User> foundUsers = new ArrayList<User>();
+
+                for (DataSnapshot record : dataSnapshot.getChildren()) {
+                    User foundUser = record.getValue(User.class);
+                    foundUser.setKey(record.getKey());
+
+                    foundUsers.add(foundUser);
+                }
+
+                queryCompleteListener.onQueryComplete(foundUsers);
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+                // Getting User failed, log a message
+                LogWriter.log(context, Level.FINE, "Users.find:onCancelled " + databaseError.toException());
+            }
+        });
+
     }
 }
 

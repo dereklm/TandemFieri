@@ -59,7 +59,7 @@ public class DriverRatings extends AppCompatActivity {
      */
     private void initialize() {
         resources = this.getResources();
-        ratingsRepository = new Ratings<>();
+        ratingsRepository = new Ratings<>(this);
         calendar = Calendar.getInstance();
         calendar.setTime(new Date());
 

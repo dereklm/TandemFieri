@@ -3,16 +3,15 @@ package com.gmail.dleemcewen.tandemfieri;
 import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuInflater;
-import android.widget.Button;
 import android.view.MenuItem;
-import android.view.View;
-import android.widget.Toast;
 
 import com.gmail.dleemcewen.tandemfieri.Entities.User;
+import com.gmail.dleemcewen.tandemfieri.Logging.LogWriter;
 import com.google.firebase.auth.FirebaseAuth;
+
+import java.util.logging.Level;
 
 public class RestaurantMainMenu extends AppCompatActivity {
 
@@ -26,7 +25,7 @@ public class RestaurantMainMenu extends AppCompatActivity {
         Bundle bundle = this.getIntent().getExtras();
         user = (User) bundle.getSerializable("User");
 
-        Toast.makeText(getApplicationContext(),"The user is " + user.getEmail(), Toast.LENGTH_LONG).show();
+        LogWriter.log(getApplicationContext(), Level.INFO, "The user is " + user.getEmail());
     }//end onCreate
 
     //create menu

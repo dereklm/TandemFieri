@@ -10,7 +10,10 @@ import android.view.MenuItem;
 import android.widget.Toast;
 
 import com.gmail.dleemcewen.tandemfieri.Entities.User;
+import com.gmail.dleemcewen.tandemfieri.Logging.LogWriter;
 import com.google.firebase.auth.FirebaseAuth;
+
+import java.util.logging.Level;
 
 public class DriverMainMenu extends AppCompatActivity {
 
@@ -27,8 +30,7 @@ public class DriverMainMenu extends AppCompatActivity {
         bundle = this.getIntent().getExtras();
         user = (User) bundle.getSerializable("User");
 
-        Toast.makeText(getApplicationContext(),"The user is " + user.getEmail(), Toast.LENGTH_LONG).show();
-
+        LogWriter.log(getApplicationContext(), Level.INFO, "The user is " + user.getEmail());
     }//end onCreate
 
     //create menu

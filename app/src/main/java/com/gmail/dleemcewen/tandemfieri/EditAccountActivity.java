@@ -10,6 +10,7 @@ import android.widget.EditText;
 import android.widget.Toast;
 
 import com.gmail.dleemcewen.tandemfieri.Entities.User;
+import com.gmail.dleemcewen.tandemfieri.Logging.LogWriter;
 import com.gmail.dleemcewen.tandemfieri.Repositories.Users;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
@@ -19,7 +20,10 @@ import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.Logger;
 import com.google.firebase.database.ValueEventListener;
+
+import java.util.logging.Level;
 
 import static com.gmail.dleemcewen.tandemfieri.Validator.Validator.isValid;
 
@@ -29,7 +33,6 @@ public class EditAccountActivity extends AppCompatActivity {
     private User changedUser;
     private String type = "";
     private String uid = "";
-    private Users<User> users;
     private boolean emailIsDuplicated, userIsValid;
 
 
@@ -48,7 +51,6 @@ public class EditAccountActivity extends AppCompatActivity {
         Bundle bundle = this.getIntent().getExtras();
         currentUser = (User) bundle.getSerializable("User");
         type = this.getIntent().getStringExtra("UserType");
-        users = new Users<>();
 
 
         /*For the code I currently have, the key stored in the User object is not the same as the id in the database.
@@ -70,6 +72,16 @@ public class EditAccountActivity extends AppCompatActivity {
 
         //reference in database to the current user
         mDatabase = FirebaseDatabase.getInstance().getReference().child("User").child(type).child(uid);
+
+        if(currentUser != null) {
+            LogWriter.log(getApplicationContext(), Level.INFO, "The user is " + currentUser.getEmail());
+        }
+        else{
+            LogWriter.log(getApplicationContext(), Level.WARNING, "The user is null");
+            finish();
+        }
+        LogWriter.log(getApplicationContext(), Level.INFO, "The user key is " + currentUser.getKey());
+        LogWriter.log(getApplicationContext(), Level.INFO, "The user id is " + uid);
 
         //get handles to view
         firstName = (EditText) findViewById(R.id.firstName);
@@ -257,7 +269,7 @@ public class EditAccountActivity extends AppCompatActivity {
                     @Override
                     public void onComplete(@NonNull Task<Void> task) {
                         if (task.isSuccessful()) {
-                           // Log.d(TAG, "User email address updated.");
+                            LogWriter.log(getApplicationContext(), Level.INFO, "User email address updated.");
                         }
                     }
                 });

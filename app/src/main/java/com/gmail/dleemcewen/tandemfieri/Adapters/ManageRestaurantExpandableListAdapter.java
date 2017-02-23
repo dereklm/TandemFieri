@@ -18,6 +18,7 @@ import android.widget.Toast;
 
 import com.gmail.dleemcewen.tandemfieri.DriverRatings;
 import com.gmail.dleemcewen.tandemfieri.Entities.Restaurant;
+import com.gmail.dleemcewen.tandemfieri.ManageRestaurantDrivers;
 import com.gmail.dleemcewen.tandemfieri.MenuBuilder.MenuBuilderActivity;
 import com.gmail.dleemcewen.tandemfieri.MenuBuilder.MenuCatagory;
 import com.gmail.dleemcewen.tandemfieri.R;
@@ -46,7 +47,7 @@ public class ManageRestaurantExpandableListAdapter extends BaseExpandableListAda
         this.restaurantsList = restaurantsList;
         this.childDataList = childDataList;
         resources = context.getResources();
-        restaurantsRepository = new Restaurants<>();
+        restaurantsRepository = new Restaurants<>(context);
     }
 
     /**
@@ -237,10 +238,10 @@ public class ManageRestaurantExpandableListAdapter extends BaseExpandableListAda
             convertView = layoutInflater.inflate(R.layout.manage_restaurants_list_item, null);
         }
 
-        //TODO: add click events for buttons
         Button manageMenuItems = (Button)convertView.findViewById(R.id.manageMenuItems);
         Button viewSales = (Button)convertView.findViewById(R.id.viewSales);
         Button viewDeliveryArea = (Button)convertView.findViewById(R.id.viewDeliveryArea);
+        Button manageDrivers = (Button)convertView.findViewById(R.id.manageDrivers);
         Button rateDrivers = (Button)convertView.findViewById(R.id.rateDrivers);
 
         manageMenuItems.setOnClickListener(new View.OnClickListener() {
@@ -273,6 +274,17 @@ public class ManageRestaurantExpandableListAdapter extends BaseExpandableListAda
             public void onClick(View view) {
                 Intent intent = new Intent(context, RestaurantMapActivity.class);
                 intent.putExtra("restaurant", selectedChild);
+                context.startActivity(intent);
+            }
+        });
+        manageDrivers.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Bundle bundle = new Bundle();
+                bundle.putSerializable("Restaurant", selectedChild);
+                bundle.putString("key", selectedChild.getKey());
+                Intent intent = new Intent(context, ManageRestaurantDrivers.class);
+                intent.putExtras(bundle);
                 context.startActivity(intent);
             }
         });

@@ -124,7 +124,7 @@ public abstract class Repository<T extends Entity> {
     protected Query buildEqualsQuery(DatabaseReference dataContext, String equalsValue, String... childNodes) {
        Query query = buildQuery(dataContext, Arrays.asList(childNodes));
 
-        if (!equalsValue.equals("")) {
+        if (equalsValue != null && !equalsValue.equals("")) {
             query = query.equalTo(equalsValue);
         }
 
@@ -166,7 +166,16 @@ public abstract class Repository<T extends Entity> {
 
         String childNodesPath = "";
         if (!childNodes.isEmpty()) {
-            childNodesPath = TextUtils.join("/", childNodes);
+            //Get the last values in childNodes and assign that to childnodespath
+            childNodesPath = childNodes.get(childNodes.size() - 1);
+        }
+
+        //If there are any other child nodes, assign those as children on the datacontext
+        //Otherwise queries on multi-node entities will not work
+        if (!childNodes.isEmpty()) {
+            for (int index = 0; index < childNodes.size() - 1; index++) {
+                dataContext = dataContext.child(childNodes.get(index));
+            }
         }
 
         if (!childNodesPath.equals("")) {
