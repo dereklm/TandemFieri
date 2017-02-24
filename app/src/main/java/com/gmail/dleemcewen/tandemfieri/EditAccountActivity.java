@@ -5,8 +5,11 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.Spinner;
 import android.widget.Toast;
 
 import com.gmail.dleemcewen.tandemfieri.Entities.User;
@@ -23,11 +26,12 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.Logger;
 import com.google.firebase.database.ValueEventListener;
 
+import java.util.Arrays;
 import java.util.logging.Level;
 
 import static com.gmail.dleemcewen.tandemfieri.Validator.Validator.isValid;
 
-public class EditAccountActivity extends AppCompatActivity {
+public class EditAccountActivity extends AppCompatActivity implements AdapterView.OnItemSelectedListener {
 
     private User currentUser;
     private User changedUser;
@@ -39,8 +43,11 @@ public class EditAccountActivity extends AppCompatActivity {
     private DatabaseReference mDatabase;
     private FirebaseUser fireuser;
 
-    private EditText firstName, lastName, address, city, state, zip, phoneNumber, email;
+    private EditText firstName, lastName, address, city, zip, phoneNumber, email;
     private Button saveButton, cancelButton;
+
+    private String state = "";
+    private Spinner states;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -88,19 +95,35 @@ public class EditAccountActivity extends AppCompatActivity {
         lastName = (EditText) findViewById(R.id.lastName);
         address = (EditText) findViewById(R.id.address);
         city = (EditText) findViewById(R.id.city);
-        state = (EditText) findViewById(R.id.state);
+        states = (Spinner) findViewById(R.id.state);
         zip = (EditText) findViewById(R.id.zip);
         phoneNumber = (EditText) findViewById(R.id.phone);
         email = (EditText) findViewById(R.id.email);
         saveButton = (Button) findViewById(R.id.save_Button);
         cancelButton = (Button) findViewById(R.id.cancel_Button);
 
+        states.setOnItemSelectedListener(this);
+
+        // Create an ArrayAdapter using the string array and a default spinner layout
+        ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(this,
+                R.array.states, android.R.layout.simple_spinner_item);
+
+        // Specify the layout to use when the list of choices appears
+        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+
+        // Apply the adapter to the spinner
+        states.setAdapter(adapter);
+
+        // Find the user's state in the array of states
+        String[] arrayOfStates = getResources().getStringArray(R.array.states);
+        int positionOfUserState = Arrays.asList(arrayOfStates).indexOf(toProperCase(currentUser.getState()));
+
         //set text in fields using user's current information
         firstName.setText(currentUser.getFirstName());
         lastName.setText(currentUser.getLastName());
         address.setText(currentUser.getAddress());
         city.setText(currentUser.getCity());
-        state.setText(currentUser.getState());
+        states.setSelection(positionOfUserState);
         zip.setText(currentUser.getZip());
         phoneNumber.setText(currentUser.getPhoneNumber());
         email.setText(currentUser.getEmail());
@@ -146,7 +169,7 @@ public class EditAccountActivity extends AppCompatActivity {
         changedUser.setLastName(lastName.getText().toString());
         changedUser.setAddress(address.getText().toString());
         changedUser.setCity(city.getText().toString());
-        changedUser.setState(state.getText().toString());
+        changedUser.setState(state);
         changedUser.setZip(zip.getText().toString());
         changedUser.setPhoneNumber(phoneNumber.getText().toString());
         changedUser.setEmail(email.getText().toString());
@@ -160,7 +183,6 @@ public class EditAccountActivity extends AppCompatActivity {
         boolean lastNameValid = isValid(lastName, FormConstants.REG_EX_LASTNAME, FormConstants.ERROR_TAG_LASTNAME);
         boolean addressValid = isValid(address, FormConstants.REG_EX_ADDRESS, FormConstants.ERROR_TAG_ADDRESS);
         boolean cityValid = isValid(city, FormConstants.REG_EX_CITY, FormConstants.ERROR_TAG_CITY);
-        boolean stateValid = isValid(state, FormConstants.REG_EX_STATE, FormConstants.ERROR_TAG_STATE);
         boolean emailValid = isValid(email, FormConstants.REG_EX_EMAIL, FormConstants.ERROR_TAG_EMAIL);
         boolean phoneNumberValid = isValid(phoneNumber, FormConstants.REG_EX_PHONE, FormConstants.ERROR_TAG_PHONE);
         boolean zipValid = isValid(zip, FormConstants.REG_EX_ZIP, FormConstants.ERROR_TAG_ZIP);
@@ -169,7 +191,6 @@ public class EditAccountActivity extends AppCompatActivity {
                 lastNameValid       &&
                 addressValid        &&
                 cityValid           &&
-                stateValid          &&
                 zipValid            &&
                 phoneNumberValid    &&
                 emailValid) {
@@ -179,6 +200,45 @@ public class EditAccountActivity extends AppCompatActivity {
         return result;
     }
 
+    /**
+     * <p>Callback method to be invoked when an item in this view has been
+     * selected. This callback is invoked only when the newly selected
+     * position is different from the previously selected position or if
+     * there was no selected item.</p>
+     * <p>
+     * Impelmenters can call getItemAtPosition(position) if they need to access the
+     * data associated with the selected item.
+     *
+     * @param parent   The AdapterView where the selection happened
+     * @param view     The view within the AdapterView that was clicked
+     * @param position The position of the view in the adapter
+     * @param id       The row id of the item that is selected
+     */
+    @Override
+    public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+        state = (String)parent.getItemAtPosition(position);
+    }
+
+    /**
+     * Callback method to be invoked when the selection disappears from this
+     * view. The selection can disappear for instance when touch is activated
+     * or when the adapter becomes empty.
+     *
+     * @param parent The AdapterView that now contains no selected item.
+     */
+    @Override
+    public void onNothingSelected(AdapterView<?> parent) {
+
+    }
+
+    /**
+     * toProperCase converts a string to proper case
+     * @param sourceString indicates the source string to convert
+     * @return string converted to proper case
+     */
+    private String toProperCase(String sourceString) {
+        return sourceString.substring(0, 1).toUpperCase() + sourceString.substring(1).toLowerCase();
+    }
 
     public class VEListener implements ValueEventListener {
 

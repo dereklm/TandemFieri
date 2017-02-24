@@ -74,40 +74,47 @@
         android:layout_alignParentLeft="true"
         android:layout_alignParentStart="true" />
 
-
-    <EditText
-        android:layout_width="wrap_content"
+    <LinearLayout
+        android:id="@+id/stateZipContainer"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_below="@+id/city"
-        android:inputType="textPersonName"
-        android:hint="@string/hintState"
-        android:textSize="14sp"
-        android:ems="10"
-        android:id="@+id/state"
+        android:orientation="horizontal"
         android:layout_marginTop="20dp"
+        android:layout_alignParentStart="true"
         android:layout_alignParentLeft="true"
-        android:layout_alignParentStart="true" />
-
-    <EditText
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:inputType="text|number"
-        android:hint="@string/hintZip"
-        android:textSize="14sp"
-        android:ems="10"
-        android:id="@+id/zip"
-        android:layout_alignBaseline="@+id/state"
-        android:layout_alignBottom="@+id/state"
         android:layout_alignParentRight="true"
-        android:layout_alignParentEnd="true" />
-
+        android:layout_alignParentEnd="true"
+        android:layout_below="@id/city">
+        <Spinner
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:hint="@string/hintState"
+            android:textSize="14sp"
+            android:ems="10"
+            android:id="@+id/state"
+            android:paddingRight="20dp"
+            android:paddingEnd="20dp"
+            android:layout_weight="1"
+            style="@style/Base.Widget.AppCompat.Spinner.Underlined"/>
+        <EditText
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:inputType="text|number"
+            android:hint="@string/hintZip"
+            android:textSize="14sp"
+            android:ems="10"
+            android:layout_weight="1"
+            android:id="@+id/zip"
+            android:layout_alignBaseline="@+id/state"
+            android:layout_alignBottom="@+id/state" />
+    </LinearLayout>
     <EditText
         android:hint="@string/hintPhone"
         android:textSize="14sp"
         android:inputType="textPhonetic"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_below="@+id/state"
+        android:layout_below="@id/stateZipContainer"
         android:layout_marginTop="20dp"
         android:id="@+id/phone"
         android:layout_alignParentRight="true"
