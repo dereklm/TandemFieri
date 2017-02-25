@@ -1,3 +1,4 @@
+
 package com.gmail.dleemcewen.tandemfieri.Tasks;
 
 import android.support.annotation.NonNull;
@@ -15,14 +16,14 @@ import java.util.AbstractMap;
 import java.util.Map;
 
 /**
- * AddRestaurantTask defines the task to add a new restaurant that can be used with other chained tasks
+ * UpdateRestaurantTask defines the task to update an existing restaurant that can be used with other chained tasks
  */
 
-public class AddRestaurantTask implements Continuation<Map.Entry<Boolean, DatabaseError>, Task<Map.Entry<Boolean, DatabaseError>>> {
+public class UpdateRestaurantTask implements Continuation<Map.Entry<Boolean, DatabaseError>, Task<Map.Entry<Boolean, DatabaseError>>> {
     private DatabaseReference dataContext;
     private Restaurant entity;
 
-    public AddRestaurantTask(DatabaseReference dataContext, Restaurant entity) {
+    public UpdateRestaurantTask(DatabaseReference dataContext, Restaurant entity) {
         this.dataContext = dataContext;
         this.entity = entity;
     }
@@ -51,7 +52,6 @@ public class AddRestaurantTask implements Continuation<Map.Entry<Boolean, Databa
                     taskCompletionSource.setResult(listenerResult);
                 }
             });
-
         } else {
             taskCompletionSource.setResult(task.getResult());
         }

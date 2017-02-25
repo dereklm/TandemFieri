@@ -15,6 +15,7 @@ import android.widget.Toast;
 import com.gmail.dleemcewen.tandemfieri.Entities.User;
 import com.gmail.dleemcewen.tandemfieri.Logging.LogWriter;
 import com.gmail.dleemcewen.tandemfieri.Repositories.Users;
+import com.gmail.dleemcewen.tandemfieri.Utility.Util;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
@@ -116,7 +117,7 @@ public class EditAccountActivity extends AppCompatActivity implements AdapterVie
 
         // Find the user's state in the array of states
         String[] arrayOfStates = getResources().getStringArray(R.array.states);
-        int positionOfUserState = Arrays.asList(arrayOfStates).indexOf(toProperCase(currentUser.getState()));
+        int positionOfUserState = Arrays.asList(arrayOfStates).indexOf(Util.toProperCase(currentUser.getState()));
 
         //set text in fields using user's current information
         firstName.setText(currentUser.getFirstName());
@@ -229,15 +230,6 @@ public class EditAccountActivity extends AppCompatActivity implements AdapterVie
     @Override
     public void onNothingSelected(AdapterView<?> parent) {
 
-    }
-
-    /**
-     * toProperCase converts a string to proper case
-     * @param sourceString indicates the source string to convert
-     * @return string converted to proper case
-     */
-    private String toProperCase(String sourceString) {
-        return sourceString.substring(0, 1).toUpperCase() + sourceString.substring(1).toLowerCase();
     }
 
     public class VEListener implements ValueEventListener {

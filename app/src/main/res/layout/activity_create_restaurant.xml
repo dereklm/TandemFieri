@@ -104,36 +104,37 @@
         android:layout_alignParentStart="true"
         android:id="@+id/deliveryCharge"
         android:hint="@string/hintDeliveryCharge" />
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textSize="@dimen/button_text_size"
+        android:id="@+id/businessHours"
+        android:layout_alignParentStart="true"
+        android:layout_alignParentLeft="true"
+        android:layout_below="@id/deliveryCharge"
+        android:text="@string/businessHours" />
     <LinearLayout
-        android:id="@+id/additionalSetupContainer"
+        android:id="@+id/actionsContainer"
+        android:layout_marginTop="20dp"
         android:layout_width="match_parent"
-        android:layout_height="40dp"
+        android:layout_height="64dp"
         android:orientation="horizontal"
         android:layout_alignParentStart="true"
         android:layout_alignParentLeft="true"
-        android:layout_below="@id/deliveryCharge">
+        android:layout_below="@id/businessHours">
         <Button
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:textSize="@dimen/button_text_size"
-            android:id="@+id/businessHours"
-            android:text="@string/businessHours" />
-        <!--<Button-->
-            <!--android:layout_width="wrap_content"-->
-            <!--android:layout_height="wrap_content"-->
-            <!--android:layout_weight="1"-->
-            <!--android:textSize="@dimen/button_text_size"-->
-            <!--android:id="@+id/deliveryArea"-->
-            <!--android:text="@string/deliveryArea" />-->
+            android:text="@string/cancel"
+            android:textSize="@dimen/regular_text_size"
+            android:id="@+id/cancelRestaurant" />
+        <Button
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="@string/createButton"
+            android:textSize="@dimen/regular_text_size"
+            android:id="@+id/createRestaurant" />
     </LinearLayout>
-    <Button
-        android:layout_marginTop="20dp"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_centerHorizontal="true"
-        android:layout_below="@id/additionalSetupContainer"
-        android:text="@string/createButton"
-        android:textSize="@dimen/regular_text_size"
-        android:id="@+id/createRestaurant" />
 </RelativeLayout>

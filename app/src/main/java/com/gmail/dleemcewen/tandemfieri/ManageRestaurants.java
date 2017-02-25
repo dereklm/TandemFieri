@@ -18,6 +18,7 @@ import com.gmail.dleemcewen.tandemfieri.Events.ActivityEvent;
 import com.gmail.dleemcewen.tandemfieri.Logging.LogWriter;
 import com.gmail.dleemcewen.tandemfieri.MenuBuilder.MenuCatagory;
 import com.gmail.dleemcewen.tandemfieri.Repositories.Restaurants;
+import com.google.android.gms.nearby.messages.internal.Update;
 
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
@@ -38,6 +39,7 @@ public class ManageRestaurants extends AppCompatActivity {
     private User currentUser;
     private Context context;
     private static final int CREATE_RESTAURANT = 1;
+    private static final int UPDATE_RESTAURANT = 2;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -53,8 +55,9 @@ public class ManageRestaurants extends AppCompatActivity {
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        if (requestCode == CREATE_RESTAURANT && resultCode == RESULT_OK) {
-            //A new restaurant was added, so reload the restaurants data
+        if ((requestCode == CREATE_RESTAURANT || requestCode == UPDATE_RESTAURANT)
+            && resultCode == RESULT_OK) {
+            //A new restaurant was added or a restaurant was updated
             retrieveData();
         }
         if (requestCode == 111 && resultCode == RESULT_OK) {

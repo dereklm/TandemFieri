@@ -1,5 +1,7 @@
 package com.gmail.dleemcewen.tandemfieri;
 
+import android.content.Intent;
+import android.content.res.Resources;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
@@ -15,21 +17,25 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.gmail.dleemcewen.tandemfieri.Entities.Restaurant;
-import com.gmail.dleemcewen.tandemfieri.Events.ActivityEvent;
+import com.gmail.dleemcewen.tandemfieri.Logging.LogWriter;
 import com.gmail.dleemcewen.tandemfieri.Repositories.Restaurants;
+import com.gmail.dleemcewen.tandemfieri.Utility.Util;
 import com.gmail.dleemcewen.tandemfieri.Validator.Validator;
 import com.google.android.gms.tasks.Continuation;
 import com.google.android.gms.tasks.Task;
 import com.google.android.gms.tasks.TaskCompletionSource;
 import com.google.firebase.database.DatabaseError;
 
-import org.greenrobot.eventbus.EventBus;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Map;
+import java.util.logging.Level;
 
-public class CreateRestaurant extends AppCompatActivity implements AdapterView.OnItemSelectedListener {
+public class EditRestaurantActivity extends AppCompatActivity implements AdapterView.OnItemSelectedListener {
+    private Resources resources;
     private Restaurants<Restaurant> restaurantsRepository;
+    private Restaurant restaurant;
     private TextView title;
     private TextView address;
     private TextView delivery;
@@ -39,11 +45,10 @@ public class CreateRestaurant extends AppCompatActivity implements AdapterView.O
     private Spinner states;
     private EditText zipCode;
     private EditText deliveryCharge;
-    private Button businessHours;
-    private Button createRestaurant;
-    private Button cancelCreateRestaurant;
-    private String restaurantOwnerId;
     private String state;
+    private Button businessHours;
+    private Button updateRestaurant;
+    private Button cancelUpdateRestaurant;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -61,9 +66,15 @@ public class CreateRestaurant extends AppCompatActivity implements AdapterView.O
      * initialize all necessary variables
      */
     private void initialize() {
+        resources = this.getResources();
         restaurantsRepository = new Restaurants<>(this);
-        restaurantOwnerId = getIntent().getStringExtra("ownerId");
         state = "";
+
+        Bundle bundle = getIntent().getExtras();
+        restaurant = (Restaurant)bundle.getSerializable("Restaurant");
+        restaurant.setKey(bundle.getString("key"));
+
+        LogWriter.log(getApplicationContext(), Level.FINE, "The restaurant key is " + restaurant.getKey());
     }
 
     /**
@@ -80,8 +91,8 @@ public class CreateRestaurant extends AppCompatActivity implements AdapterView.O
         zipCode = (EditText)findViewById(R.id.zipcode);
         deliveryCharge = (EditText)findViewById(R.id.deliveryCharge);
         businessHours = (Button)findViewById(R.id.businessHours);
-        createRestaurant = (Button)findViewById(R.id.createRestaurant);
-        cancelCreateRestaurant = (Button)findViewById(R.id.cancelRestaurant);
+        updateRestaurant = (Button)findViewById(R.id.createRestaurant);
+        cancelUpdateRestaurant = (Button)findViewById(R.id.cancelRestaurant);
     }
 
     /**
@@ -93,44 +104,46 @@ public class CreateRestaurant extends AppCompatActivity implements AdapterView.O
         businessHours.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Toast.makeText(CreateRestaurant.this, "Opening soon!", Toast.LENGTH_SHORT).show();
+                Toast.makeText(EditRestaurantActivity.this, "Opening soon!", Toast.LENGTH_SHORT).show();
             }
         });
 
-        createRestaurant.setOnClickListener(new View.OnClickListener() {
+        updateRestaurant.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 if (checkForValidData()) {
-                    //build a new restaurant
-                    Restaurant restaurant = buildNewRestaurant();
+                    //update restaurant values
+                    restaurant = updateRestaurantValues();
 
                     //add the restaurant record
                     //and then check the return value to ensure the restaurant was created successfully
                     restaurantsRepository
-                        .add(restaurant)
+                        .update(restaurant)
                         .continueWith(new Continuation<Map.Entry<Boolean ,DatabaseError>,
                                 Task<Map.Entry<Boolean, DatabaseError>>>() {
                             @Override
                             public Task<Map.Entry<Boolean, DatabaseError>> then(@NonNull Task<Map.Entry<Boolean, DatabaseError>> task)
                                     throws Exception {
                                 TaskCompletionSource<Map.Entry<Boolean, DatabaseError>> taskCompletionSource =
-                                    new TaskCompletionSource<>();
+                                        new TaskCompletionSource<>();
 
                                 Map.Entry<Boolean, DatabaseError> taskResult = task.getResult();
                                 StringBuilder toastMessage = new StringBuilder();
 
                                 if (taskResult.getKey()) {
-                                    toastMessage.append("Restaurant created successfully");
+                                    toastMessage.append("Restaurant updated successfully");
                                 } else {
-                                    toastMessage.append("An error occurred while creating the restaurant.  Please check your network connection and try again.");
+                                    toastMessage.append("An error occurred while updating the restaurant.  Please check your network connection and try again.");
                                 }
+
                                 Toast
-                                    .makeText(CreateRestaurant.this, toastMessage.toString(), Toast.LENGTH_LONG)
+                                    .makeText(EditRestaurantActivity.this, toastMessage.toString(), Toast.LENGTH_LONG)
                                     .show();
 
                                 //Only go back to the manage restaurants screen if the restaurant was created successfully...
                                 if (taskResult.getKey()) {
-                                    EventBus.getDefault().post(new ActivityEvent(ActivityEvent.Result.REFRESH_RESTAURANT_LIST));
+                                    Intent intent=new Intent();
+                                    setResult(RESULT_OK, intent);
                                     finish();
                                 }
 
@@ -141,7 +154,7 @@ public class CreateRestaurant extends AppCompatActivity implements AdapterView.O
             }
         });
 
-        cancelCreateRestaurant.setOnClickListener(new View.OnClickListener() {
+        cancelUpdateRestaurant.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 finish();
@@ -168,6 +181,23 @@ public class CreateRestaurant extends AppCompatActivity implements AdapterView.O
      * perform any final layout updates
      */
     private void finalizeLayout() {
+        //set title
+        title.setText(resources.getString(R.string.updateRestaurant));
+
+        restaurantName.setText(restaurant.getName());
+        street.setText(restaurant.getStreet());
+        city.setText(restaurant.getCity());
+        zipCode.setText(restaurant.getZipcode());
+        deliveryCharge.setText(restaurant.getCharge().toString());
+
+        // Find the user's state in the array of states
+        String[] arrayOfStates = getResources().getStringArray(R.array.states);
+        int positionOfUserState = Arrays.asList(arrayOfStates).indexOf(Util.toProperCase(restaurant.getState()));
+        states.setSelection(positionOfUserState);
+
+        //set button text
+        updateRestaurant.setText(resources.getString(R.string.updateButton));
+
         underlineText(title);
         underlineText(address);
         underlineText(delivery);
@@ -175,7 +205,7 @@ public class CreateRestaurant extends AppCompatActivity implements AdapterView.O
 
     /**
      * underline the text in the provided textview
-    * @param textViewControl identifies the textview control containing the text to be underlined
+     * @param textViewControl identifies the textview control containing the text to be underlined
      */
     private void underlineText(TextView textViewControl) {
         String textToUnderline = textViewControl.getText().toString();
@@ -185,26 +215,23 @@ public class CreateRestaurant extends AppCompatActivity implements AdapterView.O
     }
 
     /**
-     * build a new restaurant entity
-     * @return new restaurant entity
+     * update existing restaurant entity values
+     * @return updated restaurant entity
      */
-    private Restaurant buildNewRestaurant() {
-        //Create new restaurant entity
-        Restaurant restaurant = new Restaurant();
+    private Restaurant updateRestaurantValues() {
+        //Update existing restaurant entity values
         restaurant.setName(restaurantName.getText().toString());
         restaurant.setStreet(street.getText().toString());
         restaurant.setCity(city.getText().toString());
         restaurant.setState(state);
         restaurant.setZipcode(zipCode.getText().toString());
         restaurant.setCharge(Double.valueOf(deliveryCharge.getText().toString()));
-        restaurant.setOwnerId(restaurantOwnerId);
-        restaurant.setDeliveryRadius(getBaseContext().getResources().getInteger(R.integer.defaultDeliveryRadius));
 
         return restaurant;
     }
 
     /**
-     * checkForValidData checks to ensure that the information entered in to the create restaurant
+     * checkForValidData checks to ensure that the information entered in to the edit restaurant
      * view is valid
      * @return true or false
      */

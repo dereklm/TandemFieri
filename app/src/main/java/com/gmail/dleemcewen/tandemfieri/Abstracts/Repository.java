@@ -1,7 +1,5 @@
 package com.gmail.dleemcewen.tandemfieri.Abstracts;
 
-import android.text.TextUtils;
-
 import com.gmail.dleemcewen.tandemfieri.EventListeners.QueryCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.database.DatabaseReference;

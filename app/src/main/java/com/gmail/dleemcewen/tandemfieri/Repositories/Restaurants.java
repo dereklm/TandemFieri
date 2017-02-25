@@ -14,6 +14,7 @@ import com.gmail.dleemcewen.tandemfieri.EventListeners.QueryCompleteListener;
 import com.gmail.dleemcewen.tandemfieri.Logging.LogWriter;
 import com.gmail.dleemcewen.tandemfieri.Tasks.AddRestaurantTask;
 import com.gmail.dleemcewen.tandemfieri.Tasks.NetworkConnectivityCheckTask;
+import com.gmail.dleemcewen.tandemfieri.Tasks.UpdateRestaurantTask;
 import com.google.android.gms.tasks.Continuation;
 import com.google.android.gms.tasks.Task;
 import com.google.android.gms.tasks.TaskCompletionSource;
@@ -58,6 +59,20 @@ public class Restaurants<T extends Entity> extends Repository<Restaurant> {
         return Tasks.<Void>forResult(null)
             .continueWithTask(new NetworkConnectivityCheckTask(context))
             .continueWithTask(new AddRestaurantTask(dataContext, entity));
+    }
+
+    /**
+     * update updates an existing restaurant and then returns the value as a task so that some other action
+     * can be taken
+     * @param entity indicates the entity to update
+     * @return Task containing the results of the find that can be chained to other tasks
+     */
+    public Task<Map.Entry<Boolean, DatabaseError>> update(Restaurant entity) {
+        DatabaseReference dataContext = getDataContext(entity.getClass().getSimpleName(), new String[]{});
+
+        return Tasks.<Void>forResult(null)
+            .continueWithTask(new NetworkConnectivityCheckTask(context))
+            .continueWithTask(new UpdateRestaurantTask(dataContext, entity));
     }
 
     /**

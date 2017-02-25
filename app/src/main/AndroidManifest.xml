@@ -52,7 +52,7 @@
             android:name=".DinerMapActivity"
             android:label="@string/title_activity_diner_map" />
         <activity android:name=".ManageRestaurantDrivers" />
-        <activity android:name=".AssignRestaurantDrivers"></activity>
+        <activity android:name=".EditRestaurantActivity"></activity>
     </application>
 
 </manifest>
