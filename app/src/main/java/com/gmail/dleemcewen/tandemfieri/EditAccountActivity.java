@@ -14,7 +14,7 @@ import android.widget.Toast;
 
 import com.gmail.dleemcewen.tandemfieri.Entities.User;
 import com.gmail.dleemcewen.tandemfieri.Logging.LogWriter;
-import com.gmail.dleemcewen.tandemfieri.Repositories.Users;
+import com.gmail.dleemcewen.tandemfieri.Utility.MapUtil;
 import com.gmail.dleemcewen.tandemfieri.Utility.Util;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
@@ -24,7 +24,6 @@ import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.database.Logger;
 import com.google.firebase.database.ValueEventListener;
 
 import java.util.Arrays;
@@ -187,6 +186,16 @@ public class EditAccountActivity extends AppCompatActivity implements AdapterVie
         boolean emailValid = isValid(email, FormConstants.REG_EX_EMAIL, FormConstants.ERROR_TAG_EMAIL);
         boolean phoneNumberValid = isValid(phoneNumber, FormConstants.REG_EX_PHONE, FormConstants.ERROR_TAG_PHONE);
         boolean zipValid = isValid(zip, FormConstants.REG_EX_ZIP, FormConstants.ERROR_TAG_ZIP);
+
+        String cityStr = city.getText().toString();
+        String zipStr = zip.getText().toString();
+        String street = address.getText().toString();
+        if (!MapUtil.verifyAddress(getApplicationContext(), street, cityStr, state, zipStr)) {
+            address.setError(FormConstants.ERROR_TAG_ADDRESS);
+            city.setError(FormConstants.ERROR_TAG_CITY);
+            zip.setError(FormConstants.ERROR_TAG_ZIP);
+            return result;
+        }
 
         if (    firstNameValid      &&
                 lastNameValid       &&

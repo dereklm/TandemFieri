@@ -21,26 +21,12 @@
         android:id="@+id/almostDone" />
 
     <EditText
-        android:hint="@string/hintUsername"
-        android:textSize="14sp"
-        android:inputType="textPersonName"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_below="@+id/almostDone"
-        android:layout_marginTop="30dp"
-        android:id="@+id/username"
-        android:layout_alignParentRight="true"
-        android:layout_alignParentEnd="true"
-        android:layout_alignParentLeft="true"
-        android:layout_alignParentStart="true" />
-
-    <EditText
         android:hint="@string/hintPassword"
         android:textSize="14sp"
         android:inputType="textPassword"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_below="@+id/username"
+        android:layout_below="@+id/almostDone"
         android:layout_marginTop="30dp"
         android:id="@+id/password"
         android:layout_alignParentRight="true"

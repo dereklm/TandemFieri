@@ -46,19 +46,37 @@
         android:layout_alignParentRight="true"
         android:layout_alignParentEnd="true" />
 
-    <EditText
-        android:hint="@string/hintAddress"
-        android:textSize="14sp"
-        android:inputType="textPostalAddress"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_below="@+id/firstName"
-        android:layout_marginTop="20dp"
-        android:id="@+id/address"
-        android:layout_alignParentRight="true"
-        android:layout_alignParentEnd="true"
-        android:layout_alignParentLeft="true"
-        android:layout_alignParentStart="true" />
+    <LinearLayout
+        android:layout_below="@id/firstName"
+        android:layout_width="match_parent"
+        android:id="@+id/address_container"
+        android:orientation="horizontal"
+        android:layout_height="wrap_content">
+
+        <EditText
+            android:hint="@string/hintAddress"
+            android:textSize="14sp"
+            android:inputType="textPostalAddress"
+            android:layout_width="0dp"
+            android:layout_weight="4"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/firstName"
+            android:layout_marginTop="20dp"
+            android:id="@+id/address"
+            android:layout_alignParentRight="true"
+            android:layout_alignParentEnd="true"
+            android:layout_alignParentLeft="true"
+            android:layout_alignParentStart="true" />
+
+        <Button
+            android:layout_width="45dp"
+            android:layout_height="wrap_content"
+            android:id="@+id/location_button"
+            android:layout_marginTop="10dp"
+            android:drawableLeft="@drawable/ic_room_black_24dp"
+            />
+
+    </LinearLayout>
 
     <EditText
         android:hint="@string/hintCity"
@@ -66,7 +84,7 @@
         android:inputType="textPersonName"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_below="@+id/address"
+        android:layout_below="@+id/address_container"
         android:layout_marginTop="20dp"
         android:id="@+id/city"
         android:layout_alignParentRight="true"
@@ -111,7 +129,7 @@
     <EditText
         android:hint="@string/hintPhone"
         android:textSize="14sp"
-        android:inputType="textPhonetic"
+        android:inputType="text|number"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_below="@id/stateZipContainer"

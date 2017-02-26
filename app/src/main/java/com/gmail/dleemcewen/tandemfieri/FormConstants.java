@@ -6,15 +6,6 @@ public final class FormConstants {
     public static final String REG_EX_LASTNAME = "^[a-zA-Z]+[\\sa-zA-Z]*$";
     public static final String REG_EX_ADDRESS = "^[\\w]+[\\s\\w-]*";
     public static final String REG_EX_CITY = "^[a-zA-Z]+[\\sa-zA-Z-]*$";
-    public static final String REG_EX_STATE = "(?i)((alabama)|(alaska)|(arizona)|(arkansas)|" +
-            "(california)|(colorado)|(connecticut)|(delaware)|" +
-            "(florida)|(georgia)|(hawaii)|(idaho)|(illinois)|(indiana)|(iowa)|" +
-            "(kansas)|(kentucky)|(louisiana)|(maine)|(maryland)|(massachusetts)|" +
-            "(michigan)|(minnesota)|(mississippi)|(missouri)|(montana)|(nebraska)|" +
-            "(nevada)|(new hampshire)|(new jersey)|(new mexico)|(new york)|(north carolina)|" +
-            "(north dakota)|(ohio)|(oklahoma)|(oregon)|(pennsylvania)|(rhode island)|(south carolina)|" +
-            "(south dakota)|(tennessee)|(texas)|(utah)|(vermont)|(virginia)|(washington)|(west virginia)|" +
-            "(wisconsin)|(wyoming))";
     public static final String REG_EX_ZIP = "\\d{5}|\\d{9}";
     public static final String REG_EX_PHONE = "\\d{10}";
     public static final String REG_EX_EMAIL = "([\\w-\\.]+)@((?:[\\w]+\\.)+)([a-zA-Z]{2,4})";
@@ -26,7 +17,6 @@ public final class FormConstants {
     public static final String ERROR_TAG_LASTNAME = "Invalid last name. Must be non-empty and contain only letters and spaces.";
     public static final String ERROR_TAG_ADDRESS = "Invalid address. Must be non-empty and begin with an alphanumeric character.";
     public static final String ERROR_TAG_CITY = "Invalid city. Must be non-empty.";
-    public static final String ERROR_TAG_STATE = "Invalid state. Must match an existing state name.";
     public static final String ERROR_TAG_ZIP = "Invalid ZIP code. Must be non-empty and in the form '12345' or '123456789' if ZIP+4.";
     public static final String ERROR_TAG_PHONE = "Invalid phone number. Must be non-empty and in the form '1234567890'.";
     public static final String ERROR_TAG_EMAIL = "Invalid email. Must be of format 'name@example.com'.";

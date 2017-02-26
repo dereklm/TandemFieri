@@ -4,7 +4,6 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
-import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -12,7 +11,6 @@ import android.widget.RadioButton;
 import android.widget.Toast;
 
 import com.gmail.dleemcewen.tandemfieri.Entities.User;
-import com.gmail.dleemcewen.tandemfieri.Repositories.Users;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
@@ -26,7 +24,7 @@ public class AlmostDoneActivity extends AppCompatActivity{
     public String firstName, lastName, address, city, state, zip, phoneNumber, email;
     public Button createButton;
     public Button cancelButton;
-    public EditText username, password, confirmPassword;
+    public EditText password, confirmPassword;
     public User newUser;
     private DatabaseReference mDatabase;
     public RadioButton radioDining, radioRestaurant, radioDriver;
@@ -43,8 +41,6 @@ public class AlmostDoneActivity extends AppCompatActivity{
         radioDining = (RadioButton) findViewById(R.id.diningRadio);
         radioRestaurant = (RadioButton) findViewById(R.id.restaurantRadio);
         radioDriver = (RadioButton) findViewById(R.id.driverRadio);
-
-        username = (EditText) findViewById(R.id.username);
         password = (EditText) findViewById(R.id.password);
         confirmPassword = (EditText) findViewById(R.id.confrimPassword);
 
@@ -111,7 +107,6 @@ public class AlmostDoneActivity extends AppCompatActivity{
                     newUser = new User();
                     newUser.setFirstName(firstName);
                     newUser.setLastName(lastName);
-                    newUser.setUsername(username.getText().toString());
                     newUser.setCity(city);
                     newUser.setAuthUserID(user.getUid());
                     newUser.setEmail(email);

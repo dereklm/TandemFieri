@@ -18,7 +18,6 @@ public class User extends Entity implements Serializable{
     private String zip;
     private String phoneNumber;
     private String email;
-    private String username;
     private String authUserID;
     private String restaurantId;
 
@@ -66,10 +65,6 @@ public class User extends Entity implements Serializable{
         return email;
     }
 
-    public String getUsername() {
-        return username;
-    }
-
     public void setFirstName(String firstName) {
         this.firstName = firstName;
     }
@@ -100,10 +95,6 @@ public class User extends Entity implements Serializable{
 
     public void setEmail(String email) {
         this.email = email;
-    }
-
-    public void setUsername(String username) {
-        this.username = username;
     }
 
     /**
