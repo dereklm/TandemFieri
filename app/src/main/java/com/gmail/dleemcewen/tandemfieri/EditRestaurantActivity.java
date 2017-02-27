@@ -46,7 +46,7 @@ public class EditRestaurantActivity extends AppCompatActivity implements Adapter
     private EditText zipCode;
     private EditText deliveryCharge;
     private String state;
-    private Button businessHours;
+    private Button deliveryHours;
     private Button updateRestaurant;
     private Button cancelUpdateRestaurant;
 
@@ -90,7 +90,7 @@ public class EditRestaurantActivity extends AppCompatActivity implements Adapter
         states = (Spinner)findViewById(R.id.state);
         zipCode = (EditText)findViewById(R.id.zipcode);
         deliveryCharge = (EditText)findViewById(R.id.deliveryCharge);
-        businessHours = (Button)findViewById(R.id.businessHours);
+        deliveryHours = (Button)findViewById(R.id.deliveryHours);
         updateRestaurant = (Button)findViewById(R.id.createRestaurant);
         cancelUpdateRestaurant = (Button)findViewById(R.id.cancelRestaurant);
     }
@@ -101,10 +101,14 @@ public class EditRestaurantActivity extends AppCompatActivity implements Adapter
     private void bindEventHandlers() {
         states.setOnItemSelectedListener(this);
 
-        businessHours.setOnClickListener(new View.OnClickListener() {
+        deliveryHours.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Toast.makeText(EditRestaurantActivity.this, "Opening soon!", Toast.LENGTH_SHORT).show();
+                Intent intent = new Intent(EditRestaurantActivity.this, CreateDeliveryHoursActivity.class);
+                intent.putExtra("restId",restaurant.getKey());
+                intent.putExtra("editOrCreate", "edit");
+                finish();
+                startActivity(intent);
             }
         });
 

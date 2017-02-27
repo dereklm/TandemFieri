@@ -100,18 +100,26 @@ public class EditPasswordActivity extends AppCompatActivity {
         saveButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                if (isValidPassword(oldPassword.getText().toString(),
+
+
+                while (!isValidPassword(oldPassword.getText().toString(),
                         password.getText().toString(),
                         confirmPswd.getText().toString())) {
-                    savePassword(password.getText().toString());
-                    finish();
-                } else {
-                    oldPassword.setText("");
-                    password.setText("");
-                    confirmPswd.setText("");
-                    oldPassword.requestFocus();
-                }
-            }//end onClick
+
+                    if (isValidPassword(oldPassword.getText().toString(),
+                            password.getText().toString(),
+                            confirmPswd.getText().toString())) {
+                        savePassword(password.getText().toString());
+                        finish();
+                    } else {
+
+                        oldPassword.setText("");
+                        password.setText("");
+                        confirmPswd.setText("");
+                        oldPassword.requestFocus();
+                    }
+                }//end onClick
+            }
         });
 
     }//end onCreate

@@ -1,5 +1,6 @@
 package com.gmail.dleemcewen.tandemfieri;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
@@ -15,15 +16,12 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.gmail.dleemcewen.tandemfieri.Entities.Restaurant;
-import com.gmail.dleemcewen.tandemfieri.Events.ActivityEvent;
 import com.gmail.dleemcewen.tandemfieri.Repositories.Restaurants;
 import com.gmail.dleemcewen.tandemfieri.Validator.Validator;
 import com.google.android.gms.tasks.Continuation;
 import com.google.android.gms.tasks.Task;
 import com.google.android.gms.tasks.TaskCompletionSource;
 import com.google.firebase.database.DatabaseError;
-
-import org.greenrobot.eventbus.EventBus;
 
 import java.util.ArrayList;
 import java.util.Map;
@@ -39,10 +37,10 @@ public class CreateRestaurant extends AppCompatActivity implements AdapterView.O
     private Spinner states;
     private EditText zipCode;
     private EditText deliveryCharge;
-    private Button businessHours;
+    private Button deliveryHours;
     private Button createRestaurant;
     private Button cancelCreateRestaurant;
-    private String restaurantOwnerId;
+    private String restaurantOwnerId, restaurantId;
     private String state;
 
     @Override
@@ -79,7 +77,7 @@ public class CreateRestaurant extends AppCompatActivity implements AdapterView.O
         states = (Spinner)findViewById(R.id.state);
         zipCode = (EditText)findViewById(R.id.zipcode);
         deliveryCharge = (EditText)findViewById(R.id.deliveryCharge);
-        businessHours = (Button)findViewById(R.id.businessHours);
+        deliveryHours = (Button)findViewById(R.id.deliveryHours);
         createRestaurant = (Button)findViewById(R.id.createRestaurant);
         cancelCreateRestaurant = (Button)findViewById(R.id.cancelRestaurant);
     }
@@ -90,19 +88,24 @@ public class CreateRestaurant extends AppCompatActivity implements AdapterView.O
     private void bindEventHandlers() {
         states.setOnItemSelectedListener(this);
 
-        businessHours.setOnClickListener(new View.OnClickListener() {
+        deliveryHours.setOnClickListener(new View.OnClickListener() {
+
             @Override
-            public void onClick(View v) {
-                Toast.makeText(CreateRestaurant.this, "Opening soon!", Toast.LENGTH_SHORT).show();
+            public void onClick(View view) {
+                Intent intent = new Intent(CreateRestaurant.this, CreateDeliveryHoursActivity.class);
+                intent.putExtra("restId",restaurantId);
+                intent.putExtra("editOrCreate", "create");
+                finish();
+                startActivity(intent);
             }
-        });
+        });//end business hours
 
         createRestaurant.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 if (checkForValidData()) {
                     //build a new restaurant
-                    Restaurant restaurant = buildNewRestaurant();
+                    final Restaurant restaurant = buildNewRestaurant();
 
                     //add the restaurant record
                     //and then check the return value to ensure the restaurant was created successfully
@@ -121,6 +124,7 @@ public class CreateRestaurant extends AppCompatActivity implements AdapterView.O
 
                                 if (taskResult.getKey()) {
                                     toastMessage.append("Restaurant created successfully");
+
                                 } else {
                                     toastMessage.append("An error occurred while creating the restaurant.  Please check your network connection and try again.");
                                 }
@@ -130,8 +134,9 @@ public class CreateRestaurant extends AppCompatActivity implements AdapterView.O
 
                                 //Only go back to the manage restaurants screen if the restaurant was created successfully...
                                 if (taskResult.getKey()) {
-                                    EventBus.getDefault().post(new ActivityEvent(ActivityEvent.Result.REFRESH_RESTAURANT_LIST));
-                                    finish();
+                                    deliveryHours.setEnabled(true);
+                                    createRestaurant.setEnabled(false);
+                                    restaurantId = restaurant.getKey();
                                 }
 
                                 return taskCompletionSource.getTask();
@@ -168,6 +173,7 @@ public class CreateRestaurant extends AppCompatActivity implements AdapterView.O
      * perform any final layout updates
      */
     private void finalizeLayout() {
+        deliveryHours.setEnabled(false);
         underlineText(title);
         underlineText(address);
         underlineText(delivery);

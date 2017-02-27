@@ -31,7 +31,7 @@
     <string name="hintZipcode">Zipcode</string>
     <string name="restaurantDelivery">Delivery</string>
     <string name="hintDeliveryCharge">Charge</string>
-    <string name="businessHours">Business Hours</string>
+    <string name="deliveryHours">Delivery Hours</string>
     <string name="deliveryArea">Delivery Area</string>
     <string name="nameRequired">Name is required!</string>
     <string name="streetRequired">Street address is required!</string>

@@ -16,15 +16,16 @@ import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.gmail.dleemcewen.tandemfieri.CreateDeliveryHoursActivity;
 import com.gmail.dleemcewen.tandemfieri.DriverRatings;
 import com.gmail.dleemcewen.tandemfieri.EditRestaurantActivity;
 import com.gmail.dleemcewen.tandemfieri.Entities.Restaurant;
 import com.gmail.dleemcewen.tandemfieri.ManageRestaurantDrivers;
-import com.gmail.dleemcewen.tandemfieri.MenuBuilder.MenuBuilderActivity;
-import com.gmail.dleemcewen.tandemfieri.MenuBuilder.MenuCatagory;
 import com.gmail.dleemcewen.tandemfieri.R;
 import com.gmail.dleemcewen.tandemfieri.Repositories.Restaurants;
 import com.gmail.dleemcewen.tandemfieri.RestaurantMapActivity;
+import com.gmail.dleemcewen.tandemfieri.menubuilder.MenuBuilderActivity;
+import com.gmail.dleemcewen.tandemfieri.menubuilder.MenuCatagory;
 
 import java.util.Arrays;
 import java.util.List;
@@ -256,6 +257,7 @@ public class ManageRestaurantExpandableListAdapter extends BaseExpandableListAda
         Button viewDeliveryArea = (Button)convertView.findViewById(R.id.viewDeliveryArea);
         Button manageDrivers = (Button)convertView.findViewById(R.id.manageDrivers);
         Button rateDrivers = (Button)convertView.findViewById(R.id.rateDrivers);
+        Button deliveryHours = (Button)convertView.findViewById(R.id.deliveryHours);
 
         manageMenuItems.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -311,6 +313,15 @@ public class ManageRestaurantExpandableListAdapter extends BaseExpandableListAda
                 bundle.putSerializable("Restaurant", selectedChild);
                 bundle.putString("key", selectedChild.getKey());
                 intent.putExtras(bundle);
+                context.startActivity(intent);
+            }
+        });
+        deliveryHours.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(context, CreateDeliveryHoursActivity.class);
+                intent.putExtra("ownerID",selectedChild.getKey());
+                intent.putExtra("editOrCreate", "edit");
                 context.startActivity(intent);
             }
         });
