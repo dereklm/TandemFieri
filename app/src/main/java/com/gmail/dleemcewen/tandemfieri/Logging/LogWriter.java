@@ -2,6 +2,7 @@ package com.gmail.dleemcewen.tandemfieri.Logging;
 
 import android.content.Context;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Enumeration;
 import java.util.List;
@@ -17,6 +18,7 @@ public class LogWriter {
     private static final String TAG = "Tandem Fieri";
     private static LogWriter logWriterInstance = new LogWriter();
     private static Level minimumLoggingLevel;
+    private static List<Logger> addedLoggers;
 
     /**
      * Default constructor, intentionally private so it cannot be directly accessed
@@ -24,6 +26,7 @@ public class LogWriter {
     private LogWriter() {
         LogManager.getLogManager().reset();
         minimumLoggingLevel = Level.SEVERE;
+        addedLoggers = new ArrayList<>();
     }
 
     /**
@@ -45,6 +48,7 @@ public class LogWriter {
         if (!Collections.list(logManager.getLoggerNames()).contains(logger.getName()))
         {
             logManager.addLogger(logger);
+            addedLoggers.add(logger);
         }
     }
 
@@ -95,7 +99,7 @@ public class LogWriter {
                 //or equal to the level of the log message, log it
                 if (logger != null) {
                     Level loggerLevel = logger.getLevel();
-                    if (loggerLevel != null && loggerLevel.intValue() >= level.intValue()) {
+                    if (loggerLevel != null && level.intValue() >= loggerLevel.intValue()) {
                         logger.log(level, message, context);
                     }
                 }

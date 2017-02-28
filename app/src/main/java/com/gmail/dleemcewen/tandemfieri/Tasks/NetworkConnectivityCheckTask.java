@@ -26,6 +26,10 @@ import java.util.Map;
 public class NetworkConnectivityCheckTask implements Continuation<Void, Task<Map.Entry<Boolean, DatabaseError>>> {
     private Context context;
 
+    /**
+     * Default constructor
+     * @param context indicates the current application context
+     */
     public NetworkConnectivityCheckTask(Context context) {
         this.context = context;
     }

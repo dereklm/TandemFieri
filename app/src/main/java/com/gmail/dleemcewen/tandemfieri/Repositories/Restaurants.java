@@ -1,20 +1,13 @@
 package com.gmail.dleemcewen.tandemfieri.Repositories;
 
 import android.content.Context;
-import android.net.ConnectivityManager;
-import android.net.NetworkInfo;
 import android.support.annotation.NonNull;
-import android.util.Log;
 
 import com.gmail.dleemcewen.tandemfieri.Abstracts.Entity;
 import com.gmail.dleemcewen.tandemfieri.Abstracts.Repository;
 import com.gmail.dleemcewen.tandemfieri.Entities.Restaurant;
-import com.gmail.dleemcewen.tandemfieri.Entities.User;
 import com.gmail.dleemcewen.tandemfieri.EventListeners.QueryCompleteListener;
 import com.gmail.dleemcewen.tandemfieri.Logging.LogWriter;
-import com.gmail.dleemcewen.tandemfieri.Tasks.AddRestaurantTask;
-import com.gmail.dleemcewen.tandemfieri.Tasks.NetworkConnectivityCheckTask;
-import com.gmail.dleemcewen.tandemfieri.Tasks.UpdateRestaurantTask;
 import com.google.android.gms.tasks.Continuation;
 import com.google.android.gms.tasks.Task;
 import com.google.android.gms.tasks.TaskCompletionSource;
@@ -26,10 +19,8 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
 
-import java.util.AbstractMap;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 import java.util.logging.Level;
 
 /**
@@ -44,35 +35,8 @@ public class Restaurants<T extends Entity> extends Repository<Restaurant> {
      * @param context indicates the current application context
      */
     public Restaurants(Context context) {
+        super(context);
         this.context = context;
-    }
-
-    /**
-     * add adds a new restaurant and then returns the value as a task so that some other action
-     * can be taken
-     * @param entity indicates the entity to add
-     * @return Task containing the results of the find that can be chained to other tasks
-     */
-    public Task<Map.Entry<Boolean, DatabaseError>> add(Restaurant entity) {
-        DatabaseReference dataContext = getDataContext(entity.getClass().getSimpleName(), new String[]{});
-
-        return Tasks.<Void>forResult(null)
-            .continueWithTask(new NetworkConnectivityCheckTask(context))
-            .continueWithTask(new AddRestaurantTask(dataContext, entity));
-    }
-
-    /**
-     * update updates an existing restaurant and then returns the value as a task so that some other action
-     * can be taken
-     * @param entity indicates the entity to update
-     * @return Task containing the results of the find that can be chained to other tasks
-     */
-    public Task<Map.Entry<Boolean, DatabaseError>> update(Restaurant entity) {
-        DatabaseReference dataContext = getDataContext(entity.getClass().getSimpleName(), new String[]{});
-
-        return Tasks.<Void>forResult(null)
-            .continueWithTask(new NetworkConnectivityCheckTask(context))
-            .continueWithTask(new UpdateRestaurantTask(dataContext, entity));
     }
 
     /**

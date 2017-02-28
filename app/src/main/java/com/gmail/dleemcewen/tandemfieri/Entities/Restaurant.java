@@ -1,7 +1,7 @@
 package com.gmail.dleemcewen.tandemfieri.Entities;
 
 import com.gmail.dleemcewen.tandemfieri.Abstracts.Entity;
-import com.gmail.dleemcewen.tandemfieri.menubuilder.MenuCatagory;
+import com.gmail.dleemcewen.tandemfieri.MenuBuilder.MenuCatagory;
 
 import java.io.Serializable;
 import java.util.Map;
@@ -17,9 +17,9 @@ public class Restaurant extends Entity implements Serializable {
     private String zipcode;
     private Double charge;
     private String ownerId;
-    private Map<String, String> drivers;
     private Integer deliveryRadius;
     private String id;
+    private Map<String, String> drivers;
 
     private MenuCatagory menu;
 
@@ -168,22 +168,6 @@ public class Restaurant extends Entity implements Serializable {
     }
 
     /**
-     * get the drivers associated with the restaurant
-     * @return return all of the driver ids and names associated with the restaurant
-     */
-    public Map<String, String> getDrivers() {
-        return drivers;
-    }
-
-    /**
-     * sets the drivers associated with the restaurant
-     * @param drivers the id and name of each driver associated with the restaurant
-     */
-    public void setDrivers(Map<String, String> drivers) {
-        this.drivers = drivers;
-    }
-
-    /**
      * gets the restaurant delivery radius
      * @return restaurant delivery radius
      */
@@ -194,4 +178,13 @@ public class Restaurant extends Entity implements Serializable {
      * @param deliveryRadius identifies the restaurant delivery radius
      */
     public void setDeliveryRadius(Integer deliveryRadius) { this.deliveryRadius = deliveryRadius;}
+
+    public Map<String, String> getDrivers() {
+        return drivers;
+    }
+
+    public void setDrivers(Map<String, String> drivers) {
+        this.drivers = drivers;
+    }
+
 }

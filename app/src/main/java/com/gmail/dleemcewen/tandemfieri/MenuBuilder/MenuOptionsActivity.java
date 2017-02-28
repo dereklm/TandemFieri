@@ -1,4 +1,4 @@
-package com.gmail.dleemcewen.tandemfieri.menubuilder;
+package com.gmail.dleemcewen.tandemfieri.MenuBuilder;
 
 import android.app.Activity;
 import android.content.Context;

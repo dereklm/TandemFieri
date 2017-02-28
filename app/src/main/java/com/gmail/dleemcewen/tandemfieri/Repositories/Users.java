@@ -38,6 +38,7 @@ public class Users<T extends Entity> extends Repository<User> {
      * @param context indicates the current application context
      */
     public Users(Context context) {
+        super(context);
         this.context = context;
     }
 

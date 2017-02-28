@@ -12,8 +12,12 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.gmail.dleemcewen.tandemfieri.Entities.User;
+import com.gmail.dleemcewen.tandemfieri.Interfaces.ISubscriber;
 import com.gmail.dleemcewen.tandemfieri.Logging.LogWriter;
 import com.gmail.dleemcewen.tandemfieri.Logging.ToastLogger;
+import com.gmail.dleemcewen.tandemfieri.Publishers.Publisher;
+import com.gmail.dleemcewen.tandemfieri.Services.NotificationService;
+import com.gmail.dleemcewen.tandemfieri.Subscribers.RestaurantSubscriber;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
@@ -145,6 +149,9 @@ public class MainActivity extends AppCompatActivity {
             intent = new Intent(MainActivity.this, DriverMainMenu.class);
             bundle.putSerializable("User", driver);
         }else if(restaurantOwner != null){
+            //register new restaurant subscriber
+            registerNewSubscriber(new RestaurantSubscriber(MainActivity.this));
+
             intent = new Intent(MainActivity.this, RestaurantMainMenu.class);
             bundle.putSerializable("User", restaurantOwner);
         }
@@ -156,6 +163,11 @@ public class MainActivity extends AppCompatActivity {
     private void setupLogging() {
         LogWriter.setMinimumLoggingLevel(resources.getString(R.string.minimum_logging_level));
         LogWriter.addLogger(new ToastLogger());
+    }
+
+    private void registerNewSubscriber(ISubscriber subscriber) {
+        Publisher publisher = Publisher.getInstance();
+        publisher.subscribe(subscriber);
     }
 
     private void clear(){

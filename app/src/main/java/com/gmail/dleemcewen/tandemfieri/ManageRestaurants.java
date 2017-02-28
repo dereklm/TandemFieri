@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.widget.Button;
@@ -13,16 +14,17 @@ import android.widget.TextView;
 import com.gmail.dleemcewen.tandemfieri.Adapters.ManageRestaurantExpandableListAdapter;
 import com.gmail.dleemcewen.tandemfieri.Entities.Restaurant;
 import com.gmail.dleemcewen.tandemfieri.Entities.User;
-import com.gmail.dleemcewen.tandemfieri.EventListeners.QueryCompleteListener;
 import com.gmail.dleemcewen.tandemfieri.Events.ActivityEvent;
 import com.gmail.dleemcewen.tandemfieri.Logging.LogWriter;
+import com.gmail.dleemcewen.tandemfieri.MenuBuilder.MenuCatagory;
 import com.gmail.dleemcewen.tandemfieri.Repositories.Restaurants;
-import com.gmail.dleemcewen.tandemfieri.menubuilder.MenuCatagory;
+import com.gmail.dleemcewen.tandemfieri.Tasks.TaskResult;
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
 
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
@@ -124,16 +126,16 @@ public class ManageRestaurants extends AppCompatActivity {
      */
     private void retrieveData() {
         //find all the restaurants where the ownerid matches the current user id
-        restaurants.find(
-            Arrays.asList("ownerId"),
-            currentUser.getAuthUserID(),
-            new QueryCompleteListener<Restaurant>() {
+        restaurants
+            .find("ownerId = " + currentUser.getAuthUserID())
+            .addOnCompleteListener(ManageRestaurants.this, new OnCompleteListener<TaskResult<Restaurant>>() {
                 @Override
-                public void onQueryComplete(ArrayList<Restaurant> entities) {
+                public void onComplete(@NonNull Task<TaskResult<Restaurant>> task) {
+                    List<Restaurant> entities = task.getResult().getResults();
                     listAdapter = new ManageRestaurantExpandableListAdapter((Activity)context, entities, buildExpandableChildData(entities));
                     restaurantsList.setAdapter(listAdapter);
                 }
-        });
+            });
     }
 
     /**

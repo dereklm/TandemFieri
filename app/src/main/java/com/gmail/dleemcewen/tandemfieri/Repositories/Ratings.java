@@ -43,6 +43,7 @@ public class Ratings<T extends Entity> extends Repository<Rating> {
      * @param context indicates the current application context
      */
     public Ratings(Context context) {
+        super(context);
         this.context = context;
     }
 

@@ -17,11 +17,14 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.gmail.dleemcewen.tandemfieri.Entities.Restaurant;
+import com.gmail.dleemcewen.tandemfieri.Formatters.StringFormatter;
 import com.gmail.dleemcewen.tandemfieri.Logging.LogWriter;
 import com.gmail.dleemcewen.tandemfieri.Repositories.Restaurants;
+import com.gmail.dleemcewen.tandemfieri.Tasks.TaskResult;
 import com.gmail.dleemcewen.tandemfieri.Utility.Util;
 import com.gmail.dleemcewen.tandemfieri.Validator.Validator;
 import com.google.android.gms.tasks.Continuation;
+import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.android.gms.tasks.TaskCompletionSource;
 import com.google.firebase.database.DatabaseError;
@@ -105,13 +108,13 @@ public class EditRestaurantActivity extends AppCompatActivity implements Adapter
             @Override
             public void onClick(View v) {
                 Intent intent = new Intent(EditRestaurantActivity.this, CreateDeliveryHoursActivity.class);
-                intent.putExtra("restId",restaurant.getKey());
+                intent.putExtra("restId", restaurant.getKey());
                 intent.putExtra("editOrCreate", "edit");
                 finish();
                 startActivity(intent);
             }
         });
-
+        
         updateRestaurant.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -119,22 +122,15 @@ public class EditRestaurantActivity extends AppCompatActivity implements Adapter
                     //update restaurant values
                     restaurant = updateRestaurantValues();
 
-                    //add the restaurant record
-                    //and then check the return value to ensure the restaurant was created successfully
+                    //update the restaurant record
+                    //and then check the return value to ensure the restaurant was updated successfully
                     restaurantsRepository
                         .update(restaurant)
-                        .continueWith(new Continuation<Map.Entry<Boolean ,DatabaseError>,
-                                Task<Map.Entry<Boolean, DatabaseError>>>() {
+                        .addOnCompleteListener(EditRestaurantActivity.this, new OnCompleteListener<TaskResult<Restaurant>>() {
                             @Override
-                            public Task<Map.Entry<Boolean, DatabaseError>> then(@NonNull Task<Map.Entry<Boolean, DatabaseError>> task)
-                                    throws Exception {
-                                TaskCompletionSource<Map.Entry<Boolean, DatabaseError>> taskCompletionSource =
-                                        new TaskCompletionSource<>();
-
-                                Map.Entry<Boolean, DatabaseError> taskResult = task.getResult();
+                            public void onComplete(@NonNull Task<TaskResult<Restaurant>> task) {
                                 StringBuilder toastMessage = new StringBuilder();
-
-                                if (taskResult.getKey()) {
+                                if (task.isSuccessful()) {
                                     toastMessage.append("Restaurant updated successfully");
                                 } else {
                                     toastMessage.append("An error occurred while updating the restaurant.  Please check your network connection and try again.");
@@ -144,14 +140,12 @@ public class EditRestaurantActivity extends AppCompatActivity implements Adapter
                                     .makeText(EditRestaurantActivity.this, toastMessage.toString(), Toast.LENGTH_LONG)
                                     .show();
 
-                                //Only go back to the manage restaurants screen if the restaurant was created successfully...
-                                if (taskResult.getKey()) {
+                                //Only go back to the manage restaurants screen if the restaurant was updated successfully...
+                                if (task.isSuccessful()) {
                                     Intent intent=new Intent();
                                     setResult(RESULT_OK, intent);
                                     finish();
                                 }
-
-                                return taskCompletionSource.getTask();
                             }
                         });
                 }
@@ -196,7 +190,7 @@ public class EditRestaurantActivity extends AppCompatActivity implements Adapter
 
         // Find the user's state in the array of states
         String[] arrayOfStates = getResources().getStringArray(R.array.states);
-        int positionOfUserState = Arrays.asList(arrayOfStates).indexOf(Util.toProperCase(restaurant.getState()));
+        int positionOfUserState = Arrays.asList(arrayOfStates).indexOf(StringFormatter.toProperCase(restaurant.getState()));
         states.setSelection(positionOfUserState);
 
         //set button text

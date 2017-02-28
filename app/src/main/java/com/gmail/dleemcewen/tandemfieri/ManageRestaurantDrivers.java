@@ -5,6 +5,7 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.res.Resources;
+import android.support.annotation.NonNull;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
@@ -28,6 +29,9 @@ import com.gmail.dleemcewen.tandemfieri.EventListeners.QueryCompleteListener;
 import com.gmail.dleemcewen.tandemfieri.Logging.LogWriter;
 import com.gmail.dleemcewen.tandemfieri.Repositories.Restaurants;
 import com.gmail.dleemcewen.tandemfieri.Repositories.Users;
+import com.gmail.dleemcewen.tandemfieri.Tasks.TaskResult;
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -188,12 +192,13 @@ public class ManageRestaurantDrivers extends AppCompatActivity {
      */
     public void getAssignedRestaurantDrivers() {
         //find all the users where the restaurant id matches the current restaurant id
-        users.find(
-            Arrays.asList("Driver", "restaurantId"),
-            restaurant.getKey(),
-            new QueryCompleteListener<User>() {
+        users
+            .atNode("Driver")
+            .find("restaurantId = " + restaurant.getKey())
+            .addOnCompleteListener(ManageRestaurantDrivers.this, new OnCompleteListener<TaskResult<User>>() {
                 @Override
-                public void onQueryComplete(ArrayList<User> entities) {
+                public void onComplete(@NonNull Task<TaskResult<User>> task) {
+                    List<User> entities = task.getResult().getResults();
                     listAdapter = new ManageRestaurantDriversListAdapter((Activity)context, entities);
                     restaurantDriverList.setAdapter(listAdapter);
 
@@ -206,21 +211,22 @@ public class ManageRestaurantDrivers extends AppCompatActivity {
      * getUnassignedDrivers retrieves all of the drivers that are not currently assigned to a restaurant
      */
     private void getUnassignedDrivers() {
-        users.find(
-                Arrays.asList("Driver"),
-                null,
-                new QueryCompleteListener<User>() {
-                    @Override
-                    public void onQueryComplete(ArrayList<User> entities) {
-                        unassignedDrivers.clear();
+        users
+            .atNode("Driver")
+            .find(null)
+            .addOnCompleteListener(ManageRestaurantDrivers.this, new OnCompleteListener<TaskResult<User>>() {
+                @Override
+                public void onComplete(@NonNull Task<TaskResult<User>> task) {
+                    List<User> entities = task.getResult().getResults();
+                    unassignedDrivers.clear();
 
-                        for (User entity : entities) {
-                            if (entity.getRestaurantId() == null || entity.getRestaurantId().equals("")) {
-                                unassignedDrivers.add(entity);
-                            }
+                    for (User entity : entities) {
+                        if (entity.getRestaurantId() == null || entity.getRestaurantId().equals("")) {
+                            unassignedDrivers.add(entity);
                         }
                     }
-                });
+                }
+            });
     }
 
     /**

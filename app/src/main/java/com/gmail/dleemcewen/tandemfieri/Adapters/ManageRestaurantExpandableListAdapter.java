@@ -24,8 +24,8 @@ import com.gmail.dleemcewen.tandemfieri.ManageRestaurantDrivers;
 import com.gmail.dleemcewen.tandemfieri.R;
 import com.gmail.dleemcewen.tandemfieri.Repositories.Restaurants;
 import com.gmail.dleemcewen.tandemfieri.RestaurantMapActivity;
-import com.gmail.dleemcewen.tandemfieri.menubuilder.MenuBuilderActivity;
-import com.gmail.dleemcewen.tandemfieri.menubuilder.MenuCatagory;
+import com.gmail.dleemcewen.tandemfieri.MenuBuilder.MenuCatagory;
+import com.gmail.dleemcewen.tandemfieri.MenuBuilder.MenuBuilderActivity;
 
 import java.util.Arrays;
 import java.util.List;

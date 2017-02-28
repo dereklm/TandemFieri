@@ -1,5 +1,5 @@
 <resources>
-    <string name="minimum_logging_level">WARNING</string>
+    <string name="minimum_logging_level">FINE</string>
     <string name="app_name">Tandem Fieri</string>
     <string name="multiDex">multidex</string>
     <string name="signInTitle">Tandem Fieri</string>

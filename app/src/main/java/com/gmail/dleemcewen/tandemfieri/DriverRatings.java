@@ -4,6 +4,7 @@ import android.app.AlertDialog;
 import android.app.DatePickerDialog;
 import android.content.DialogInterface;
 import android.content.res.Resources;
+import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
@@ -18,6 +19,9 @@ import com.gmail.dleemcewen.tandemfieri.Entities.Rating;
 import com.gmail.dleemcewen.tandemfieri.Entities.Restaurant;
 import com.gmail.dleemcewen.tandemfieri.EventListeners.QueryCompleteListener;
 import com.gmail.dleemcewen.tandemfieri.Repositories.Ratings;
+import com.gmail.dleemcewen.tandemfieri.Tasks.TaskResult;
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
 
 import java.text.DateFormat;
 import java.text.ParseException;
@@ -63,8 +67,7 @@ public class DriverRatings extends AppCompatActivity {
         calendar = Calendar.getInstance();
         calendar.setTime(new Date());
 
-        Bundle bundle = new Bundle();
-        bundle = this.getIntent().getExtras();
+        Bundle bundle = this.getIntent().getExtras();
         restaurant = (Restaurant)bundle.getSerializable("Restaurant");
         restaurant.setKey(bundle.getString("key"));
     }
@@ -160,16 +163,26 @@ public class DriverRatings extends AppCompatActivity {
 
         if (startDate.getText().toString().equals("") && endDate.getText().toString().equals("")) {
             //no start and end date range has been provided, so get all of the ratings for the current restaurant
-            ratingsRepository.find(Arrays.asList("restaurantId"), Arrays.asList(restaurant.getKey()), new QueryCompleteListener<Rating>() {
+            /*ratingsRepository.find(Arrays.asList("restaurantId"), Arrays.asList(restaurant.getKey()), new QueryCompleteListener<Rating>() {
                 @Override
                 public void onQueryComplete(ArrayList<Rating> entities) {
                     matchedRatingsList.addAll(entities);
                     buildRatings(matchedRatingsList);
                 }
-            });
+            });*/
+            ratingsRepository
+                .find("restaurantId = " + restaurant.getKey())
+                .addOnCompleteListener(DriverRatings.this, new OnCompleteListener<TaskResult<Rating>>() {
+                    @Override
+                    public void onComplete(@NonNull Task<TaskResult<Rating>> task) {
+                        List<Rating> entities = task.getResult().getResults();
+                        matchedRatingsList.addAll(entities);
+                        buildRatings(matchedRatingsList);
+                    }
+                });
         } else {
             //get all the ratings that are in the start and end date range
-            ratingsRepository.find(
+            /*ratingsRepository.find(
                 Arrays.asList("date"),
                 Arrays.asList(startDate.getText().toString(), endDate.getText().toString()),
                 new QueryCompleteListener<Rating>() {
@@ -185,7 +198,26 @@ public class DriverRatings extends AppCompatActivity {
 
                         buildRatings(matchedRatingsList);
                     }
-            });
+            });*/
+
+            ratingsRepository
+                .find("date between " + startDate.getText().toString() + " and " + endDate.getText().toString())
+                .addOnCompleteListener(DriverRatings.this, new OnCompleteListener<TaskResult<Rating>>() {
+                    @Override
+                    public void onComplete(@NonNull Task<TaskResult<Rating>> task) {
+                        List<Rating> entities = task.getResult().getResults();
+
+                        //all ratings for date range could include ratings for other restaurants
+                        //so filter out all entries except those for the current restaurant
+                        for (Rating rating : entities) {
+                            if (rating.getRestaurantId().equals(restaurant.getKey())) {
+                                matchedRatingsList.add(rating);
+                            }
+                        }
+
+                        buildRatings(matchedRatingsList);
+                    }
+                });
         }
     }
 

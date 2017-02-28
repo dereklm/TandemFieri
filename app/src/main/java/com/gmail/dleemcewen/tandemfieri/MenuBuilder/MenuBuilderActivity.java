@@ -1,4 +1,4 @@
-package com.gmail.dleemcewen.tandemfieri.menubuilder;
+package com.gmail.dleemcewen.tandemfieri.MenuBuilder;
 
 import android.app.Activity;
 import android.content.Context;
@@ -50,7 +50,7 @@ public class MenuBuilderActivity extends AppCompatActivity {
             public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
                 MenuCompenet compenet = adapter.getItem(i);
                 if(compenet instanceof MenuItem){
-                    Intent intent = new Intent(MenuBuilderActivity.this,MenuItemEditActivity.class);
+                    Intent intent = new Intent(MenuBuilderActivity.this, MenuItemEditActivity.class);
                     intent.putExtra("parent",current);
                     intent.putExtra("item",compenet);
                     startActivityForResult(intent,666);

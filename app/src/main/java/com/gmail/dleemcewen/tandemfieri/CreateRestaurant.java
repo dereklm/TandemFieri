@@ -17,8 +17,10 @@ import android.widget.Toast;
 
 import com.gmail.dleemcewen.tandemfieri.Entities.Restaurant;
 import com.gmail.dleemcewen.tandemfieri.Repositories.Restaurants;
+import com.gmail.dleemcewen.tandemfieri.Tasks.TaskResult;
 import com.gmail.dleemcewen.tandemfieri.Validator.Validator;
 import com.google.android.gms.tasks.Continuation;
+import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.android.gms.tasks.TaskCompletionSource;
 import com.google.firebase.database.DatabaseError;
@@ -111,35 +113,27 @@ public class CreateRestaurant extends AppCompatActivity implements AdapterView.O
                     //and then check the return value to ensure the restaurant was created successfully
                     restaurantsRepository
                         .add(restaurant)
-                        .continueWith(new Continuation<Map.Entry<Boolean ,DatabaseError>,
-                                Task<Map.Entry<Boolean, DatabaseError>>>() {
+                        .addOnCompleteListener(CreateRestaurant.this, new OnCompleteListener<TaskResult<Restaurant>>() {
                             @Override
-                            public Task<Map.Entry<Boolean, DatabaseError>> then(@NonNull Task<Map.Entry<Boolean, DatabaseError>> task)
-                                    throws Exception {
-                                TaskCompletionSource<Map.Entry<Boolean, DatabaseError>> taskCompletionSource =
-                                    new TaskCompletionSource<>();
-
-                                Map.Entry<Boolean, DatabaseError> taskResult = task.getResult();
+                            public void onComplete(@NonNull Task<TaskResult<Restaurant>> task) {
                                 StringBuilder toastMessage = new StringBuilder();
-
-                                if (taskResult.getKey()) {
+                                if (task.isSuccessful()) {
                                     toastMessage.append("Restaurant created successfully");
 
                                 } else {
                                     toastMessage.append("An error occurred while creating the restaurant.  Please check your network connection and try again.");
                                 }
+
                                 Toast
                                     .makeText(CreateRestaurant.this, toastMessage.toString(), Toast.LENGTH_LONG)
                                     .show();
 
-                                //Only go back to the manage restaurants screen if the restaurant was created successfully...
-                                if (taskResult.getKey()) {
+                                //Enable set delivery hours if the create restaurant task was successful...
+                                if (task.isSuccessful()) {
                                     deliveryHours.setEnabled(true);
                                     createRestaurant.setEnabled(false);
                                     restaurantId = restaurant.getKey();
                                 }
-
-                                return taskCompletionSource.getTask();
                             }
                         });
                 }

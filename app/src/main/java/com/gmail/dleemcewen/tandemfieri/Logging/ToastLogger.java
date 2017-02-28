@@ -14,7 +14,7 @@ public class ToastLogger extends Logger {
     public ToastLogger() {
         super("ToastLogger", null);
 
-        setLevel(Level.INFO);
+        setLevel(Level.FINE);
 
         ToastLogHandler handler = new ToastLogHandler();
         handler.setLevel(getLevel());

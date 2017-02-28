@@ -1,4 +1,4 @@
-package com.gmail.dleemcewen.tandemfieri.menubuilder;
+package com.gmail.dleemcewen.tandemfieri.MenuBuilder;
 
 /**
  * Created by jfly1_000 on 2/13/2017.

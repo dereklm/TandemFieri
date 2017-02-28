@@ -13,7 +13,9 @@ import android.widget.Spinner;
 import android.widget.Toast;
 
 import com.gmail.dleemcewen.tandemfieri.Entities.User;
+import com.gmail.dleemcewen.tandemfieri.Formatters.StringFormatter;
 import com.gmail.dleemcewen.tandemfieri.Logging.LogWriter;
+import com.gmail.dleemcewen.tandemfieri.Repositories.Users;
 import com.gmail.dleemcewen.tandemfieri.Utility.MapUtil;
 import com.gmail.dleemcewen.tandemfieri.Utility.Util;
 import com.google.android.gms.tasks.OnCompleteListener;
@@ -119,7 +121,7 @@ public class EditAccountActivity extends AppCompatActivity implements AdapterVie
 
         // Find the user's state in the array of states
         String[] arrayOfStates = getResources().getStringArray(R.array.states);
-        int positionOfUserState = Arrays.asList(arrayOfStates).indexOf(Util.toProperCase(currentUser.getState()));
+        int positionOfUserState = Arrays.asList(arrayOfStates).indexOf(StringFormatter.toProperCase(currentUser.getState()));
 
 
         //set text in fields using user's current information
