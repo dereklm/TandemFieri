@@ -32,10 +32,10 @@
         <activity android:name=".DriverMainMenu" />
         <activity android:name=".CreateRestaurant" />
         <activity android:name=".CreateDeliveryHoursActivity" />
-        <activity android:name=".MenuBuilder.MenuBuilderActivity" />
-        <activity android:name=".MenuBuilder.MenuItemEditActivity" />
-        <activity android:name=".MenuBuilder.MenuOptionsActivity" />
-        <activity android:name=".MenuBuilder.OptionAddActivity" />
+        <activity android:name=".menubuilder.MenuBuilderActivity" />
+        <activity android:name=".menubuilder.MenuItemEditActivity" />
+        <activity android:name=".menubuilder.MenuOptionsActivity" />
+        <activity android:name=".menubuilder.OptionAddActivity" />
         <activity android:name=".ManageRestaurants" />
         <activity android:name=".DriverRatings" />
         <activity android:name=".RestaurantMapActivity" />

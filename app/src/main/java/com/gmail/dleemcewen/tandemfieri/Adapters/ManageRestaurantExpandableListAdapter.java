@@ -19,13 +19,19 @@ import android.widget.Toast;
 import com.gmail.dleemcewen.tandemfieri.CreateDeliveryHoursActivity;
 import com.gmail.dleemcewen.tandemfieri.DriverRatings;
 import com.gmail.dleemcewen.tandemfieri.EditRestaurantActivity;
+import com.gmail.dleemcewen.tandemfieri.Entities.DeliveryHours;
 import com.gmail.dleemcewen.tandemfieri.Entities.Restaurant;
 import com.gmail.dleemcewen.tandemfieri.ManageRestaurantDrivers;
 import com.gmail.dleemcewen.tandemfieri.R;
 import com.gmail.dleemcewen.tandemfieri.Repositories.Restaurants;
 import com.gmail.dleemcewen.tandemfieri.RestaurantMapActivity;
-import com.gmail.dleemcewen.tandemfieri.MenuBuilder.MenuCatagory;
-import com.gmail.dleemcewen.tandemfieri.MenuBuilder.MenuBuilderActivity;
+import com.gmail.dleemcewen.tandemfieri.menubuilder.MenuBuilderActivity;
+import com.gmail.dleemcewen.tandemfieri.menubuilder.MenuCatagory;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 
 import java.util.Arrays;
 import java.util.List;
@@ -43,6 +49,7 @@ public class ManageRestaurantExpandableListAdapter extends BaseExpandableListAda
     private Resources resources;
     private Restaurants<Restaurant> restaurantsRepository;
     private static final int UPDATE_RESTAURANT = 2;
+    DatabaseReference mDatabase;
 
     public ManageRestaurantExpandableListAdapter(Activity context, List<Restaurant> restaurantsList,
                                                  Map<String, List<Restaurant>> childDataList) {
@@ -201,6 +208,9 @@ public class ManageRestaurantExpandableListAdapter extends BaseExpandableListAda
                         resources.getString(R.string.yes),
                         new DialogInterface.OnClickListener() {
                             public void onClick(DialogInterface dialog, int id) {
+                                //find the corresponding delivery hours and remove
+                                removeDeliveryHours(restaurant.getId());
+
                                 restaurantsList.remove(restaurant);
                                 childDataList.remove(Arrays.asList(restaurant));
                                 restaurantsRepository.remove(restaurant);
@@ -348,5 +358,30 @@ public class ManageRestaurantExpandableListAdapter extends BaseExpandableListAda
                     restaurant.getStreet().equals(inList.getStreet())) return inList;
         }
         return null; //something went horribly wrong
+    }
+
+    public void removeDeliveryHours(String restaurant_id){
+        final String id = restaurant_id;
+        mDatabase = FirebaseDatabase.getInstance().getReference().child("DeliveryHours");
+
+        mDatabase.addListenerForSingleValueEvent(
+                new ValueEventListener() {
+                    @Override
+                    public void onDataChange(DataSnapshot dataSnapshot) {
+                        for (DataSnapshot ps : dataSnapshot.getChildren()) {
+                            DeliveryHours d = ps.getValue(DeliveryHours.class);
+                            if(d.getRestaurantId().equals(id)){
+                                //correct restaurant found
+                                mDatabase.child(ps.getKey()).removeValue();
+                            }
+                        }
+                    }
+
+                    @Override
+                    public void onCancelled(DatabaseError databaseError) {
+
+                    }
+                }
+        );
     }
 }

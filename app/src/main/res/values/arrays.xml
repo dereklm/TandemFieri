@@ -52,4 +52,15 @@
         <item>Wisconsin</item>
         <item>Wyoming</item>
     </string-array>
+
+    <string-array name="restaurantTypeArray">
+        <item>Mexican</item>
+        <item>Chinese</item>
+        <item>Modern</item>
+        <item>Indian</item>
+        <item>Asian Fusion</item>
+        <item>Barbecue</item>
+        <item>Pizza</item>
+        <item>American</item>
+    </string-array>
 </resources>

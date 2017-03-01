@@ -124,6 +124,7 @@ public class EditAccountActivity extends AppCompatActivity implements AdapterVie
         int positionOfUserState = Arrays.asList(arrayOfStates).indexOf(StringFormatter.toProperCase(currentUser.getState()));
 
 
+
         //set text in fields using user's current information
         firstName.setText(currentUser.getFirstName());
         lastName.setText(currentUser.getLastName());

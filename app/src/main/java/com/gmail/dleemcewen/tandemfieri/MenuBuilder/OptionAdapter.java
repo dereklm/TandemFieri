@@ -1,4 +1,4 @@
-package com.gmail.dleemcewen.tandemfieri.MenuBuilder;
+package com.gmail.dleemcewen.tandemfieri.menubuilder;
 
 import android.content.Context;
 import android.view.LayoutInflater;

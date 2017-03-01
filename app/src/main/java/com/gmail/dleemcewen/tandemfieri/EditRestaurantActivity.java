@@ -46,12 +46,14 @@ public class EditRestaurantActivity extends AppCompatActivity implements Adapter
     private EditText street;
     private EditText city;
     private Spinner states;
+    private Spinner restaurantTypes;
     private EditText zipCode;
     private EditText deliveryCharge;
     private String state;
     private Button deliveryHours;
     private Button updateRestaurant;
     private Button cancelUpdateRestaurant;
+    private String restaurantType;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -72,6 +74,7 @@ public class EditRestaurantActivity extends AppCompatActivity implements Adapter
         resources = this.getResources();
         restaurantsRepository = new Restaurants<>(this);
         state = "";
+        restaurantType = "";
 
         Bundle bundle = getIntent().getExtras();
         restaurant = (Restaurant)bundle.getSerializable("Restaurant");
@@ -96,6 +99,7 @@ public class EditRestaurantActivity extends AppCompatActivity implements Adapter
         deliveryHours = (Button)findViewById(R.id.deliveryHours);
         updateRestaurant = (Button)findViewById(R.id.createRestaurant);
         cancelUpdateRestaurant = (Button)findViewById(R.id.cancelRestaurant);
+        restaurantTypes = (Spinner) findViewById(R.id.restaurantTypeSpinner);
     }
 
     /**
@@ -103,6 +107,7 @@ public class EditRestaurantActivity extends AppCompatActivity implements Adapter
      */
     private void bindEventHandlers() {
         states.setOnItemSelectedListener(this);
+        restaurantTypes.setOnItemSelectedListener(this);
 
         deliveryHours.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -173,6 +178,25 @@ public class EditRestaurantActivity extends AppCompatActivity implements Adapter
 
         // Apply the adapter to the spinner
         states.setAdapter(adapter);
+
+        ArrayAdapter<CharSequence> typeAdapter = ArrayAdapter.createFromResource(this,
+                R.array.restaurantTypeArray, android.R.layout.simple_spinner_item);
+        typeAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        restaurantTypes.setAdapter(typeAdapter);
+
+        restaurantTypes.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View view,
+                                       int pos, long id) {
+                // An item was selected.
+                restaurantType = parent.getItemAtPosition(pos).toString();
+                restaurant.setRestaurantType(restaurantType);
+
+            }
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) {
+            }
+        });
     }
 
     /**
@@ -192,6 +216,11 @@ public class EditRestaurantActivity extends AppCompatActivity implements Adapter
         String[] arrayOfStates = getResources().getStringArray(R.array.states);
         int positionOfUserState = Arrays.asList(arrayOfStates).indexOf(StringFormatter.toProperCase(restaurant.getState()));
         states.setSelection(positionOfUserState);
+
+        // Find the user's state in the array of restaurant types
+        String[] arrayOfTypes = getResources().getStringArray(R.array.restaurantTypeArray);
+        int positionOfType = Arrays.asList(arrayOfTypes).indexOf(StringFormatter.toProperCase(restaurant.getRestaurantType()));
+        restaurantTypes.setSelection(positionOfType);
 
         //set button text
         updateRestaurant.setText(resources.getString(R.string.updateButton));
@@ -224,6 +253,7 @@ public class EditRestaurantActivity extends AppCompatActivity implements Adapter
         restaurant.setState(state);
         restaurant.setZipcode(zipCode.getText().toString());
         restaurant.setCharge(Double.valueOf(deliveryCharge.getText().toString()));
+        restaurant.setRestaurantType(restaurantType);
 
         return restaurant;
     }
@@ -277,4 +307,5 @@ public class EditRestaurantActivity extends AppCompatActivity implements Adapter
     public void onNothingSelected(AdapterView<?> parent) {
         //not implemented
     }
+
 }

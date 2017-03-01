@@ -37,6 +37,7 @@ public class CreateRestaurant extends AppCompatActivity implements AdapterView.O
     private EditText street;
     private EditText city;
     private Spinner states;
+    private Spinner restaurantTypes;
     private EditText zipCode;
     private EditText deliveryCharge;
     private Button deliveryHours;
@@ -44,6 +45,7 @@ public class CreateRestaurant extends AppCompatActivity implements AdapterView.O
     private Button cancelCreateRestaurant;
     private String restaurantOwnerId, restaurantId;
     private String state;
+    private String restaurantType;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -64,6 +66,7 @@ public class CreateRestaurant extends AppCompatActivity implements AdapterView.O
         restaurantsRepository = new Restaurants<>(this);
         restaurantOwnerId = getIntent().getStringExtra("ownerId");
         state = "";
+        restaurantType = "";
     }
 
     /**
@@ -82,6 +85,7 @@ public class CreateRestaurant extends AppCompatActivity implements AdapterView.O
         deliveryHours = (Button)findViewById(R.id.deliveryHours);
         createRestaurant = (Button)findViewById(R.id.createRestaurant);
         cancelCreateRestaurant = (Button)findViewById(R.id.cancelRestaurant);
+        restaurantTypes = (Spinner) findViewById(R.id.restaurantTypeSpinner);
     }
 
     /**
@@ -89,9 +93,9 @@ public class CreateRestaurant extends AppCompatActivity implements AdapterView.O
      */
     private void bindEventHandlers() {
         states.setOnItemSelectedListener(this);
+        restaurantTypes.setOnItemSelectedListener(this);
 
         deliveryHours.setOnClickListener(new View.OnClickListener() {
-
             @Override
             public void onClick(View view) {
                 Intent intent = new Intent(CreateRestaurant.this, CreateDeliveryHoursActivity.class);
@@ -128,6 +132,7 @@ public class CreateRestaurant extends AppCompatActivity implements AdapterView.O
                                     .makeText(CreateRestaurant.this, toastMessage.toString(), Toast.LENGTH_LONG)
                                     .show();
 
+
                                 //Enable set delivery hours if the create restaurant task was successful...
                                 if (task.isSuccessful()) {
                                     deliveryHours.setEnabled(true);
@@ -161,6 +166,26 @@ public class CreateRestaurant extends AppCompatActivity implements AdapterView.O
 
         // Apply the adapter to the spinner
         states.setAdapter(adapter);
+
+        //restaurant type adapter and listener
+        ArrayAdapter<CharSequence> typeAdapter = ArrayAdapter.createFromResource(this,
+                R.array.restaurantTypeArray, android.R.layout.simple_spinner_item);
+        typeAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        restaurantTypes.setAdapter(typeAdapter);
+
+        restaurantTypes.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View view,
+                                       int pos, long id) {
+                // An item was selected.
+                restaurantType = parent.getItemAtPosition(pos).toString();
+
+            }
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) {
+            }
+        });
+
     }
 
     /**
@@ -199,6 +224,7 @@ public class CreateRestaurant extends AppCompatActivity implements AdapterView.O
         restaurant.setCharge(Double.valueOf(deliveryCharge.getText().toString()));
         restaurant.setOwnerId(restaurantOwnerId);
         restaurant.setDeliveryRadius(getBaseContext().getResources().getInteger(R.integer.defaultDeliveryRadius));
+        restaurant.setRestaurantType(restaurantType);
 
         return restaurant;
     }
@@ -251,5 +277,10 @@ public class CreateRestaurant extends AppCompatActivity implements AdapterView.O
     @Override
     public void onNothingSelected(AdapterView<?> parent) {
         //not implemented
+    }
+
+    private void toastIt(String message) {
+        Toast.makeText(getApplicationContext(), message,
+                Toast.LENGTH_SHORT).show();
     }
 }
