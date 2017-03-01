@@ -61,15 +61,6 @@ public class ManageRestaurants extends AppCompatActivity {
             //A new restaurant was added or a restaurant was updated
             retrieveData();
         }
-        if (requestCode == 111 && resultCode == RESULT_OK) {
-            //update main menu
-            MenuCatagory temp = (MenuCatagory) data.getSerializableExtra("now");
-            Restaurant restaurant = (Restaurant) data.getSerializableExtra("resturaunt");
-            restaurant = listAdapter.findRefrenceToUpdate(restaurant);
-            restaurant.setMenu(temp);
-
-            restaurants.update(restaurant);
-        }
     }
 
     @Override

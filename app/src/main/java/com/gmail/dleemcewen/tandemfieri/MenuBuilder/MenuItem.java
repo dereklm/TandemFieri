@@ -25,6 +25,8 @@ public class MenuItem extends MenuCompenet {
     }
 
     public ArrayList<ItemOption> getOptions() {
+        if(options!=null)return options;
+        options = new ArrayList<>();
         return options;
     }
 

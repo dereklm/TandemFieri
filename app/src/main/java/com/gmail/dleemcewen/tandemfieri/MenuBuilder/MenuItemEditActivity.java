@@ -1,6 +1,6 @@
 package com.gmail.dleemcewen.tandemfieri.menubuilder;
 
-import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
@@ -10,31 +10,34 @@ import android.widget.EditText;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.gmail.dleemcewen.tandemfieri.R;
 import com.gmail.dleemcewen.tandemfieri.Utilities.MoneyTextWatcher;
 
 public class MenuItemEditActivity extends AppCompatActivity {
 
+    private MenuIterator iterator = MenuIterator.create();
+
     private EditText price;
     private EditText name;
-    private MenuCatagory parentCat;
     private boolean editing;
     private MenuCompenet item;
     private Button options;
     private boolean isCat;
     private TextView priceLable;
+    private boolean added = false;
+    private Context context;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_menu_item_edit);
 
-        Bundle bundle = this.getIntent().getExtras();
-        parentCat = (MenuCatagory) bundle.getSerializable("parent");
-        item = (MenuItem)  bundle.getSerializable("item");
+        item = iterator.getCurrentComponent();
 
         editing = item!=null;
+        context=this;
 
 
 
@@ -47,8 +50,12 @@ public class MenuItemEditActivity extends AppCompatActivity {
             radios.setVisibility(View.INVISIBLE);
             MenuItem temp = (MenuItem) item;
             name.setText(temp.getName());
-            price.setText(temp.getBasePrice()+"");
+            price.setText(String.format("$%.2f",temp.getBasePrice()));
             isCat=false;
+        }
+        else{
+            TextView title = (TextView) findViewById(R.id.title);
+            title.setText("Add Item");
         }
 
         isCat=false;
@@ -63,13 +70,28 @@ public class MenuItemEditActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 //open option activity
-                /* pushed to next sprint
-                MenuItem temp;
-                if(item!=null) temp = (MenuItem) item;
-                else temp = new MenuItem();
-                temp.setBasePrice(Double.parseDouble(price.getText().toString()));
-                temp.setName(name.getText().toString());
-                item = temp;*/
+                if (!editing) {
+                    MenuItem temp = new MenuItem();
+                    if (price.getText().toString().isEmpty()) {
+                        Toast
+                                .makeText(MenuItemEditActivity.this, "Price can not be empty", Toast.LENGTH_SHORT)
+                                .show();
+                        return;
+                    }
+                    String toConvert = price.getText().toString().replace("$", "");
+                    toConvert = toConvert.replace(",", "");
+                    temp.setBasePrice(Double.parseDouble(toConvert));
+                    temp.setName(name.getText().toString());
+                    added = true;
+                    item = temp;
+                    iterator.backtrack();
+                    MenuCatagory parrent = (MenuCatagory) iterator.getCurrentComponent();
+                    parrent.getSubItems().add((MenuItem) item);
+                    editing = true;
+                    iterator.setCurrentComponent(item);
+                }
+                Intent intent = new Intent(context,MenuOptionsActivity.class);
+                startActivity(intent);
             }
         });
 
@@ -79,15 +101,16 @@ public class MenuItemEditActivity extends AppCompatActivity {
                 if(editing){
                     if(!isCat) {
                         MenuItem temp = (MenuItem) item;
-                        temp.setBasePrice(Double.parseDouble(price.getText().toString().substring(1)));
-                        temp.setName(name.getText().toString());
-                        for(MenuCompenet mc : parentCat.getSubItems()){
-                            if(mc.name.equals(item.getName())){
-                                item=mc;
-                            }
+                        if(price.getText().toString().isEmpty()) {
+                            Toast
+                                    .makeText(MenuItemEditActivity.this, "Price can not be empty", Toast.LENGTH_SHORT)
+                                    .show();
+                            return;
                         }
-                        parentCat.getSubItems().remove(item);
-                        parentCat.getSubItems().add(temp);
+                        String toConvert = price.getText().toString().replace("$","");
+                        toConvert = toConvert.replace(",","");
+                        temp.setBasePrice(Double.parseDouble(toConvert));
+                        temp.setName(name.getText().toString());
                     }
                     else{
                         item.setName(name.getText().toString());
@@ -96,17 +119,31 @@ public class MenuItemEditActivity extends AppCompatActivity {
                 else{
                     if(!isCat) {
                         MenuItem temp = new MenuItem();
-                        temp.setBasePrice(Double.parseDouble(price.getText().toString().substring(1)));
+                        if(price.getText().toString().isEmpty()) {
+                            Toast
+                                    .makeText(MenuItemEditActivity.this, "Price can not be empty", Toast.LENGTH_SHORT)
+                                    .show();
+                            return;
+                        }
+                        String toConvert = price.getText().toString().replace("$","");
+                        toConvert = toConvert.replace(",","");
+                        temp.setBasePrice(Double.parseDouble(toConvert));
                         temp.setName(name.getText().toString());
-                        parentCat.getSubItems().add(temp);
+                        added=true;
+                        item=temp;
+                        iterator.backtrack();
+                        MenuCatagory parrent = (MenuCatagory) iterator.getCurrentComponent();
+                        parrent.getSubItems().add((MenuItem) item);
                     }
                     else{
-                        parentCat.getSubCategories().add(new MenuCatagory(name.getText().toString()));
+                        iterator.backtrack();
+                        item = (new MenuCatagory(name.getText().toString()));
+                        MenuCatagory temp = (MenuCatagory) iterator.getCurrentComponent();
+                        temp.getSubCategories().add((MenuCatagory) item);
+                        added=true;
                     }
                 }
                 Intent resultIntent = new Intent();
-                resultIntent.putExtra("current",parentCat);
-                setResult(Activity.RESULT_OK,resultIntent);
                 finish();
             }
         });
@@ -133,5 +170,22 @@ public class MenuItemEditActivity extends AppCompatActivity {
                     isCat=false;
                     break;
         }
+    }
+
+    @Override
+    public void onDestroy(){
+        super.onDestroy();
+        if(isFinishing()) {
+
+            if (!added) {
+                iterator.backtrack();
+            }
+        }
+    }
+
+    @Override
+    public void onBackPressed(){
+        super.onBackPressed();
+        this.finish();
     }
 }

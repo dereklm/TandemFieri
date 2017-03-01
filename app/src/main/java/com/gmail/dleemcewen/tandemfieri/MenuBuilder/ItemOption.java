@@ -12,6 +12,8 @@ public class ItemOption implements Serializable{
     private boolean required;
     private boolean andRelationship; //determines if the relations ship of the items is mutually exclusive or not ie: you cannot have both ranch and ceaser for your dressing
 
+    public ItemOption(){}
+
     public String getOptionName() {
         return optionName;
     }
@@ -21,6 +23,8 @@ public class ItemOption implements Serializable{
     }
 
     public ArrayList<OptionSelection> getSelections() {
+        if(selections!=null)return selections;
+        selections = new ArrayList<>();
         return selections;
     }
 
@@ -43,4 +47,11 @@ public class ItemOption implements Serializable{
         this.selections = new ArrayList<>();
     }
 
+    public boolean isAndRelationship() {
+        return andRelationship;
+    }
+
+    public void setAndRelationship(boolean andRelationship) {
+        this.andRelationship = andRelationship;
+    }
 }

@@ -8,5 +8,32 @@ public class OptionSelection {
     private  double addedPrice;
     private String description;
 
+    public OptionSelection(){
 
+    }
+
+
+    public String getSelectionName() {
+        return SelectionName;
+    }
+
+    public void setSelectionName(String selectionName) {
+        SelectionName = selectionName;
+    }
+
+    public double getAddedPrice() {
+        return addedPrice;
+    }
+
+    public void setAddedPrice(double addedPrice) {
+        this.addedPrice = addedPrice;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
+    }
 }

@@ -1,56 +1,29 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/activity_option_add"
+    android:id="@+id/activity_option_selection_edit"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:paddingBottom="@dimen/activity_vertical_margin"
     android:paddingLeft="@dimen/activity_horizontal_margin"
     android:paddingRight="@dimen/activity_horizontal_margin"
     android:paddingTop="@dimen/activity_vertical_margin"
-    tools:context="com.gmail.dleemcewen.tandemfieri.menubuilder.OptionAddActivity">
+    tools:context="com.gmail.dleemcewen.tandemfieri.menubuilder.OptionSelectionEditActivity">
 
     <TextView
         android:id="@+id/title"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_centerHorizontal="true"
-        android:text="Edit Option"
+        android:text="Edit Selection"
         android:textSize="30sp"
         />
-
-    <CheckBox
-        android:id="@+id/requiredCheck"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_below="@id/title"
-        android:text="Required"
-        />
-
-    <RadioGroup
-        android:id="@+id/relationships"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_below="@id/requiredCheck"
-        android:orientation="horizontal"
-        android:visibility="visible">
-        <RadioButton android:id="@+id/andRadio"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="And"
-            android:onClick="onRadioButtonClicked"/>
-        <RadioButton android:id="@+id/orRadio"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Or"
-            android:onClick="onRadioButtonClicked"/>
-    </RadioGroup>
 
     <TextView
         android:id="@+id/itemNameLable"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_below="@id/relationships"
+        android:layout_below="@id/title"
         android:text="Name:"
         />
 
@@ -58,21 +31,47 @@
         android:id="@+id/itemName"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_below="@id/relationships"
+        android:layout_below="@id/title"
         android:layout_toRightOf="@id/itemNameLable"
         android:layout_alignParentRight="true"
         />
 
-
-
-
-    <Button
-        android:id="@+id/selections"
-        android:layout_width="match_parent"
+    <TextView
+        android:id="@+id/priceLable"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Edit Selections"
         android:layout_below="@id/itemName"
+        android:text="Added Price:"
         />
+
+    <EditText
+        android:id="@+id/price"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/itemName"
+        android:layout_toRightOf="@id/priceLable"
+        android:layout_alignParentRight="true"
+        android:inputType="numberDecimal"
+        />
+
+    <TextView
+        android:id="@+id/descLable"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/price"
+        android:text="Description:"
+        />
+
+    <EditText
+        android:id="@+id/desc"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/price"
+        android:layout_toRightOf="@id/descLable"
+        android:layout_alignParentRight="true"
+        android:inputType="textMultiLine"
+        />
+
 
     <Button
         android:id="@+id/saveItem"

@@ -12,13 +12,14 @@ import com.gmail.dleemcewen.tandemfieri.R;
 import java.util.ArrayList;
 
 /**
- * Created by jfly1_000 on 2/14/2017.
+ * Created by jfly1_000 on 2/28/2017.
  */
-public class OptionAdapter extends ArrayAdapter<ItemOption> {
-    private final Context context;
-    private final ArrayList<ItemOption> values;
 
-    public OptionAdapter(Context context,ArrayList<ItemOption> values){
+public class OptionSelectionAdapter extends ArrayAdapter<OptionSelection> {
+    private final Context context;
+    private final ArrayList<OptionSelection> values;
+
+    public OptionSelectionAdapter(Context context,ArrayList<OptionSelection> values){
         super(context,-1,values);
         this.context=context;
         this.values=values;
@@ -29,11 +30,14 @@ public class OptionAdapter extends ArrayAdapter<ItemOption> {
         LayoutInflater inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         View rowView=inflater.inflate(R.layout.menu_option_rowlayout,parent,false);
         TextView text = (TextView) rowView.findViewById(R.id.text);
-        text.setText(values.get(position).getOptionName());
+        text.setText(values.get(position).getSelectionName());
+        TextView price = (TextView) rowView.findViewById(R.id.price);
+        price.setText(String.format("$%.2f",values.get(position).getAddedPrice()));
         return rowView;
     }
 
-    public ItemOption getItem(int postion){
+    public OptionSelection getItem(int postion){
         return values.get(postion);
     }
+
 }

@@ -1,6 +1,5 @@
 package com.gmail.dleemcewen.tandemfieri.menubuilder;
 
-import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
@@ -8,23 +7,24 @@ import android.support.v7.app.AppCompatActivity;
 import android.view.Menu;
 import android.view.View;
 import android.widget.AdapterView;
-import android.widget.Button;
 import android.widget.ListView;
 import android.widget.TextView;
 
 import com.gmail.dleemcewen.tandemfieri.Entities.Restaurant;
 import com.gmail.dleemcewen.tandemfieri.R;
+import com.gmail.dleemcewen.tandemfieri.Repositories.Restaurants;
 
 import java.util.ArrayList;
 
 public class MenuBuilderActivity extends AppCompatActivity {
+
+    private MenuIterator iterator = MenuIterator.create();
 
     private MenuCatagory current;
     private  MenuItemAdapter adapter;
     private ArrayList<MenuCompenet> allItems;
     private ListView listView;
     private Context context;
-    private Restaurant owner;
 
 
     @Override
@@ -32,10 +32,8 @@ public class MenuBuilderActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_menu_builder);
 
-        Bundle bundle = this.getIntent().getExtras();
-        current = (MenuCatagory) bundle.getSerializable("menu");
+        current = (MenuCatagory) iterator.getCurrentComponent();
 
-        owner = (Restaurant) bundle.getSerializable("resturaunt");
         allItems = new ArrayList<>();
         allItems.addAll(current.getSubCategories());
         allItems.addAll(current.getSubItems());
@@ -51,14 +49,13 @@ public class MenuBuilderActivity extends AppCompatActivity {
                 MenuCompenet compenet = adapter.getItem(i);
                 if(compenet instanceof MenuItem){
                     Intent intent = new Intent(MenuBuilderActivity.this, MenuItemEditActivity.class);
-                    intent.putExtra("parent",current);
-                    intent.putExtra("item",compenet);
-                    startActivityForResult(intent,666);
+                    iterator.setCurrentComponent(compenet);
+                    startActivity(intent);
                 }
                 else{
                     Intent intent = new Intent(MenuBuilderActivity.this,MenuBuilderActivity.class);
-                    intent.putExtra("menu", (MenuCatagory)compenet);
-                    startActivityForResult(intent,999);
+                    iterator.setCurrentComponent(compenet);
+                    startActivity(intent);
                 }
             }
         });
@@ -81,17 +78,6 @@ public class MenuBuilderActivity extends AppCompatActivity {
         TextView name = (TextView) findViewById(R.id.CatName);
         name.setText(current.name);
 
-        Button save = (Button) findViewById(R.id.saveButton);
-        save.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Intent resultIntent = new Intent();
-                resultIntent.putExtra("now",current);
-                resultIntent.putExtra("resturaunt",owner);
-                setResult(Activity.RESULT_OK,resultIntent);
-                finish();
-            }
-        });
 
     }
 
@@ -104,6 +90,7 @@ public class MenuBuilderActivity extends AppCompatActivity {
     @Override
     public void onResume(){
         super.onResume();
+        updatAllItems();
         adapter = new MenuItemAdapter(this,allItems);
         listView = (ListView) findViewById(R.id.menuItems);
         listView.setAdapter(adapter);
@@ -121,38 +108,29 @@ public class MenuBuilderActivity extends AppCompatActivity {
         switch(item.getItemId()) {
         case R.id.add:
             Intent intent = new Intent(MenuBuilderActivity.this,MenuItemEditActivity.class);
-            intent.putExtra("parent",current);
-            startActivityForResult(intent,666);
+            iterator.setCurrentComponent(null);
+            startActivity(intent);
             return(true);
     }
         return(super.onOptionsItemSelected(item));
     }
 
     @Override
-    public void onActivityResult(int requestCode, int resultCode, Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
-        switch(requestCode) {
-            case (666) : {
-                if (resultCode == Activity.RESULT_OK) {
-                    current = (MenuCatagory) data.getSerializableExtra("current");
-                    updatAllItems();
-                }
-                break;
-            }
-            case(999) : {
-                if(resultCode==Activity.RESULT_OK){
-                    MenuCatagory temp = (MenuCatagory) data.getSerializableExtra("now");
-                    MenuCatagory toRemove = new MenuCatagory("");
-                    for(MenuCatagory mc : current.getSubCategories()){
-                        if(mc.getName().equals(temp.getName())){
-                            toRemove=mc;
-                        }
-                    }
-                    current.getSubCategories().remove(toRemove);
-                    current.getSubCategories().add(temp);
-                    updatAllItems();
-                }
+    public void onDestroy() {
+        super.onDestroy();
+        if (isFinishing()) {
+            iterator.backtrack();
+            if (iterator.getCurrentComponent() == null) {
+                Restaurants<Restaurant> restaurantsRepository = new Restaurants<>(this);
+                restaurantsRepository
+                        .update(iterator.getRestaurant());
             }
         }
+    }
+
+    @Override
+    public void onBackPressed(){
+        super.onBackPressed();
+        this.finish();
     }
 }

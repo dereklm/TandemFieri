@@ -21,8 +21,8 @@ public class Restaurant extends Entity implements Serializable {
     private String id;
     private String restaurantType;
     private Map<String, String> drivers;
-
     private MenuCatagory menu;
+
 
     /**
      * Default constructor

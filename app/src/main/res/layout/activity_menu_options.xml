@@ -10,14 +10,6 @@
     android:paddingTop="@dimen/activity_vertical_margin"
     tools:context="com.gmail.dleemcewen.tandemfieri.menubuilder.MenuOptionsActivity">
 
-    <Button
-        android:id="@+id/saveButton"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_centerInParent="true"
-        android:layout_alignParentBottom="true"
-        android:text="Save Menu"
-        />
 
     <TextView
         android:id="@+id/CatName"

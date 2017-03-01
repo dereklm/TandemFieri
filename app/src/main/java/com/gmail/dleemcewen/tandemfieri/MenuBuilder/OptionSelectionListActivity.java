@@ -12,23 +12,26 @@ import android.widget.TextView;
 
 import com.gmail.dleemcewen.tandemfieri.R;
 
-public class MenuOptionsActivity extends AppCompatActivity {
+import java.util.ArrayList;
 
-    MenuIterator iterator = MenuIterator.create();
+public class OptionSelectionListActivity extends AppCompatActivity {
 
-    private OptionAdapter adapter;
+    private MenuIterator iterator = MenuIterator.create();
+    private ArrayList<ItemOption> allItems;
     private ListView listView;
     private Context context;
-    private MenuItem item;
+    private OptionSelectionAdapter adapter;
+    private ItemOption option;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_menu_options);
+        setContentView(R.layout.activity_selections_list);
 
-        item = (MenuItem) iterator.getCurrentComponent();
+        option =  iterator.getCurrentOption();
 
-        adapter = new OptionAdapter(this,item.getOptions());
+        adapter = new OptionSelectionAdapter(this,option.getSelections());
         listView = (ListView) findViewById(R.id.menuItems);
         listView.setAdapter(adapter);
         context= this;
@@ -36,9 +39,9 @@ public class MenuOptionsActivity extends AppCompatActivity {
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
-                ItemOption compenet = adapter.getItem(i);
-                iterator.setCurrentOption(compenet);
-                Intent intent = new Intent(MenuOptionsActivity.this,OptionAddActivity.class);
+                OptionSelection compenet = adapter.getItem(i);
+                iterator.setCurrentSelection(compenet);
+                Intent intent = new Intent(context,OptionSelectionEditActivity.class);
                 startActivity(intent);
             }
         });
@@ -46,23 +49,23 @@ public class MenuOptionsActivity extends AppCompatActivity {
         listView.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
             @Override
             public boolean onItemLongClick(AdapterView<?> adapterView, View view, int i, long l) {
-                ItemOption compenet = adapter.getItem(i);
-                item.getOptions().remove(compenet);
-                adapter = new OptionAdapter(context,item.getOptions());
+                OptionSelection compenet = adapter.getItem(i);
+                option.getSelections().remove(compenet);
+                adapter = new OptionSelectionAdapter(context,option.getSelections());
                 listView.setAdapter(adapter);
                 return true;
             }
         });
 
         TextView name = (TextView) findViewById(R.id.CatName);
-        name.setText("Options");
+        name.setText("Selections");
 
     }
 
     @Override
     public void onResume(){
         super.onResume();
-        adapter = new OptionAdapter(this,item.getOptions());
+        adapter = new OptionSelectionAdapter(this,option.getSelections());
         listView = (ListView) findViewById(R.id.menuItems);
         listView.setAdapter(adapter);
     }
@@ -78,12 +81,11 @@ public class MenuOptionsActivity extends AppCompatActivity {
     public boolean onOptionsItemSelected(android.view.MenuItem item) {
         switch(item.getItemId()) {
             case R.id.add:
-                Intent intent = new Intent(MenuOptionsActivity.this,OptionAddActivity.class);
-                iterator.setCurrentOption(null);
+                Intent intent = new Intent(context,OptionSelectionEditActivity.class);
+                iterator.setCurrentSelection(null);
                 startActivity(intent);
                 return(true);
         }
         return(super.onOptionsItemSelected(item));
     }
-
 }

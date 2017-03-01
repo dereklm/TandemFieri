@@ -22,6 +22,7 @@ import com.gmail.dleemcewen.tandemfieri.EditRestaurantActivity;
 import com.gmail.dleemcewen.tandemfieri.Entities.DeliveryHours;
 import com.gmail.dleemcewen.tandemfieri.Entities.Restaurant;
 import com.gmail.dleemcewen.tandemfieri.ManageRestaurantDrivers;
+import com.gmail.dleemcewen.tandemfieri.menubuilder.MenuIterator;
 import com.gmail.dleemcewen.tandemfieri.R;
 import com.gmail.dleemcewen.tandemfieri.Repositories.Restaurants;
 import com.gmail.dleemcewen.tandemfieri.RestaurantMapActivity;
@@ -277,9 +278,17 @@ public class ManageRestaurantExpandableListAdapter extends BaseExpandableListAda
                     selectedChild.setMenu(new MenuCatagory("Main"));
                 }
 
-                intent.putExtra("menu",selectedChild.getMenu());
-                intent.putExtra("resturaunt",selectedChild);
-                context.startActivityForResult(intent,111);
+                MenuIterator iterator = MenuIterator.create(); //set up iterator
+
+                try {
+                    iterator.setRestaurant(selectedChild);
+                } catch (Exception e) {
+                    Toast
+                            .makeText(context, e.getMessage(), Toast.LENGTH_SHORT)
+                            .show();
+                }
+
+                context.startActivity(intent);
 
                 Toast
                     .makeText(context, "Managing menu items for " + selectedChild.getName(), Toast.LENGTH_SHORT)
