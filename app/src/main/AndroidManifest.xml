@@ -64,7 +64,8 @@
             android:exported="false" />
 
         <activity android:name=".menubuilder.OptionSelectionListActivity" />
-        <activity android:name=".menubuilder.OptionSelectionEditActivity"></activity>
+        <activity android:name=".menubuilder.OptionSelectionEditActivity" />
+        <activity android:name=".LookAtMenuActivity"></activity>
     </application>
 
 </manifest>

@@ -1,14 +1,23 @@
 package com.gmail.dleemcewen.tandemfieri;
 
+import android.content.Context;
+import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.graphics.Color;
+import android.graphics.Typeface;
 import android.location.Address;
 import android.location.Geocoder;
 import android.location.Location;
+import android.location.LocationManager;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.content.ContextCompat;
+import android.view.Gravity;
+import android.view.View;
+import android.widget.LinearLayout;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.gmail.dleemcewen.tandemfieri.Entities.Restaurant;
@@ -39,6 +48,7 @@ import java.util.List;
 
 import static android.media.CamcorderProfile.get;
 import static android.os.Build.VERSION_CODES.M;
+import static com.google.android.gms.location.LocationServices.FusedLocationApi;
 
 public class DinerMapActivity extends FragmentActivity implements GoogleApiClient.ConnectionCallbacks,
         GoogleApiClient.OnConnectionFailedListener,
@@ -46,7 +56,7 @@ public class DinerMapActivity extends FragmentActivity implements GoogleApiClien
 
     private GoogleMap mMap;
     GoogleApiClient mGoogleApiClient;
-    Location mLastLocation;
+    Location mLastLocation, currentLocation;
     Marker mCurrLocationMarker;
     LocationRequest mLocationRequest;
     DatabaseReference mDatabase;
@@ -56,6 +66,7 @@ public class DinerMapActivity extends FragmentActivity implements GoogleApiClien
     public AddressGeocode address;
     public boolean wait = false;
     public Marker[] markers;
+    public Location tempLocation;
 
 
     @Override
@@ -64,6 +75,21 @@ public class DinerMapActivity extends FragmentActivity implements GoogleApiClien
         setContentView(R.layout.activity_diner_map);
         restaurants = new ArrayList<Restaurant>();
         tempRestaurants = new ArrayList<Restaurant>();
+        currentLocation = new Location("");
+
+
+        LocationManager locManager = (LocationManager)getSystemService(Context.LOCATION_SERVICE);
+
+        boolean network_enabled = locManager.isProviderEnabled(LocationManager.NETWORK_PROVIDER);
+
+        Location location;
+
+        if(network_enabled){
+
+            currentLocation = locManager.getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
+
+        }
+
         if (android.os.Build.VERSION.SDK_INT >= M) {
             checkLocationPermission();
         }
@@ -81,7 +107,7 @@ public class DinerMapActivity extends FragmentActivity implements GoogleApiClien
                 }
                 //Toast.makeText(getApplicationContext(), restaurants.size()+"", Toast.LENGTH_LONG).show();
                 markers = new Marker[restaurants.size()];
-                for(int j = 0; j < restaurants.size(); j++) {
+                for (int j = 0; j < restaurants.size(); j++) {
                     initialize(restaurants.get(j));
                 }
             }
@@ -118,8 +144,7 @@ public class DinerMapActivity extends FragmentActivity implements GoogleApiClien
                 buildGoogleApiClient();
                 mMap.setMyLocationEnabled(true);
             }
-        }
-        else {
+        } else {
             buildGoogleApiClient();
             mMap.setMyLocationEnabled(true);
         }
@@ -130,13 +155,66 @@ public class DinerMapActivity extends FragmentActivity implements GoogleApiClien
                 try {
                     for (int k = 0; k < restaurants.size(); k++) {
                         if (marker.getTag().equals(restaurants.get(k).getId())) {
-                            Toast.makeText(getApplicationContext(), restaurants.get(k).getName(), Toast.LENGTH_SHORT).show();
+                            //Toast.makeText(getApplicationContext(), "" + restaurants.get(k).getMenu(), Toast.LENGTH_SHORT).show();
+
                         }
                     }
-                }catch (Exception e){
+                } catch (Exception e) {
 
                 }
                 return false;
+            }
+        });
+
+        googleMap.setOnInfoWindowClickListener(new GoogleMap.OnInfoWindowClickListener() {
+            @Override
+            public void onInfoWindowClick(Marker marker) {
+                try {
+                    for (int k = 0; k < restaurants.size(); k++) {
+                        if (marker.getTag().equals(restaurants.get(k).getId())) {
+                            Toast.makeText(getApplicationContext(), "" + restaurants.get(k).getName(), Toast.LENGTH_SHORT).show();
+
+                            Intent intent = new Intent(DinerMapActivity.this, LookAtMenuActivity.class);
+                            Bundle bundle = new Bundle();
+                            bundle.putSerializable("Restaurant",  restaurants.get(k));
+                            intent.putExtras(bundle);
+                            startActivity(intent);
+                        }
+                    }
+                } catch (Exception e) {
+
+                }
+
+            }
+        });
+
+        mMap.setInfoWindowAdapter(new GoogleMap.InfoWindowAdapter() {
+
+            @Override
+            public View getInfoWindow(Marker arg0) {
+                return null;
+            }
+
+            @Override
+            public View getInfoContents(Marker marker) {
+                Context context = getApplicationContext();
+                LinearLayout info = new LinearLayout(context);
+                info.setOrientation(LinearLayout.VERTICAL);
+
+                TextView title = new TextView(context);
+                title.setTextColor(Color.BLACK);
+                title.setGravity(Gravity.CENTER);
+                title.setTypeface(null, Typeface.BOLD);
+                title.setText(marker.getTitle());
+
+                TextView snippet = new TextView(context);
+                snippet.setTextColor(Color.GRAY);
+                snippet.setText(marker.getSnippet());
+
+                info.addView(title);
+                info.addView(snippet);
+
+                return info;
             }
         });
     }
@@ -160,7 +238,8 @@ public class DinerMapActivity extends FragmentActivity implements GoogleApiClien
         if (ContextCompat.checkSelfPermission(this,
                 android.Manifest.permission.ACCESS_FINE_LOCATION)
                 == PackageManager.PERMISSION_GRANTED) {
-            LocationServices.FusedLocationApi.requestLocationUpdates(mGoogleApiClient, mLocationRequest, this);
+            FusedLocationApi.requestLocationUpdates(mGoogleApiClient, mLocationRequest, this);
+
         }
 
     }
@@ -172,7 +251,7 @@ public class DinerMapActivity extends FragmentActivity implements GoogleApiClien
 
     @Override
     public void onLocationChanged(Location location) {
-
+        currentLocation = location;
         mLastLocation = location;
         if (mCurrLocationMarker != null) {
             mCurrLocationMarker.remove();
@@ -192,7 +271,7 @@ public class DinerMapActivity extends FragmentActivity implements GoogleApiClien
 
         //stop location updates
         if (mGoogleApiClient != null) {
-            LocationServices.FusedLocationApi.removeLocationUpdates(mGoogleApiClient, this);
+            FusedLocationApi.removeLocationUpdates(mGoogleApiClient, this);
         }
 
     }
@@ -203,7 +282,8 @@ public class DinerMapActivity extends FragmentActivity implements GoogleApiClien
     }
 
     public static final int MY_PERMISSIONS_REQUEST_LOCATION = 99;
-    public boolean checkLocationPermission(){
+
+    public boolean checkLocationPermission() {
         if (ContextCompat.checkSelfPermission(this,
                 android.Manifest.permission.ACCESS_FINE_LOCATION)
                 != PackageManager.PERMISSION_GRANTED) {
@@ -274,25 +354,49 @@ public class DinerMapActivity extends FragmentActivity implements GoogleApiClien
         ArrayList<android.location.Address> addressList = new ArrayList<>();
         LatLng latlng;
 
-            String streetAddress = restaurant.getStreet() + "," + restaurant.getCity() + "," + restaurant.getState() + "," + restaurant.getZipcode();
-            try {
-                address = coder.getFromLocationName(streetAddress, 1);
-                if (address.size() == 0){
+        String streetAddress = restaurant.getStreet() + "," + restaurant.getCity() + "," + restaurant.getState() + "," + restaurant.getZipcode();
+        try {
+            address = coder.getFromLocationName(streetAddress, 1);
+            if (address.size() == 0) {
 
-                }else {
-                    android.location.Address location = address.get(0);
-                    markers[j] = (mMap.addMarker(new MarkerOptions().position(new LatLng(location.getLatitude(), location.getLongitude())).title(restaurant.getName())));
-                    markers[j].setTag(restaurant.getId());
+            } else {
+                android.location.Address location = address.get(0);
+                tempLocation = new Location("");
+
+
+                tempLocation.set(currentLocation);
+                tempLocation.setLatitude(location.getLatitude());
+                tempLocation.setLongitude(location.getLongitude());
+                float tempDistance = (currentLocation.distanceTo(tempLocation));
+                tempDistance *= 0.000621371;
+                if(restaurant.getDeliveryRadius() != null) {
+                    if ((int) tempDistance < restaurant.getDeliveryRadius()) {
+                        double tempdouble = (double) tempDistance;
+                        tempdouble *= 100;
+                        tempdouble = Math.round(tempdouble);
+                        tempdouble /= 100;
+                        markers[j] = (mMap.addMarker(new MarkerOptions().position(new LatLng(location.getLatitude(), location.getLongitude())).title(restaurant.getName())));
+                        markers[j].setSnippet("Delivery Charge: $" + restaurant.getCharge() + "\n" + " Distance Away: " + tempdouble);
+                        markers[j].setTag(restaurant.getId());
+                    }
                 }
-            } catch (IOException e) {
-                e.printStackTrace();
             }
+
+        } catch (IOException e) {
+            e.printStackTrace();
         }
+    }
 
 
     @Override
     public boolean onMarkerClick(Marker marker) {
         return false;
+    }
+
+
+    public int calculateDistance() {
+
+        return 0;
     }
 }
 
