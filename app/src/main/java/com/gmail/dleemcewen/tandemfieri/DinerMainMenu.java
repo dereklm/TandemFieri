@@ -69,6 +69,15 @@ public class DinerMainMenu extends AppCompatActivity {
                 //this is just for testing and demo purposes
                 simulateCompletedOrder();
                 return true;
+            case R.id.payment:
+                Bundle bundle = new Bundle();
+                bundle.putSerializable("User", user);
+
+                Intent intent = new Intent(DinerMainMenu.this, FakePayment.class);
+                intent.putExtras(bundle);
+                startActivity(intent);
+
+                return true;
             default:
                 return super.onOptionsItemSelected(item);
         }

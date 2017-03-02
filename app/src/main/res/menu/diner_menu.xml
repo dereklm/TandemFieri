@@ -4,6 +4,8 @@
         android:title="Map"/>
     <item android:id="@+id/sign_out"
         android:title="Sign Out"/>
+    <item android:id="@+id/payment"
+        android:title="Payment"/>
     <item android:id="@+id/account"
         android:title="Account" >
         <menu>

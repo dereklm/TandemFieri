@@ -63,6 +63,7 @@
     <string name="updateButton">Update</string>
     <string name="deliveryRadius">Delivery Radius (mi)</string>
     <string name="googleDecoderBaseURL">https://maps.googleapis.com/maps/api/geocode/json?</string>
+    <string name="braintreeBaseURL">https://tandemfieri-bkpratt84.c9users.io/</string>
     <string name="title_activity_diner_map">Map</string>
     <string name="driversCurrentlyAssigned">Currently assigned drivers</string>
     <string name="availableDrivers">Drivers available to be assigned to </string>
