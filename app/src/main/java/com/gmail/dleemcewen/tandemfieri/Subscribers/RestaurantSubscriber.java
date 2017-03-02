@@ -103,12 +103,14 @@ public class RestaurantSubscriber implements ISubscriber {
 
             // Build notification
             NotificationCompat.Builder notificationBuilder =
+                    // The drawable files were causing issues.
+                    // cast_ic_notification_small_icon and cast_ic_notification_2
                     (NotificationCompat.Builder) new NotificationCompat.Builder(context)
-                            .setSmallIcon(R.drawable.cast_ic_notification_small_icon)
+                            .setSmallIcon(R.drawable.ic_add)
                             .setContentTitle(notificationType + " notification message")
                             .setContentText(contentTextBuilder.toString())
                             .setStyle(new NotificationCompat.BigTextStyle().bigText(notificationTextBuilder.toString()))
-                            .addAction(R.drawable.cast_ic_notification_2, "View order", resultPendingIntent);
+                            .addAction(R.drawable.ic_add, "View order", resultPendingIntent);
 
             // This sets the pending intent that should be fired when the user clicks the
             // notification. Clicking the notification launches a new activity.
