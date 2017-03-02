@@ -1,6 +1,10 @@
 package com.gmail.dleemcewen.tandemfieri.Utility;
 
 import android.content.Context;
+import android.os.Build;
+import android.provider.Settings;
+import android.text.TextUtils;
+import android.widget.EditText;
 
 import com.gmail.dleemcewen.tandemfieri.Json.AddressGeocode.AddressGeocode;
 import com.gmail.dleemcewen.tandemfieri.R;
@@ -34,17 +38,17 @@ public class MapUtil {
         map.moveCamera(CameraUpdateFactory.newLatLngBounds(bounds, padding));
     }
 
-    public static boolean verifyAddress(Context context, String street, String city, String state, String zip) {
+    public static boolean verifyAddress(Context context, EditText street, EditText city, String state, EditText zip) {
         String url;
 
         url = "address="
-                + street
+                + street.getText().toString()
                 + ","
-                + city
+                + city.getText().toString()
                 + ","
                 + state
                 + ","
-                + zip
+                + zip.getText().toString()
                 + "&" + context.getString(R.string.google_api_key);
 
         AsyncHttpClient client = new AsyncHttpClient();
@@ -72,5 +76,27 @@ public class MapUtil {
                 });
 
         return statusREST;
+    }
+
+    public static boolean isLocationEnabled(Context context) {
+        int locationMode = 0;
+        String locationProviders;
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT){
+            try {
+                locationMode = Settings.Secure.getInt(context.getContentResolver(), Settings.Secure.LOCATION_MODE);
+
+            } catch (Exception e) {
+                e.printStackTrace();
+                return false;
+            }
+
+            return locationMode != Settings.Secure.LOCATION_MODE_OFF;
+
+        }else{
+            locationProviders = Settings.Secure.getString(context.getContentResolver(), Settings.Secure.LOCATION_PROVIDERS_ALLOWED);
+            return !TextUtils.isEmpty(locationProviders);
+        }
+
     }
 }

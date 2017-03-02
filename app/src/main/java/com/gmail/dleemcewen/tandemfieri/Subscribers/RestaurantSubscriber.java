@@ -7,20 +7,14 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.NotificationCompat;
 
-import com.gmail.dleemcewen.tandemfieri.Abstracts.Entity;
-import com.gmail.dleemcewen.tandemfieri.Entities.Restaurant;
 import com.gmail.dleemcewen.tandemfieri.Entities.User;
 import com.gmail.dleemcewen.tandemfieri.Interfaces.ISubscriber;
-import com.gmail.dleemcewen.tandemfieri.Logging.LogWriter;
 import com.gmail.dleemcewen.tandemfieri.R;
 import com.gmail.dleemcewen.tandemfieri.RestaurantMainMenu;
 
-import java.util.AbstractMap;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.logging.Level;
 
-import static android.R.attr.action;
 import static android.content.Context.NOTIFICATION_SERVICE;
 
 /**
@@ -103,12 +97,14 @@ public class RestaurantSubscriber implements ISubscriber {
 
             // Build notification
             NotificationCompat.Builder notificationBuilder =
+                    // The drawable files were causing issues.
+                    // cast_ic_notification_small_icon and cast_ic_notification_2
                     (NotificationCompat.Builder) new NotificationCompat.Builder(context)
-                            .setSmallIcon(R.drawable.cast_ic_notification_small_icon)
+                            .setSmallIcon(R.drawable.ic_add)
                             .setContentTitle(notificationType + " notification message")
                             .setContentText(contentTextBuilder.toString())
                             .setStyle(new NotificationCompat.BigTextStyle().bigText(notificationTextBuilder.toString()))
-                            .addAction(R.drawable.cast_ic_notification_2, "View order", resultPendingIntent);
+                            .addAction(R.drawable.ic_add, "View order", resultPendingIntent);
 
             // This sets the pending intent that should be fired when the user clicks the
             // notification. Clicking the notification launches a new activity.

@@ -46,7 +46,7 @@ public class CreateAccountActivity extends AppCompatActivity implements AdapterV
     private String state = "";
     private Spinner states;
     private static CreateAccountActivity activityInstance;
-    private boolean statusFromREST;
+    private boolean verifiedAddr;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -77,19 +77,32 @@ public class CreateAccountActivity extends AppCompatActivity implements AdapterV
         myLocation.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                try {
-                    location = LocationServices.FusedLocationApi.getLastLocation(googleApiClient);
+                if (ActivityCompat.checkSelfPermission(getApplicationContext(),
+                        android.Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED
+                        && ActivityCompat.checkSelfPermission(getApplicationContext()
+                        , android.Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
 
-                    if (googleApiClient.isConnected() && location != null) {
-                        if (mResultReceiver == null) mResultReceiver = new AddressResultReceiver(new Handler());
-                        Intent addressIntent = new Intent(getApplicationContext(), FetchAddressIntentService.class);
-                        addressIntent.putExtra(AddressConstants.RECEIVER, mResultReceiver);
-                        addressIntent.putExtra(AddressConstants.LOCATION_DATA_EXTRA, location);
-                        startService(addressIntent);
+                    ActivityCompat.requestPermissions(CreateAccountActivity.this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION},
+                            1);
+                }
+
+                if (MapUtil.isLocationEnabled(getApplicationContext())) {
+                    try {
+                        location = LocationServices.FusedLocationApi.getLastLocation(googleApiClient);
+
+                        if (googleApiClient.isConnected() && location != null) {
+                            if (mResultReceiver == null)
+                                mResultReceiver = new AddressResultReceiver(new Handler());
+                            Intent addressIntent = new Intent(getApplicationContext(), FetchAddressIntentService.class);
+                            addressIntent.putExtra(AddressConstants.RECEIVER, mResultReceiver);
+                            addressIntent.putExtra(AddressConstants.LOCATION_DATA_EXTRA, location);
+                            startService(addressIntent);
+                        }
+                    } catch (SecurityException e) {
+                        e.printStackTrace();
                     }
-
-                } catch (SecurityException e) {
-                    e.printStackTrace();
+                } else {
+                    Toast.makeText(getApplicationContext(), "Please enable location service.", Toast.LENGTH_SHORT).show();
                 }
             }
         });
@@ -97,30 +110,31 @@ public class CreateAccountActivity extends AppCompatActivity implements AdapterV
         nextButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                String cityStr = city.getText().toString();
-                String zipStr = zip.getText().toString();
-                String street = address.getText().toString();
 
-                if (MapUtil.verifyAddress(getApplicationContext(), street, cityStr, state, zipStr)) {
-                    Intent intent = new Intent(CreateAccountActivity.this, AlmostDoneActivity.class);
-                    intent.putExtra("firstName", firstName.getText().toString());
-                    intent.putExtra("lastName", lastName.getText().toString());
-                    intent.putExtra("address", address.getText().toString());
-                    intent.putExtra("city", city.getText().toString());
-                    intent.putExtra("state", state);
-                    intent.putExtra("zip", zip.getText().toString());
-                    intent.putExtra("phoneNumber", phoneNumber.getText().toString());
-                    intent.putExtra("email", email.getText().toString());
-                    if (email.getText().toString().isEmpty()) {
-                        makeText(getApplicationContext(), "Do not leave email blank", Toast.LENGTH_LONG).show();
-                    } else if (!email.getText().toString().contains("@")) {
-                        makeText(getApplicationContext(), "Email must contain an @", Toast.LENGTH_LONG).show();
+                synchronized (this) {
+                    verifiedAddr = MapUtil.verifyAddress(getApplicationContext(), address, city, state, zip);
+
+                    if (!verifiedAddr) {
+                        Intent intent = new Intent(CreateAccountActivity.this, AlmostDoneActivity.class);
+                        intent.putExtra("firstName", firstName.getText().toString());
+                        intent.putExtra("lastName", lastName.getText().toString());
+                        intent.putExtra("address", address.getText().toString());
+                        intent.putExtra("city", city.getText().toString());
+                        intent.putExtra("state", state);
+                        intent.putExtra("zip", zip.getText().toString());
+                        intent.putExtra("phoneNumber", phoneNumber.getText().toString());
+                        intent.putExtra("email", email.getText().toString());
+                        if (email.getText().toString().isEmpty()) {
+                            makeText(getApplicationContext(), "Do not leave email blank", Toast.LENGTH_LONG).show();
+                        } else if (!email.getText().toString().contains("@")) {
+                            makeText(getApplicationContext(), "Email must contain an @", Toast.LENGTH_LONG).show();
+                        }
+                        startActivity(intent);
+                    } else {
+                        address.setError(FormConstants.ERROR_TAG_ADDRESS);
+                        city.setError(FormConstants.ERROR_TAG_CITY);
+                        zip.setError(FormConstants.ERROR_TAG_ZIP);
                     }
-                    startActivity(intent);
-                } else {
-                    address.setError(FormConstants.ERROR_TAG_ADDRESS);
-                    city.setError(FormConstants.ERROR_TAG_CITY);
-                    zip.setError(FormConstants.ERROR_TAG_ZIP);
                 }
             }
         });
@@ -182,7 +196,7 @@ public class CreateAccountActivity extends AppCompatActivity implements AdapterV
         protected void onReceiveResult(int resultCode, Bundle resultData) {
             Address addressOutput = resultData.getParcelable(AddressConstants.RESULT_DATA_KEY);
             if (addressOutput == null) {
-                Toast.makeText(getApplicationContext(), "Couldn't Receive Location.", Toast.LENGTH_SHORT).show();
+                Toast.makeText(getApplicationContext(), "Couldn't Retrieve Location.", Toast.LENGTH_SHORT).show();
             }
 
             String [] statesArray = getResources().getStringArray(R.array.states);
@@ -233,9 +247,8 @@ public class CreateAccountActivity extends AppCompatActivity implements AdapterV
                         se.printStackTrace();
                     }
                 } else {
-                    Toast.makeText(getApplicationContext(), "no permission", Toast.LENGTH_SHORT).show();
                 }
-
+                verifiedAddr = MapUtil.verifyAddress(getApplicationContext(), address, city, state, zip);
                 return;
         }
     }
