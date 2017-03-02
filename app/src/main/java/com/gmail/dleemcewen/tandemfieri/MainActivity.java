@@ -15,8 +15,7 @@ import com.gmail.dleemcewen.tandemfieri.Entities.User;
 import com.gmail.dleemcewen.tandemfieri.Interfaces.ISubscriber;
 import com.gmail.dleemcewen.tandemfieri.Logging.LogWriter;
 import com.gmail.dleemcewen.tandemfieri.Logging.ToastLogger;
-import com.gmail.dleemcewen.tandemfieri.Publishers.Publisher;
-import com.gmail.dleemcewen.tandemfieri.Services.NotificationService;
+import com.gmail.dleemcewen.tandemfieri.Publishers.NotificationPublisher;
 import com.gmail.dleemcewen.tandemfieri.Subscribers.RestaurantSubscriber;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
@@ -29,6 +28,7 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
+import java.util.AbstractMap;
 import java.util.logging.Level;
 
 public class MainActivity extends AppCompatActivity {
@@ -150,7 +150,10 @@ public class MainActivity extends AppCompatActivity {
             bundle.putSerializable("User", driver);
         }else if(restaurantOwner != null){
             //register new restaurant subscriber
-            registerNewSubscriber(new RestaurantSubscriber(MainActivity.this));
+            registerNewSubscriber(new RestaurantSubscriber(
+                    MainActivity.this,
+                    restaurantOwner,
+                    new AbstractMap.SimpleEntry<>("ownerId", mAuth.getCurrentUser().getUid())));
 
             intent = new Intent(MainActivity.this, RestaurantMainMenu.class);
             bundle.putSerializable("User", restaurantOwner);
@@ -166,8 +169,8 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void registerNewSubscriber(ISubscriber subscriber) {
-        Publisher publisher = Publisher.getInstance();
-        publisher.subscribe(subscriber);
+        NotificationPublisher notificationPublisher = NotificationPublisher.getInstance();
+        notificationPublisher.subscribe(subscriber);
     }
 
     private void clear(){

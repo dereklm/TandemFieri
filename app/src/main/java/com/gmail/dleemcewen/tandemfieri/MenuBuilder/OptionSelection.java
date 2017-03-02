@@ -1,9 +1,11 @@
 package com.gmail.dleemcewen.tandemfieri.menubuilder;
 
+import java.io.Serializable;
+
 /**
  * Created by jfly1_000 on 2/13/2017.
  */
-public class OptionSelection {
+public class OptionSelection implements Serializable {
     private String SelectionName;
     private  double addedPrice;
     private String description;

@@ -17,8 +17,10 @@ import com.gmail.dleemcewen.tandemfieri.Adapters.DriverRatingsListAdapter;
 import com.gmail.dleemcewen.tandemfieri.Comparators.RatingsByDriverInAscendingOrderComparator;
 import com.gmail.dleemcewen.tandemfieri.Entities.Rating;
 import com.gmail.dleemcewen.tandemfieri.Entities.Restaurant;
+import com.gmail.dleemcewen.tandemfieri.Entities.User;
 import com.gmail.dleemcewen.tandemfieri.EventListeners.QueryCompleteListener;
 import com.gmail.dleemcewen.tandemfieri.Repositories.Ratings;
+import com.gmail.dleemcewen.tandemfieri.Repositories.Users;
 import com.gmail.dleemcewen.tandemfieri.Tasks.TaskResult;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
@@ -44,6 +46,7 @@ public class DriverRatings extends AppCompatActivity {
     private Button viewDriverRatings;
     private ListView ratingsList;
     private Ratings<Rating> ratingsRepository;
+    private Users<User> usersRepository;
     private Restaurant restaurant;
     private Calendar calendar;
     private Resources resources;
@@ -64,6 +67,7 @@ public class DriverRatings extends AppCompatActivity {
     private void initialize() {
         resources = this.getResources();
         ratingsRepository = new Ratings<>(this);
+        usersRepository = new Users<>(this);
         calendar = Calendar.getInstance();
         calendar.setTime(new Date());
 
@@ -163,13 +167,6 @@ public class DriverRatings extends AppCompatActivity {
 
         if (startDate.getText().toString().equals("") && endDate.getText().toString().equals("")) {
             //no start and end date range has been provided, so get all of the ratings for the current restaurant
-            /*ratingsRepository.find(Arrays.asList("restaurantId"), Arrays.asList(restaurant.getKey()), new QueryCompleteListener<Rating>() {
-                @Override
-                public void onQueryComplete(ArrayList<Rating> entities) {
-                    matchedRatingsList.addAll(entities);
-                    buildRatings(matchedRatingsList);
-                }
-            });*/
             ratingsRepository
                 .find("restaurantId = " + restaurant.getKey())
                 .addOnCompleteListener(DriverRatings.this, new OnCompleteListener<TaskResult<Rating>>() {
@@ -177,29 +174,11 @@ public class DriverRatings extends AppCompatActivity {
                     public void onComplete(@NonNull Task<TaskResult<Rating>> task) {
                         List<Rating> entities = task.getResult().getResults();
                         matchedRatingsList.addAll(entities);
-                        buildRatings(matchedRatingsList);
+                        getDistinctSetOfDrivers(matchedRatingsList);
                     }
                 });
         } else {
             //get all the ratings that are in the start and end date range
-            /*ratingsRepository.find(
-                Arrays.asList("date"),
-                Arrays.asList(startDate.getText().toString(), endDate.getText().toString()),
-                new QueryCompleteListener<Rating>() {
-                    @Override
-                    public void onQueryComplete(ArrayList<Rating> entities) {
-                        //all ratings for date range could include ratings for other restaurants
-                        //so filter out all entries except those for the current restaurant
-                        for (Rating rating : entities) {
-                            if (rating.getRestaurantId().equals(restaurant.getKey())) {
-                                matchedRatingsList.add(rating);
-                            }
-                        }
-
-                        buildRatings(matchedRatingsList);
-                    }
-            });*/
-
             ratingsRepository
                 .find("date between " + startDate.getText().toString() + " and " + endDate.getText().toString())
                 .addOnCompleteListener(DriverRatings.this, new OnCompleteListener<TaskResult<Rating>>() {
@@ -215,82 +194,70 @@ public class DriverRatings extends AppCompatActivity {
                             }
                         }
 
-                        buildRatings(matchedRatingsList);
+                        getDistinctSetOfDrivers(matchedRatingsList);
                     }
                 });
         }
     }
 
     /**
-     * buildRatings builds the ratings for the matched ratings
+     * getDistinctSetOfDrivers gets a distinct set of drivers that match the driver ids
+     * from the matchedRatingsList
      * @param matchedRatingsList indicates the list of matched ratings
      */
-    private void buildRatings(List<Rating> matchedRatingsList) {
-        //arraylist to store driver and average rating
-        ArrayList<Map.Entry<String, Double>> driverRatingsList = new ArrayList<>();
-
+    private void getDistinctSetOfDrivers(final List<Rating> matchedRatingsList) {
         //Sort ratingslist by driver in ascending order
         Collections.sort(matchedRatingsList, new RatingsByDriverInAscendingOrderComparator());
 
-        //Ensure the method is working with a distinct list of drivers
-        //matching to the drivers in the matched ratings list
-        List<Map.Entry<String, String>> distinctDrivers =
-                buildDistinctListOfDrivers(restaurant.getDrivers(), matchedRatingsList);
+        usersRepository
+            .atNode("Driver")
+            .find()
+            .addOnCompleteListener(DriverRatings.this, new OnCompleteListener<TaskResult<User>>() {
+                @Override
+                public void onComplete(@NonNull Task<TaskResult<User>> task) {
+                    Set<User> distinctDrivers = new HashSet<>();
+                    Set<String> driverIdsFromMatchedRatingsList = new HashSet<>();
+
+                    for (Rating rating : matchedRatingsList) {
+                        driverIdsFromMatchedRatingsList.add(rating.getDriverId());
+                    }
+
+                    for (User user : task.getResult().getResults()) {
+                        if (driverIdsFromMatchedRatingsList.contains(user.getAuthUserID())) {
+                            distinctDrivers.add(user);
+                        }
+                    }
+
+                    buildRatings(matchedRatingsList, distinctDrivers);
+                }
+            });
+    }
+
+    /**
+     * buildRatings builds the ratings for the matched ratings
+     * @param matchedRatingsList indicates the list of matched ratings
+     * @param distinctSetOfDrivers indicates a set of distinct driver users
+     */
+    private void buildRatings(List<Rating> matchedRatingsList, Set<User> distinctSetOfDrivers) {
+        //arraylist to store driver and average rating
+        ArrayList<Map.Entry<String, Double>> driverRatingsList = new ArrayList<>();
 
         //Calculate each driver's average rating
-        for (Map.Entry<String, String> driver : distinctDrivers) {
+        for (User driver : distinctSetOfDrivers) {
+            StringBuilder driverNameBuilder = new StringBuilder();
+            driverNameBuilder.append(driver.getFirstName());
+            driverNameBuilder.append(" ");
+            driverNameBuilder.append(driver.getLastName());
+
             double averageRating = buildDriverAverageRating(driver.getKey(), matchedRatingsList);
+
             Map.Entry<String, Double> driverRating =
-                    new AbstractMap.SimpleEntry<>(driver.getValue(), averageRating);
+                    new AbstractMap.SimpleEntry<>(driverNameBuilder.toString(), averageRating);
             driverRatingsList.add(driverRating);
         }
 
         DriverRatingsListAdapter adapter = new DriverRatingsListAdapter(this, driverRatingsList);
         ratingsList.setAdapter(adapter);
-    }
-
-    /**
-     * buildDistinctListOfDrivers builds a distinct list of drivers for the current restaurant
-     * @param drivers indicates the drivers associated with the current restaurant
-     * @return a distinct list of the driver ids and names
-     */
-    private List<Map.Entry<String, String>> buildDistinctListOfDrivers(
-            Map<String, String> drivers, List<Rating> matchedRatingsList) {
-        List<Map.Entry<String, String>> distinctListOfDrivers = new ArrayList<>();
-
-        if (drivers != null && !drivers.isEmpty()) {
-            Set<String> distinctDriverIds =  buildDistinctListOfDriverIds(matchedRatingsList);
-            for (String driverId : distinctDriverIds) {
-                Map.Entry<String, String> distinctDriver = null;
-                for (Map.Entry<String, String> driver : drivers.entrySet()) {
-                    if (distinctDriver == null && driver.getKey().equals(driverId)) {
-                        distinctDriver = new AbstractMap.SimpleEntry<>(driverId, driver.getValue());
-                    }
-                }
-
-                distinctListOfDrivers.add(distinctDriver);
-            }
-        }
-
-        return distinctListOfDrivers;
-    }
-
-    /**
-     * buildDistinctListOfDriverIds returns a list of distinct driver ids
-     * that are also in the matched ratings list
-     * @return list of distinct driver ids
-     */
-    private Set<String> buildDistinctListOfDriverIds(List<Rating> matchedRatingsList) {
-        Set<String> distinctDriverIds = new HashSet<>();
-        for (Rating rating : matchedRatingsList) {
-            for (Map.Entry<String, String> driver : restaurant.getDrivers().entrySet()) {
-                if (rating.getDriverId().equals(driver.getKey())) {
-                    distinctDriverIds.add(driver.getKey());
-                }
-            }
-        }
-
-        return distinctDriverIds;
     }
 
     /**

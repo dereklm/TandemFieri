@@ -40,6 +40,7 @@ public class EditRestaurantActivity extends AppCompatActivity implements Adapter
     private Restaurants<Restaurant> restaurantsRepository;
     private Restaurant restaurant;
     private TextView title;
+    private TextView restaurantTypeTitle;
     private TextView address;
     private TextView delivery;
     private EditText restaurantName;
@@ -88,6 +89,7 @@ public class EditRestaurantActivity extends AppCompatActivity implements Adapter
      */
     private void findControlReferences() {
         title = (TextView)findViewById(R.id.title);
+        restaurantTypeTitle = (TextView)findViewById(R.id.restaurantType);
         address = (TextView)findViewById(R.id.address);
         delivery = (TextView)findViewById(R.id.delivery);
         restaurantName = (EditText)findViewById(R.id.restaurantName);
@@ -226,6 +228,7 @@ public class EditRestaurantActivity extends AppCompatActivity implements Adapter
         updateRestaurant.setText(resources.getString(R.string.updateButton));
 
         underlineText(title);
+        underlineText(restaurantTypeTitle);
         underlineText(address);
         underlineText(delivery);
     }

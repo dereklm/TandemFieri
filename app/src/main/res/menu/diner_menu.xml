@@ -13,4 +13,6 @@
                 android:title="Edit Password" />
         </menu>
     </item>
+    <item android:id="@+id/sendSimulatedNotification"
+        android:title="Send simulated notification"/>
 </menu>

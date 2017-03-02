@@ -31,6 +31,7 @@ import java.util.Map;
 public class CreateRestaurant extends AppCompatActivity implements AdapterView.OnItemSelectedListener {
     private Restaurants<Restaurant> restaurantsRepository;
     private TextView title;
+    private TextView restaurantTypeTitle;
     private TextView address;
     private TextView delivery;
     private EditText restaurantName;
@@ -74,6 +75,7 @@ public class CreateRestaurant extends AppCompatActivity implements AdapterView.O
      */
     private void findControlReferences() {
         title = (TextView)findViewById(R.id.title);
+        restaurantTypeTitle = (TextView)findViewById(R.id.restaurantType);
         address = (TextView)findViewById(R.id.address);
         delivery = (TextView)findViewById(R.id.delivery);
         restaurantName = (EditText)findViewById(R.id.restaurantName);
@@ -131,7 +133,6 @@ public class CreateRestaurant extends AppCompatActivity implements AdapterView.O
                                 Toast
                                     .makeText(CreateRestaurant.this, toastMessage.toString(), Toast.LENGTH_LONG)
                                     .show();
-
 
                                 //Enable set delivery hours if the create restaurant task was successful...
                                 if (task.isSuccessful()) {
@@ -194,6 +195,7 @@ public class CreateRestaurant extends AppCompatActivity implements AdapterView.O
     private void finalizeLayout() {
         deliveryHours.setEnabled(false);
         underlineText(title);
+        underlineText(restaurantTypeTitle);
         underlineText(address);
         underlineText(delivery);
     }
@@ -277,10 +279,5 @@ public class CreateRestaurant extends AppCompatActivity implements AdapterView.O
     @Override
     public void onNothingSelected(AdapterView<?> parent) {
         //not implemented
-    }
-
-    private void toastIt(String message) {
-        Toast.makeText(getApplicationContext(), message,
-                Toast.LENGTH_SHORT).show();
     }
 }

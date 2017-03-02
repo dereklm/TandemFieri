@@ -213,7 +213,7 @@ public class ManageRestaurantDrivers extends AppCompatActivity {
     private void getUnassignedDrivers() {
         users
             .atNode("Driver")
-            .find(null)
+            .find()
             .addOnCompleteListener(ManageRestaurantDrivers.this, new OnCompleteListener<TaskResult<User>>() {
                 @Override
                 public void onComplete(@NonNull Task<TaskResult<User>> task) {

@@ -26,17 +26,35 @@
         android:id="@+id/restaurantName"
         android:textSize="@dimen/regular_text_size"
         android:hint="@string/hintRestaurantName"
-        android:layout_below="@+id/title"
+        android:layout_below="@id/title"
         android:layout_alignParentLeft="true"
         android:layout_alignParentStart="true" />
+    <TextView
+        android:id="@+id/restaurantType"
+        android:layout_marginTop="12dp"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true"
+        android:textSize="@dimen/title_text_size"
+        android:layout_below="@id/restaurantName"
+        android:text="@string/restaurantType"/>
+    <Spinner
+        android:id="@+id/restaurantTypeSpinner"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/restaurantType"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true">
+    </Spinner>
     <TextView
         android:text="@string/restaurantAddress"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:id="@+id/address"
         android:textSize="@dimen/title_text_size"
-        android:layout_marginTop="44dp"
-        android:layout_below="@+id/restaurantName"
+        android:layout_marginTop="20dp"
+        android:layout_below="@id/restaurantTypeSpinner"
         android:layout_alignParentLeft="true"
         android:layout_alignParentStart="true" />
     <EditText
@@ -45,7 +63,7 @@
         android:textSize="@dimen/regular_text_size"
         android:id="@+id/street"
         android:hint="@string/hintStreet"
-        android:layout_below="@+id/address"
+        android:layout_below="@id/address"
         android:layout_alignParentLeft="true"
         android:layout_alignParentStart="true"
         android:inputType="textPostalAddress" />
@@ -55,7 +73,7 @@
         android:textSize="@dimen/regular_text_size"
         android:id="@+id/city"
         android:hint="@string/hintCity"
-        android:layout_below="@+id/street"
+        android:layout_below="@id/street"
         android:layout_alignParentLeft="true"
         android:layout_alignParentStart="true"
         android:inputType="textCapWords" />
@@ -90,8 +108,8 @@
         android:textSize="@dimen/title_text_size"
         android:id="@+id/delivery"
         android:text="@string/restaurantDelivery"
-        android:layout_marginTop="44dp"
-        android:layout_below="@+id/cityStateContainer"
+        android:layout_marginTop="20dp"
+        android:layout_below="@id/cityStateContainer"
         android:layout_alignParentLeft="true"
         android:layout_alignParentStart="true" />
     <EditText
@@ -99,20 +117,11 @@
         android:layout_height="wrap_content"
         android:inputType="numberDecimal"
         android:textSize="@dimen/regular_text_size"
-        android:layout_below="@+id/delivery"
+        android:layout_below="@id/delivery"
         android:layout_alignParentLeft="true"
         android:layout_alignParentStart="true"
         android:id="@+id/deliveryCharge"
         android:hint="@string/hintDeliveryCharge" />
-    <Spinner
-        android:id="@+id/restaurantTypeSpinner"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignParentStart="true"
-        android:layout_alignParentLeft="true"
-        android:layout_below="@id/deliveryCharge">
-
-    </Spinner>
     <Button
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
