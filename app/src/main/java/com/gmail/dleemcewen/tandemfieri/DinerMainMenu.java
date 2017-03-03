@@ -1,12 +1,16 @@
 package com.gmail.dleemcewen.tandemfieri;
 
+import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
+import android.support.v4.app.ActivityCompat;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.content.Intent;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
+import android.widget.Toast;
 
 import com.gmail.dleemcewen.tandemfieri.Entities.NotificationMessage;
 import com.gmail.dleemcewen.tandemfieri.Entities.Restaurant;
@@ -20,6 +24,10 @@ import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 
 import java.util.logging.Level;
+
+import static android.Manifest.permission.ACCESS_FINE_LOCATION;
+import static android.os.Build.VERSION_CODES.M;
+import static com.gmail.dleemcewen.tandemfieri.DinerMapActivity.MY_PERMISSIONS_REQUEST_LOCATION;
 
 public class DinerMainMenu extends AppCompatActivity {
     User user;
@@ -62,7 +70,13 @@ public class DinerMainMenu extends AppCompatActivity {
                 editPassword();
                 return true;
             case R.id.map:
-                launchMap();
+                if (android.os.Build.VERSION.SDK_INT >= M) {
+                    if(checkLocationPermission() == true){
+                        launchMap();
+                    }else{
+                    }
+                }
+
                 return true;
             case R.id.sendSimulatedNotification:
                 //TODO: remove this after ordering and payment processing are in place
@@ -143,5 +157,64 @@ public class DinerMainMenu extends AppCompatActivity {
                         .update(testRestaurant);
                 }
             });
+    }
+
+    public boolean checkLocationPermission() {
+        try {
+            if (ContextCompat.checkSelfPermission(this,
+                    ACCESS_FINE_LOCATION)
+                    != PackageManager.PERMISSION_GRANTED) {
+
+                // Asking user if explanation is needed
+                if (ActivityCompat.shouldShowRequestPermissionRationale(this,
+                        ACCESS_FINE_LOCATION)) {
+
+                    ActivityCompat.requestPermissions(this,
+                            new String[]{ACCESS_FINE_LOCATION},
+                            MY_PERMISSIONS_REQUEST_LOCATION);
+
+
+                } else {
+                    ActivityCompat.requestPermissions(this,
+                            new String[]{ACCESS_FINE_LOCATION},
+                            MY_PERMISSIONS_REQUEST_LOCATION);
+                }
+
+                return false;
+            } else {
+                return true;
+            }
+        } catch (Exception e){
+            Intent intent = new Intent(this, DinerMainMenu.class);
+            intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+            startActivity(intent);
+            finish();
+            return false;
+        }
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode,
+                                           String permissions[], int[] grantResults) {
+        switch (requestCode) {
+            case MY_PERMISSIONS_REQUEST_LOCATION: {
+                // If request is cancelled, the result arrays are empty.
+                if (grantResults.length > 0
+                        && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                    launchMap();
+                    // permission was granted, yay! Do the
+                    // contacts-related task you need to do.
+
+                } else {
+                    Toast.makeText(getApplicationContext(), "Some features will be unobtainable", Toast.LENGTH_LONG).show();
+                    // permission denied, boo! Disable the
+                    // functionality that depends on this permission.
+                }
+                return;
+            }
+
+            // other 'case' lines to check for other
+            // permissions this app might request
+        }
     }
 }//end Activity

@@ -5,15 +5,16 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Color;
 import android.graphics.Typeface;
-import android.location.Address;
 import android.location.Geocoder;
 import android.location.Location;
 import android.location.LocationManager;
 import android.os.Build;
 import android.os.Bundle;
+import android.provider.Settings;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.content.ContextCompat;
+import android.text.TextUtils;
 import android.view.Gravity;
 import android.view.View;
 import android.widget.LinearLayout;
@@ -46,7 +47,6 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-import static android.media.CamcorderProfile.get;
 import static android.os.Build.VERSION_CODES.M;
 import static com.google.android.gms.location.LocationServices.FusedLocationApi;
 
@@ -73,13 +73,23 @@ public class DinerMapActivity extends FragmentActivity implements GoogleApiClien
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_diner_map);
+
+        if (isLocationEnabled(getApplicationContext()) == false){
+            finish();
+            Toast.makeText(getApplicationContext(),"Location services must be turned on", Toast.LENGTH_LONG).show();
+        }
         restaurants = new ArrayList<Restaurant>();
         tempRestaurants = new ArrayList<Restaurant>();
         currentLocation = new Location("");
 
 
         LocationManager locManager = (LocationManager)getSystemService(Context.LOCATION_SERVICE);
-
+        if(locManager == null){
+            Intent intent = new Intent(this, DinerMainMenu.class);
+            intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+            startActivity(intent);
+            finish();
+        }
         boolean network_enabled = locManager.isProviderEnabled(LocationManager.NETWORK_PROVIDER);
 
         Location location;
@@ -102,10 +112,14 @@ public class DinerMapActivity extends FragmentActivity implements GoogleApiClien
         mDatabase.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
+                if (isLocationEnabled(getApplicationContext()) == false){
+                    finish();
+                    Toast.makeText(getApplicationContext(),"Location services must be turned on", Toast.LENGTH_LONG).show();
+                }
                 for (DataSnapshot child : dataSnapshot.getChildren()) {
                     restaurants.add(child.getValue(Restaurant.class));
                 }
-                //Toast.makeText(getApplicationContext(), restaurants.size()+"", Toast.LENGTH_LONG).show();
+
                 markers = new Marker[restaurants.size()];
                 for (int j = 0; j < restaurants.size(); j++) {
                     initialize(restaurants.get(j));
@@ -122,40 +136,40 @@ public class DinerMapActivity extends FragmentActivity implements GoogleApiClien
     }
 
 
-    /**
-     * Manipulates the map once available.
-     * This callback is triggered when the map is ready to be used.
-     * This is where we can add markers or lines, add listeners or move the camera. In this case,
-     * we just add a marker near Sydney, Australia.
-     * If Google Play services is not installed on the device, the user will be prompted to install
-     * it inside the SupportMapFragment. This method will only be triggered once the user has
-     * installed Google Play services and returned to the app.
-     */
     @Override
     public void onMapReady(GoogleMap googleMap) {
         mMap = googleMap;
         mMap.setMapType(GoogleMap.MAP_TYPE_NORMAL);
 
-        //Initialize Google Play Services
-        if (android.os.Build.VERSION.SDK_INT >= M) {
-            if (ContextCompat.checkSelfPermission(this,
-                    android.Manifest.permission.ACCESS_FINE_LOCATION)
-                    == PackageManager.PERMISSION_GRANTED) {
+
+        try {
+            if (android.os.Build.VERSION.SDK_INT >= M) {
+                if (ContextCompat.checkSelfPermission(this,
+                        android.Manifest.permission.ACCESS_FINE_LOCATION)
+                        == PackageManager.PERMISSION_GRANTED) {
+                    buildGoogleApiClient();
+                    mMap.setMyLocationEnabled(true);
+                }
+            } else {
                 buildGoogleApiClient();
                 mMap.setMyLocationEnabled(true);
             }
-        } else {
-            buildGoogleApiClient();
-            mMap.setMyLocationEnabled(true);
+        } catch (Exception e){
+            Intent intent = new Intent(this, DinerMainMenu.class);
+            intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+            startActivity(intent);
+            finish();
         }
         googleMap.setOnMarkerClickListener(new GoogleMap.OnMarkerClickListener() {
             @Override
             public boolean onMarkerClick(Marker marker) {
-
+                if (isLocationEnabled(getApplicationContext()) == false){
+                    finish();
+                    Toast.makeText(getApplicationContext(),"Location services must be turned on", Toast.LENGTH_LONG).show();
+                }
                 try {
                     for (int k = 0; k < restaurants.size(); k++) {
                         if (marker.getTag().equals(restaurants.get(k).getId())) {
-                            //Toast.makeText(getApplicationContext(), "" + restaurants.get(k).getMenu(), Toast.LENGTH_SHORT).show();
 
                         }
                     }
@@ -251,6 +265,12 @@ public class DinerMapActivity extends FragmentActivity implements GoogleApiClien
 
     @Override
     public void onLocationChanged(Location location) {
+
+        if (isLocationEnabled(getApplicationContext()) == false){
+            finish();
+            Toast.makeText(getApplicationContext(),"Location services must be turned on", Toast.LENGTH_LONG).show();
+        }
+
         currentLocation = location;
         mLastLocation = location;
         if (mCurrLocationMarker != null) {
@@ -284,67 +304,72 @@ public class DinerMapActivity extends FragmentActivity implements GoogleApiClien
     public static final int MY_PERMISSIONS_REQUEST_LOCATION = 99;
 
     public boolean checkLocationPermission() {
-        if (ContextCompat.checkSelfPermission(this,
-                android.Manifest.permission.ACCESS_FINE_LOCATION)
-                != PackageManager.PERMISSION_GRANTED) {
+        try {
+            if (ContextCompat.checkSelfPermission(this,
+                    android.Manifest.permission.ACCESS_FINE_LOCATION)
+                    != PackageManager.PERMISSION_GRANTED) {
 
-            // Asking user if explanation is needed
-            if (ActivityCompat.shouldShowRequestPermissionRationale(this,
-                    android.Manifest.permission.ACCESS_FINE_LOCATION)) {
+                // Asking user if explanation is needed
+                if (ActivityCompat.shouldShowRequestPermissionRationale(this,
+                        android.Manifest.permission.ACCESS_FINE_LOCATION)) {
 
-                // Show an explanation to the user *asynchronously* -- don't block
-                // this thread waiting for the user's response! After the user
-                // sees the explanation, try again to request the permission.
-
-                //Prompt the user once explanation has been shown
-                ActivityCompat.requestPermissions(this,
-                        new String[]{android.Manifest.permission.ACCESS_FINE_LOCATION},
-                        MY_PERMISSIONS_REQUEST_LOCATION);
+                    ActivityCompat.requestPermissions(this,
+                            new String[]{android.Manifest.permission.ACCESS_FINE_LOCATION},
+                            MY_PERMISSIONS_REQUEST_LOCATION);
 
 
+                } else {
+                    ActivityCompat.requestPermissions(this,
+                            new String[]{android.Manifest.permission.ACCESS_FINE_LOCATION},
+                            MY_PERMISSIONS_REQUEST_LOCATION);
+                }
+
+                return false;
             } else {
-                // No explanation needed, we can request the permission.
-                ActivityCompat.requestPermissions(this,
-                        new String[]{android.Manifest.permission.ACCESS_FINE_LOCATION},
-                        MY_PERMISSIONS_REQUEST_LOCATION);
+                return true;
             }
+        } catch (Exception e){
+            Intent intent = new Intent(this, DinerMainMenu.class);
+            intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+            startActivity(intent);
+            finish();
             return false;
-        } else {
-            return true;
         }
     }
 
     @Override
     public void onRequestPermissionsResult(int requestCode,
                                            String permissions[], int[] grantResults) {
-        switch (requestCode) {
-            case MY_PERMISSIONS_REQUEST_LOCATION: {
-                // If request is cancelled, the result arrays are empty.
-                if (grantResults.length > 0
-                        && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+        try {
+            switch (requestCode) {
+                case MY_PERMISSIONS_REQUEST_LOCATION: {
+                    if (grantResults.length > 0
+                            && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
 
-                    // permission was granted. Do the
-                    // contacts-related task you need to do.
-                    if (ContextCompat.checkSelfPermission(this,
-                            android.Manifest.permission.ACCESS_FINE_LOCATION)
-                            == PackageManager.PERMISSION_GRANTED) {
+                        if (ContextCompat.checkSelfPermission(this,
+                                android.Manifest.permission.ACCESS_FINE_LOCATION)
+                                == PackageManager.PERMISSION_GRANTED) {
 
-                        if (mGoogleApiClient == null) {
-                            buildGoogleApiClient();
+                            if (mGoogleApiClient == null) {
+                                buildGoogleApiClient();
+                            }
+                            mMap.setMyLocationEnabled(true);
                         }
-                        mMap.setMyLocationEnabled(true);
+
+                    } else {
+
+                        Toast.makeText(this, "permission denied", Toast.LENGTH_LONG).show();
                     }
-
-                } else {
-
-                    // Permission denied, Disable the functionality that depends on this permission.
-                    Toast.makeText(this, "permission denied", Toast.LENGTH_LONG).show();
+                    return;
                 }
-                return;
-            }
 
-            // other 'case' lines to check for other permissions this app might request.
-            // You can add here other case statements according to your requirement.
+
+            }
+        } catch (Exception e){
+            Intent intent = new Intent(this, DinerMainMenu.class);
+            intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+            startActivity(intent);
+            finish();
         }
     }
 
@@ -376,7 +401,7 @@ public class DinerMapActivity extends FragmentActivity implements GoogleApiClien
                         tempdouble = Math.round(tempdouble);
                         tempdouble /= 100;
                         markers[j] = (mMap.addMarker(new MarkerOptions().position(new LatLng(location.getLatitude(), location.getLongitude())).title(restaurant.getName())));
-                        markers[j].setSnippet("Delivery Charge: $" + restaurant.getCharge() + "\n" + " Distance Away: " + tempdouble);
+                        markers[j].setSnippet("Restaurant Type: " + restaurant.getRestaurantType() + "\n" + "Delivery Charge: $" + restaurant.getCharge() + "\n" + " Distance Away: " + tempdouble);
                         markers[j].setTag(restaurant.getId());
                     }
                 }
@@ -394,10 +419,39 @@ public class DinerMapActivity extends FragmentActivity implements GoogleApiClien
     }
 
 
-    public int calculateDistance() {
 
-        return 0;
+    public static boolean isLocationEnabled(Context context) {
+        int locationMode = 0;
+        String locationProviders;
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT){
+            try {
+                locationMode = Settings.Secure.getInt(context.getContentResolver(), Settings.Secure.LOCATION_MODE);
+
+            } catch (Settings.SettingNotFoundException e) {
+                e.printStackTrace();
+                return false;
+            }
+
+            return locationMode != Settings.Secure.LOCATION_MODE_OFF;
+
+        }else{
+            locationProviders = Settings.Secure.getString(context.getContentResolver(), Settings.Secure.LOCATION_PROVIDERS_ALLOWED);
+            return !TextUtils.isEmpty(locationProviders);
+        }
+
+
     }
+
+    @Override
+    public void onResume() {
+        super.onResume();  // Always call the superclass method first
+        if (isLocationEnabled(getApplicationContext()) == false){
+            finish();
+            Toast.makeText(getApplicationContext(),"Location services must be turned on", Toast.LENGTH_LONG).show();
+        }
+    }
+
 }
 
 
