@@ -53,7 +53,7 @@
         android:layout_height="wrap_content"
         android:id="@+id/address"
         android:textSize="@dimen/title_text_size"
-        android:layout_marginTop="20dp"
+        android:layout_marginTop="16dp"
         android:layout_below="@id/restaurantTypeSpinner"
         android:layout_alignParentLeft="true"
         android:layout_alignParentStart="true" />
@@ -102,48 +102,58 @@
             android:hint="@string/hintZipcode"
             android:inputType="number" />
     </LinearLayout>
-    <TextView
+    <LinearLayout
+        android:id="@+id/restaurantDeliveryTitleContainer"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:textSize="@dimen/title_text_size"
-        android:id="@+id/delivery"
-        android:text="@string/restaurantDelivery"
-        android:layout_marginTop="20dp"
-        android:layout_below="@id/cityStateContainer"
-        android:layout_alignParentLeft="true"
-        android:layout_alignParentStart="true" />
+        android:layout_height="48dp"
+        android:orientation="horizontal"
+        android:layout_marginTop="16dp"
+        android:layout_below="@id/cityStateContainer">
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textSize="@dimen/title_text_size"
+            android:id="@+id/delivery"
+            android:text="@string/restaurantDelivery"
+            android:layout_weight="2"
+            android:layout_below="@id/cityStateContainer"
+            android:layout_alignParentLeft="true"
+            android:layout_alignParentStart="true" />
+        <Button
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textSize="@dimen/button_text_size"
+            android:id="@+id/deliveryHours"
+            android:layout_weight="1"
+            android:layout_alignParentEnd="true"
+            android:layout_alignParentRight="true"
+            android:text="@string/deliveryHours" />
+    </LinearLayout>
     <EditText
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:inputType="numberDecimal"
         android:textSize="@dimen/regular_text_size"
-        android:layout_below="@id/delivery"
+        android:layout_below="@id/restaurantDeliveryTitleContainer"
         android:layout_alignParentLeft="true"
         android:layout_alignParentStart="true"
         android:id="@+id/deliveryCharge"
         android:hint="@string/hintDeliveryCharge" />
-    <Button
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:textSize="@dimen/button_text_size"
-        android:id="@+id/deliveryHours"
-        android:layout_alignParentEnd="true"
-        android:layout_alignParentRight="true"
-        android:layout_below="@id/deliveryCharge"
-        android:text="@string/deliveryHours" />
+
     <LinearLayout
         android:id="@+id/actionsContainer"
         android:layout_marginTop="20dp"
         android:layout_width="match_parent"
-        android:layout_height="64dp"
+        android:layout_height="72dp"
         android:orientation="horizontal"
         android:layout_alignParentStart="true"
         android:layout_alignParentLeft="true"
-        android:layout_below="@id/deliveryHours">
+        android:layout_below="@id/deliveryCharge">
         <Button
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_weight="1"
+            android:layout_marginRight="@dimen/activity_horizontal_margin"
             android:text="@string/cancel"
             android:textSize="@dimen/regular_text_size"
             android:id="@+id/cancelRestaurant" />
@@ -151,6 +161,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_weight="1"
+            android:layout_marginLeft="@dimen/activity_horizontal_margin"
             android:text="@string/createButton"
             android:textSize="@dimen/regular_text_size"
             android:id="@+id/createRestaurant" />
