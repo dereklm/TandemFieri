@@ -420,6 +420,7 @@ public class CreateDeliveryHoursActivity extends AppCompatActivity implements Ti
                                 }
                             }
                             if(!isFound && restId != null){
+
                                 //restaurant # wasn't found in delivery hours so create a new delivery hours
                                 mDatabase.child(obj.getKey()).setValue(obj);
                             }
