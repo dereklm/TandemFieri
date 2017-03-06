@@ -1,7 +1,7 @@
 package com.gmail.dleemcewen.tandemfieri.Entities;
 
 import com.gmail.dleemcewen.tandemfieri.Abstracts.Entity;
-import com.gmail.dleemcewen.tandemfieri.menubuilder.MenuItem;
+import com.gmail.dleemcewen.tandemfieri.Constants.OrderConstants;
 
 import java.util.List;
 
@@ -10,22 +10,42 @@ import java.util.List;
  */
 
 public class Order extends Entity {
-    private List<MenuItem> items;
+    private List<OrderItem> items;
     private int orderId;
     private int restaurantId;
     private int customerId;
-    private int subtotal;
-    private int tax;
-    private int total;
+    private double subTotal;
+    private double tax;
+    private double total;
 
     public Order() {}
 
+    public double calculateSubTotal() {
+        double subTotal = 0;
+        for (OrderItem item : items) {
+            subTotal += item.getBasePrice();
+            for (OrderItemOptionGroup group : item.getOptionGroups()) {
+                for (OrderItemOption selection : group.getOptions()) {
+                    subTotal += selection.getAddedPrice();
+                }
+            }
+        }
+        return subTotal;
+    }
 
-    public List<MenuItem> getItems() {
+    public double calculateTax() {
+        return this.subTotal * OrderConstants.TAX_RATE;
+    }
+
+    public double calculateTotal() {
+        return this.subTotal + this.tax;
+    }
+
+    public List<OrderItem> getItems() {
         return items;
     }
 
-    public void setItems(List<MenuItem> items) {
+    public void setItems(List<OrderItem> items) {
         this.items = items;
     }
 
@@ -53,27 +73,27 @@ public class Order extends Entity {
         this.customerId = customerId;
     }
 
-    public int getSubtotal() {
-        return subtotal;
+    public double getSubTotal() {
+        return subTotal;
     }
 
-    public void setSubtotal(int subtotal) {
-        this.subtotal = subtotal;
+    public void setSubTotal(double subTotal) {
+        this.subTotal = subTotal;
     }
 
-    public int getTax() {
+    public double getTax() {
         return tax;
     }
 
-    public void setTax(int tax) {
+    public void setTax(double tax) {
         this.tax = tax;
     }
 
-    public int getTotal() {
+    public double getTotal() {
         return total;
     }
 
-    public void setTotal(int total) {
+    public void setTotal(double total) {
         this.total = total;
     }
 }
