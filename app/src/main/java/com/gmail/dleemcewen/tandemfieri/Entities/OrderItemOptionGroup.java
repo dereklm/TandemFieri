@@ -2,6 +2,7 @@ package com.gmail.dleemcewen.tandemfieri.Entities;
 
 import com.gmail.dleemcewen.tandemfieri.menubuilder.ItemOption;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -9,7 +10,7 @@ import java.util.List;
  * Created by Derek on 3/5/2017.
  */
 
-public class OrderItemOptionGroup {
+public class OrderItemOptionGroup implements Serializable {
 
     private String name;
     private List<OrderItemOption> options;
@@ -18,6 +19,7 @@ public class OrderItemOptionGroup {
 
     public OrderItemOptionGroup(ItemOption itemOption) {
         options = new ArrayList<>();
+        this.name = itemOption.getOptionName();
         required = itemOption.isRequired();
         exclusive = !itemOption.isAndRelationship();
     }

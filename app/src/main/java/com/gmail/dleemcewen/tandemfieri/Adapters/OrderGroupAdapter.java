@@ -10,10 +10,11 @@ import android.widget.TextView;
 
 import com.gmail.dleemcewen.tandemfieri.Entities.OrderItemOption;
 import com.gmail.dleemcewen.tandemfieri.Entities.OrderItemOptionGroup;
+import com.gmail.dleemcewen.tandemfieri.Logging.LogWriter;
 import com.gmail.dleemcewen.tandemfieri.R;
 
 import java.text.NumberFormat;
-import java.util.List;
+import java.util.logging.Level;
 
 /**
  * Created by Derek on 3/5/2017.
@@ -23,39 +24,50 @@ public class OrderGroupAdapter extends BaseExpandableListAdapter {
 
     private Activity activity;
     private Context context;
-    private List<OrderItemOptionGroup> groups;
+    //private List<OrderItemOptionGroup> groups;
+    private OrderItemOptionGroup group;
     private LayoutInflater inflater;
+    private LogWriter logWriter;
 
-    public OrderGroupAdapter (Activity activity, Context context, List<OrderItemOptionGroup> groups) {
+    public OrderGroupAdapter (Activity activity, Context context, OrderItemOptionGroup group) {
         this.activity = activity;
         this.context = context;
-        this.groups = groups;
+        this.group = group;
+        logWriter = LogWriter.getInstance();
+        logWriter.setMinimumLoggingLevel(Level.INFO);
         inflater = (LayoutInflater) context.getSystemService(context.LAYOUT_INFLATER_SERVICE);
     }
 
     @Override
     public int getGroupCount() {
-        return groups.size();
+        return 1;
+        //return groups.size();
     }
 
     @Override
     public int getChildrenCount(int groupPosition) {
-        return groups.get(groupPosition).getOptions().size();
+        return group.getOptions().size();
+        //return groups.get(groupPosition).getOptions().size();
     }
 
     @Override
     public Object getGroup(int groupPosition) {
-        return groups.get(groupPosition);
+        return group;
+        //logWriter.log(context, Level.WARNING, "group is " + groups.get(groupPosition).getName());
+        //return groups.get(groupPosition);
     }
 
     @Override
     public Object getChild(int groupPosition, int childPosition) {
-        return groups.get(groupPosition).getOptions().get(childPosition);
+        return group.getOptions().get(childPosition);
+        //logWriter.log(context, Level.WARNING, "child is " + groups.get(groupPosition).getOptions().get(childPosition).getName());
+        //return groups.get(groupPosition).getOptions().get(childPosition);
     }
 
     @Override
     public long getGroupId(int groupPosition) {
-        return groupPosition;
+        return 0;
+        //return groupPosition;
     }
 
     @Override
@@ -76,7 +88,7 @@ public class OrderGroupAdapter extends BaseExpandableListAdapter {
             convertView = inflater.inflate(R.layout.order_item, null);
         }
 
-        TextView name = (TextView) convertView.findViewById(R.id.item_name);
+        TextView name = (TextView) convertView.findViewById(R.id.order_item_name);
         name.setText(group.getName());
         TextView description = (TextView) convertView.findViewById(R.id.item_description);
         if (group.isRequired() && group.isExclusive()) description.setText("Must select a single item in this group.");
@@ -90,10 +102,10 @@ public class OrderGroupAdapter extends BaseExpandableListAdapter {
         OrderItemOption option = (OrderItemOption) getChild(groupPosition, childPosition);
 
         if (convertView == null) {
-            convertView = inflater.inflate(R.layout.order_item, null);
+            convertView = inflater.inflate(R.layout.order_item, parent, false);
         }
 
-        TextView name = (TextView) convertView.findViewById(R.id.item_name);
+        TextView name = (TextView) convertView.findViewById(R.id.order_item_name);
         name.setText(option.getName());
         TextView description = (TextView) convertView.findViewById(R.id.item_description);
         description.setText(option.getDescription());
@@ -106,6 +118,6 @@ public class OrderGroupAdapter extends BaseExpandableListAdapter {
 
     @Override
     public boolean isChildSelectable(int groupPosition, int childPosition) {
-        return false;
+        return true;
     }
 }

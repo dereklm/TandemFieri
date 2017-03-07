@@ -1,12 +1,13 @@
 package com.gmail.dleemcewen.tandemfieri.menubuilder;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 
 /**
  * Created by jfly1_000 on 2/13/2017.
  */
 
-public class MenuItem extends MenuCompenet {
+public class MenuItem extends MenuCompenet implements Serializable {
 
     private double basePrice;
     private ArrayList<ItemOption> options;

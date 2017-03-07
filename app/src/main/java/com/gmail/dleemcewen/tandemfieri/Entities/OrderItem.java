@@ -4,20 +4,25 @@ import com.gmail.dleemcewen.tandemfieri.menubuilder.ItemOption;
 import com.gmail.dleemcewen.tandemfieri.menubuilder.MenuItem;
 import com.gmail.dleemcewen.tandemfieri.menubuilder.OptionSelection;
 
+import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
  * Created by Derek on 3/5/2017.
  */
 
-public class OrderItem {
+public class OrderItem implements Serializable {
 
     private String name;
     private double basePrice;
     private List<OrderItemOptionGroup> optionGroups;
 
     public OrderItem(MenuItem menuItem) {
+        basePrice = 0;
+        this.name = menuItem.getName();
         this.basePrice = menuItem.getBasePrice();
+        optionGroups = new ArrayList<>();
     }
 
     public void addOptionGroup (ItemOption optionGroup) {

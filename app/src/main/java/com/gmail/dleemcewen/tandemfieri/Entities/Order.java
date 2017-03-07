@@ -4,6 +4,7 @@ import com.gmail.dleemcewen.tandemfieri.Abstracts.Entity;
 import com.gmail.dleemcewen.tandemfieri.Constants.OrderConstants;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -11,7 +12,7 @@ import java.util.List;
  */
 
 public class Order extends Entity implements Serializable {
-    private List<OrderItem> items;
+    private List<OrderItem> items = new ArrayList<>();
     private int orderId;
     private int restaurantId;
     private int customerId;
@@ -32,6 +33,10 @@ public class Order extends Entity implements Serializable {
             }
         }
         return subTotal;
+    }
+
+    public void addItem(OrderItem item) {
+        items.add(item);
     }
 
     public double calculateTax() {

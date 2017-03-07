@@ -77,7 +77,7 @@ public class OrderItemAdapter extends BaseExpandableListAdapter {
             convertView = inflater.inflate(R.layout.order_item, null);
         }
 
-        TextView name = (TextView) convertView.findViewById(R.id.item_name);
+        TextView name = (TextView) convertView.findViewById(R.id.order_item_name);
         name.setText(item.getName());
         TextView price = (TextView) convertView.findViewById(R.id.item_price);
         NumberFormat formatter = NumberFormat.getCurrencyInstance();
@@ -88,18 +88,38 @@ public class OrderItemAdapter extends BaseExpandableListAdapter {
 
     @Override
     public View getChildView(int groupPosition, int childPosition, boolean isLastChild, View convertView, ViewGroup parent) {
+        //List<OrderItemOptionGroup> groups = items.get(groupPosition).getOptionGroups();
+        //LogWriter.log(context, Level.WARNING, "size of groups " + groups.size() + " for item " + ((OrderItem) getGroup(groupPosition)).getName());
         OrderItemOptionGroup group = (OrderItemOptionGroup) getChild(groupPosition, childPosition);
-        ExpandableListView groupsListView;
+        final ExpandableListView groupsListView;
 
         if (convertView == null) {
             convertView = inflater.inflate(R.layout.order_item_group, null);
         }
 
         groupsListView = (ExpandableListView) convertView.findViewById(R.id.item_groups);
-        OrderGroupAdapter orderGroupAdapter =
-                new OrderGroupAdapter(activity, context,
-                        ((OrderItem) getGroup(groupPosition)).getOptionGroups());
+        OrderGroupAdapter orderGroupAdapter = new OrderGroupAdapter(activity, context, group);
         groupsListView.setAdapter(orderGroupAdapter);
+        groupsListView.setOnGroupExpandListener(new ExpandableListView.OnGroupExpandListener() {
+            @Override
+            public void onGroupExpand(int groupPosition) {
+                int height = 0;
+                for (int i = 0; i < groupsListView.getChildCount(); i++) {
+                    height += groupsListView.getChildAt(i).getMeasuredHeight();
+                    height += groupsListView.getDividerHeight();
+                }
+                groupsListView.getLayoutParams().height = (height+6)*(groupsListView.getChildCount()*2);
+            }
+        });
+
+        // Listview Group collapsed listener
+        groupsListView.setOnGroupCollapseListener(new ExpandableListView.OnGroupCollapseListener() {
+
+            @Override
+            public void onGroupCollapse(int groupPosition) {
+                groupsListView.getLayoutParams().height = 100;
+            }
+        });
         return convertView;
     }
 

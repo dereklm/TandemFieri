@@ -93,7 +93,7 @@ public class LookAtMenuActivity extends AppCompatActivity {
         // Handle item selection
         switch (item.getItemId()) {
             case R.id.orderLaunch:
-                Intent orderLaunch = new Intent(LookAtMenuActivity.this, CreateOrderActivity.class);
+                Intent orderLaunch = new Intent(LookAtMenuActivity.this, OrderMenuActivity.class);
                 orderLaunch.putExtras(this.getIntent().getExtras());
                 startActivity(orderLaunch);
                 return true;

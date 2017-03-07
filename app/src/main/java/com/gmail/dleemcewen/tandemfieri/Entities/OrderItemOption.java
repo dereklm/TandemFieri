@@ -2,11 +2,13 @@ package com.gmail.dleemcewen.tandemfieri.Entities;
 
 import com.gmail.dleemcewen.tandemfieri.menubuilder.OptionSelection;
 
+import java.io.Serializable;
+
 /**
  * Created by Derek on 3/5/2017.
  */
 
-public class OrderItemOption {
+public class OrderItemOption implements Serializable {
     private String name;
     private double addedPrice;
     private String description;

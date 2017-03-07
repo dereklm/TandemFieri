@@ -8,6 +8,7 @@
     <string name="hintPassword">Password</string>
     <string name="signInButton">Sign In</string>
     <string name="go_to_cart">Go To Cart</string>
+    <string name="addToOrder">To add an item to your order, long press on the item.</string>
     <string name="createAccount">Create Account</string>
     <string name="signupTitle">Sign Up</string>
     <string name="hintFirstName">First Name</string>

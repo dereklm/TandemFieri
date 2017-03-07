@@ -11,6 +11,14 @@
     android:paddingTop="5dp"
     tools:context="com.gmail.dleemcewen.tandemfieri.OrderMenuActivity">
 
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textSize="13dp"
+        android:text="@string/addToOrder"
+        android:gravity="center"
+        />
+
     <ExpandableListView
         android:id="@+id/menu_items"
         android:layout_width="match_parent"
