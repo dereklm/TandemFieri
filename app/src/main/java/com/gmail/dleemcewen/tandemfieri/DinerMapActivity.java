@@ -5,11 +5,9 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Color;
 import android.graphics.Typeface;
-import android.location.Address;
 import android.location.Geocoder;
 import android.location.Location;
 import android.location.LocationManager;
-import android.os.Build;
 import android.os.Bundle;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.FragmentActivity;
@@ -46,7 +44,6 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-import static android.media.CamcorderProfile.get;
 import static android.os.Build.VERSION_CODES.M;
 import static com.google.android.gms.location.LocationServices.FusedLocationApi;
 
@@ -182,7 +179,7 @@ public class DinerMapActivity extends FragmentActivity implements GoogleApiClien
                         }
                     }
                 } catch (Exception e) {
-
+                    e.printStackTrace();
                 }
 
             }

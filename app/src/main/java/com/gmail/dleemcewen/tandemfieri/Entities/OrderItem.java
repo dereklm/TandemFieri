@@ -12,11 +12,16 @@ import java.util.List;
 
 public class OrderItem {
 
+    private String name;
     private double basePrice;
     private List<OrderItemOptionGroup> optionGroups;
 
     public OrderItem(MenuItem menuItem) {
         this.basePrice = menuItem.getBasePrice();
+    }
+
+    public void addOptionGroup (ItemOption optionGroup) {
+        this.optionGroups.add(new OrderItemOptionGroup(optionGroup));
     }
 
     public void addOption(ItemOption itemOption, List<OptionSelection> selections) {
@@ -51,6 +56,14 @@ public class OrderItem {
             }
         }
 
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
     }
 
     public double getBasePrice() {

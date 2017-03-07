@@ -3,13 +3,14 @@ package com.gmail.dleemcewen.tandemfieri.Entities;
 import com.gmail.dleemcewen.tandemfieri.Abstracts.Entity;
 import com.gmail.dleemcewen.tandemfieri.Constants.OrderConstants;
 
+import java.io.Serializable;
 import java.util.List;
 
 /**
  * Created by Derek on 3/1/2017.
  */
 
-public class Order extends Entity {
+public class Order extends Entity implements Serializable {
     private List<OrderItem> items;
     private int orderId;
     private int restaurantId;
