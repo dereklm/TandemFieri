@@ -1,6 +1,7 @@
 package com.gmail.dleemcewen.tandemfieri;
 
 import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.view.Menu;
@@ -92,12 +93,9 @@ public class LookAtMenuActivity extends AppCompatActivity {
         // Handle item selection
         switch (item.getItemId()) {
             case R.id.orderLaunch:
-
-                /*
-                **************************
-                launch you Activity here Derek
-                ***************************
-                 */
+                Intent orderLaunch = new Intent(LookAtMenuActivity.this, OrderMenuActivity.class);
+                orderLaunch.putExtras(this.getIntent().getExtras());
+                startActivity(orderLaunch);
                 return true;
 
             default:

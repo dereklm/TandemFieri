@@ -1,11 +1,15 @@
 <resources>
-    <string name="minimum_logging_level">FINEST</string>
+    <string name="minimum_logging_level">FINE</string>
+    <string name="purchase">Purchase</string>
     <string name="app_name">Tandem Fieri</string>
     <string name="multiDex">multidex</string>
     <string name="signInTitle">Tandem Fieri</string>
     <string name="hintEmail">Email</string>
     <string name="hintPassword">Password</string>
     <string name="signInButton">Sign In</string>
+    <string name="go_to_cart">Go To Cart</string>
+    <string name="checkout">Checkout</string>
+    <string name="addToOrder">To add an item to your order, long press on the item.</string>
     <string name="createAccount">Create Account</string>
     <string name="signupTitle">Sign Up</string>
     <string name="hintFirstName">First Name</string>
