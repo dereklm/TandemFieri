@@ -8,7 +8,6 @@ import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
-import android.widget.Toast;
 
 import com.braintreepayments.api.dropin.DropInActivity;
 import com.braintreepayments.api.dropin.DropInRequest;
@@ -17,9 +16,9 @@ import com.gmail.dleemcewen.tandemfieri.Entities.Nonce;
 import com.gmail.dleemcewen.tandemfieri.Entities.User;
 import com.gmail.dleemcewen.tandemfieri.EventListeners.QueryCompleteListener;
 import com.gmail.dleemcewen.tandemfieri.Json.Braintree.Checkout;
+import com.gmail.dleemcewen.tandemfieri.Logging.LogWriter;
 import com.gmail.dleemcewen.tandemfieri.Repositories.Users;
 import com.gmail.dleemcewen.tandemfieri.Utility.BraintreeUtil;
-import com.gmail.dleemcewen.tandemfieri.Utility.Util;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.loopj.android.http.AsyncHttpClient;
@@ -30,6 +29,7 @@ import org.json.JSONObject;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.logging.Level;
 
 import cz.msebera.android.httpclient.Header;
 
@@ -57,6 +57,9 @@ public class FakePayment extends AppCompatActivity {
             public void onClick(View view) {
                 Context context = getApplicationContext();
                 String token = BraintreeUtil.getClientToken(context);
+
+                Log.v("BRAINTREE DEBUG", "TOKEN PRE DROPIN: " + token);  //REMOVE ME, TESTING ONLY
+
                 DropInRequest request = new DropInRequest().clientToken(token);
 
                 startActivityForResult(request.getIntent(context), PAYMENT);
@@ -67,7 +70,7 @@ public class FakePayment extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 if (nonce == null || nonce.getNonce().equals("")) {
-                    Util.JellyToast(getApplicationContext(), "No payment method selected.", Toast.LENGTH_LONG);
+                    LogWriter.log(getApplicationContext(), Level.SEVERE, "No payment method selected.");
                 } else {
                     submitPayment();
                 }
@@ -83,24 +86,22 @@ public class FakePayment extends AppCompatActivity {
                 DropInResult result = data.getParcelableExtra(DropInResult.EXTRA_DROP_IN_RESULT);
                 nonce = new Nonce(result.getPaymentMethodNonce().getNonce());
 
-                Log.v("Braintree", "Nouce: " + result.getPaymentMethodNonce().getNonce());
-                Util.JellyToast(getApplicationContext(), "Nounce: " + result.getPaymentMethodNonce().getNonce(), Toast.LENGTH_LONG);
+                Log.v("BRAINTREE DEBUG", "NONCE: " + nonce.getNonce());  //REMOVE ME, TESTING ONLY
+                LogWriter.log(getApplicationContext(), Level.WARNING, "Nounce: " + result.getPaymentMethodNonce().getNonce());
             } else if (resultCode == Activity.RESULT_CANCELED) {
-                Log.v("Braintree", "Canceled");
+                LogWriter.log(getApplicationContext(), Level.WARNING, "Canceled");
             } else {
                 Exception error = (Exception) data.getSerializableExtra(DropInActivity.EXTRA_ERROR);
+                LogWriter.log(getApplicationContext(), Level.WARNING, "Error: " + error.getMessage());
             }
         }
     }
 
     public void submitPayment() {
-        //Log.v("Braintree", "UserID: " + diner.getAuthUserID());
-        //Log.v("Braintree", "ID: " + diner.getBraintreeId());
-        //updateUser();
-        //Log.v("Braintree", "ID updated: " + diner.getBraintreeId());
-
         AsyncHttpClient client = new AsyncHttpClient();
         RequestParams params = new RequestParams();
+
+        Log.v("BRAINTREE DEBUG", "Payment - Cust ID: " + diner.getBraintreeId());  //REMOVE ME, TESTING ONLY
 
         params.put("customerID", diner.getBraintreeId());
         params.put("amount", "15.23");
@@ -123,17 +124,15 @@ public class FakePayment extends AppCompatActivity {
                         Checkout checkout = gson.fromJson(json, Checkout.class);
 
                         if (checkout.success.equals("true")) {
-                            Util.JellyToast(getApplicationContext(), "Payment submitted.", Toast.LENGTH_LONG);
+                            LogWriter.log(getApplicationContext(), Level.WARNING, "Payment submitted.");
                         }
 
-                        //LogWriter.log(getApplicationContext(), Level.WARNING, "BraintreeClientToken: " + token);
-                        Log.v("Braintree", "CheckoutResult: " + checkout.success);
+                        LogWriter.log(getApplicationContext(), Level.WARNING, checkout.success);
                     }
 
                     @Override
                     public void onFailure(int status, Header[] headers, String res, Throwable t) {
-                        //LogWriter.log(getApplicationContext(), Level.WARNING, "BraintreeClientTokenRequestFailed: " + t.getMessage());
-                        Log.v("Braintree", "CheckoutFailure: " + t.getMessage());
+                        LogWriter.log(getApplicationContext(), Level.WARNING, "CheckoutFailure: " + t.getMessage());
                     }
                 });
         //End rest api
@@ -148,7 +147,7 @@ public class FakePayment extends AppCompatActivity {
 
                 for (User entity : entities) {
                     diner = entity;
-                    Log.v("Braintree", "Test: " + diner.getBraintreeId());
+                    LogWriter.log(getApplicationContext(), Level.WARNING, "Test: " + diner.getBraintreeId());
                 }
             }
         });

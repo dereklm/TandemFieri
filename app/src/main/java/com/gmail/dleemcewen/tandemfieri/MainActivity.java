@@ -37,7 +37,6 @@ import com.loopj.android.http.AsyncHttpClient;
 import com.loopj.android.http.JsonHttpResponseHandler;
 import com.loopj.android.http.RequestParams;
 
-import java.util.AbstractMap;
 import org.json.JSONObject;
 
 import java.util.AbstractMap;
@@ -180,17 +179,15 @@ public class MainActivity extends AppCompatActivity {
                                     .child("braintreeId")
                                     .setValue(customer.customerID);
 
-                            Log.v("Braintree", "CreateCustomerCustomerID: " + customer.customerID);
+                            LogWriter.log(getApplicationContext(), Level.FINEST, "CreateCustomerCustomerID: " + customer.customerID);
                         }
 
-                        //LogWriter.log(getApplicationContext(), Level.WARNING, "BraintreeClientToken: " + token);
-                        Log.v("Braintree", "CreateCustomerResult: " + customer.success);
+                        LogWriter.log(getApplicationContext(), Level.FINEST, "CreateCustomerResult: " + customer.success);
                     }
 
                     @Override
                     public void onFailure(int status, Header[] headers, String res, Throwable t) {
-                        //LogWriter.log(getApplicationContext(), Level.WARNING, "BraintreeClientTokenRequestFailed: " + t.getMessage());
-                        Log.v("Braintree", "CreateCustomerFailure: " + t.getMessage());
+                        LogWriter.log(getApplicationContext(), Level.WARNING, "BraintreeCreateCustomerFailed: " + t.getMessage());
                     }
                 });
         //End rest api
@@ -202,10 +199,10 @@ public class MainActivity extends AppCompatActivity {
 
         params.put("customerID", customerID);
 
-        String url = getString(R.string.braintreeBaseURL);
+        String url = getString(R.string.braintreeBaseURL) + "generatetoken";
 
         //Start rest api
-        client.get(this
+        client.post(this
                 ,url
                 ,params
                 ,new JsonHttpResponseHandler() {
@@ -219,19 +216,19 @@ public class MainActivity extends AppCompatActivity {
                         ClientToken token = gson.fromJson(json, ClientToken.class);
 
                         if (token.status.equals("true")) {
+                            Log.v("BRAINTREE DEBUG", "TOKEN: " + token.token);  //REMOVE ME, TESTING ONLY
+                            Log.v("BRAINTREE DEBUG", "CUST ID: " + token.customerID);  //REMOVE ME, TESTING ONLY
                             BraintreeUtil.setClientToken(getApplicationContext(), token.token);
-                            Log.v("Braintree", "BraintreeClientToken: " + token.token);
-                        } else {
-                            Log.v("Braintree", "BraintreeClientTokenRequestFailed: customer does not exist");
-                        }
 
-                        //LogWriter.log(getApplicationContext(), Level.WARNING, "BraintreeClientToken: " + token);
+                            LogWriter.log(getApplicationContext(), Level.FINEST, "BraintreeClientToken: " + token.token);
+                        } else {
+                            LogWriter.log(getApplicationContext(), Level.WARNING, "BraintreeClientTokenRequestFailed: customer does not exist");
+                        }
                     }
 
                     @Override
                     public void onFailure(int status, Header[] headers, String res, Throwable t) {
-                        //LogWriter.log(getApplicationContext(), Level.WARNING, "BraintreeClientTokenRequestFailed: " + t.getMessage());
-                        Log.v("Braintree", "BraintreeClientTokenRequestFailed: " + t.getMessage());
+                        LogWriter.log(getApplicationContext(), Level.WARNING, "BraintreeClientTokenRequestFailed: " + t.getMessage());
                     }
                 });
         //End rest api
@@ -254,6 +251,7 @@ public class MainActivity extends AppCompatActivity {
             if (diner.getBraintreeId() == null || diner.getBraintreeId().equals("")) {
                 createBraintreeCustomer(diner);
             } else {
+                Log.v("BRAINTREE DEBUG", "CUS ID FROM MENU: " + diner.getBraintreeId());  //REMOVE ME, TESTING ONLY
                 requestBraintreeClientToken(diner.getBraintreeId());
             }
         }else if(driver != null){

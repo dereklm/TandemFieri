@@ -5,15 +5,14 @@ import android.graphics.Color;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
-import android.widget.Toast;
 
 import com.gmail.dleemcewen.tandemfieri.Entities.Restaurant;
 import com.gmail.dleemcewen.tandemfieri.Events.ActivityEvent;
 import com.gmail.dleemcewen.tandemfieri.Json.AddressGeocode.AddressGeocode;
 import com.gmail.dleemcewen.tandemfieri.Json.AddressGeocode.Location;
+import com.gmail.dleemcewen.tandemfieri.Logging.LogWriter;
 import com.gmail.dleemcewen.tandemfieri.Utility.Conversions;
 import com.gmail.dleemcewen.tandemfieri.Utility.MapUtil;
-import com.gmail.dleemcewen.tandemfieri.Utility.Util;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.MapFragment;
 import com.google.android.gms.maps.OnMapReadyCallback;
@@ -32,6 +31,8 @@ import com.shawnlin.numberpicker.NumberPicker;
 
 import org.greenrobot.eventbus.EventBus;
 import org.json.JSONObject;
+
+import java.util.logging.Level;
 
 import cz.msebera.android.httpclient.Header;
 
@@ -95,13 +96,9 @@ public class RestaurantMapActivity extends Activity implements OnMapReadyCallbac
                                     @Override
                                     public void onComplete(DatabaseError error, DatabaseReference reference) {
                                        if (error != null) {
-                                           Util.JellyToast(getApplicationContext()
-                                               ,"Unable to save change, try again later!"
-                                               ,Toast.LENGTH_LONG);
+                                           LogWriter.log(getApplicationContext(), Level.SEVERE, "Unable to save change, try again later!");
                                        } else {
-                                           Util.JellyToast(getApplicationContext()
-                                               ,"Delivery area saved!"
-                                               ,Toast.LENGTH_LONG);
+                                           LogWriter.log(getApplicationContext(), Level.SEVERE, "Delivery area saved!");
                                            EventBus.getDefault()
                                                    .post(new ActivityEvent(ActivityEvent.Result.REFRESH_RESTAURANT_LIST));
                                        }
@@ -182,7 +179,7 @@ public class RestaurantMapActivity extends Activity implements OnMapReadyCallbac
 
     private void asyncReqComplete() {
         if (latLng == null) {
-            Util.JellyToast(this, "Unable to locate address.", Toast.LENGTH_LONG);
+            LogWriter.log(getApplicationContext(), Level.SEVERE, "Unable to locate address.");
         } else {
             numberPicker.setValue(restaurant.getDeliveryRadius());
             mapFragment.getMapAsync(RestaurantMapActivity.this);

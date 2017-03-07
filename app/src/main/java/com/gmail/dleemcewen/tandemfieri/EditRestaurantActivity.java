@@ -21,18 +21,12 @@ import com.gmail.dleemcewen.tandemfieri.Formatters.StringFormatter;
 import com.gmail.dleemcewen.tandemfieri.Logging.LogWriter;
 import com.gmail.dleemcewen.tandemfieri.Repositories.Restaurants;
 import com.gmail.dleemcewen.tandemfieri.Tasks.TaskResult;
-import com.gmail.dleemcewen.tandemfieri.Utility.Util;
 import com.gmail.dleemcewen.tandemfieri.Validator.Validator;
-import com.google.android.gms.tasks.Continuation;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
-import com.google.android.gms.tasks.TaskCompletionSource;
-import com.google.firebase.database.DatabaseError;
-
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Map;
 import java.util.logging.Level;
 
 public class EditRestaurantActivity extends AppCompatActivity implements AdapterView.OnItemSelectedListener {
