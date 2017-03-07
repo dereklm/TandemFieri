@@ -37,6 +37,9 @@ public class Order extends Entity implements Serializable {
 
     public void addItem(OrderItem item) {
         items.add(item);
+        this.subTotal = calculateSubTotal();
+        this.tax = calculateTax();
+        this.total = calculateTotal();
     }
 
     public double calculateTax() {

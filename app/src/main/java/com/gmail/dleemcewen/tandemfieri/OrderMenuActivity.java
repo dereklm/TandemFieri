@@ -13,14 +13,12 @@ import com.gmail.dleemcewen.tandemfieri.Entities.Order;
 import com.gmail.dleemcewen.tandemfieri.Entities.OrderItem;
 import com.gmail.dleemcewen.tandemfieri.Entities.OrderItemOption;
 import com.gmail.dleemcewen.tandemfieri.Entities.Restaurant;
-import com.gmail.dleemcewen.tandemfieri.Logging.LogWriter;
 import com.gmail.dleemcewen.tandemfieri.menubuilder.ItemOption;
 import com.gmail.dleemcewen.tandemfieri.menubuilder.MenuItem;
 import com.gmail.dleemcewen.tandemfieri.menubuilder.OptionSelection;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.logging.Level;
 
 public class OrderMenuActivity extends AppCompatActivity {
 
@@ -66,9 +64,6 @@ public class OrderMenuActivity extends AppCompatActivity {
                     OrderItem item = (OrderItem) orderItemAdapter.getGroup(groupPosition);
                     order.addItem(item);
 
-                    for (OrderItem i : order.getItems()) {
-                        LogWriter.log(getApplicationContext(), Level.WARNING, "item  = " + i.getName());
-                    }
                     return true;
                 }
 
