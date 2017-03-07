@@ -1,20 +1,20 @@
 package com.gmail.dleemcewen.tandemfieri.Abstracts;
 
 import android.content.Context;
-import android.content.Intent;
 import android.support.annotation.NonNull;
 
 import com.gmail.dleemcewen.tandemfieri.Builders.QueryBuilder;
+import com.gmail.dleemcewen.tandemfieri.Constants.NotificationConstants;
+import com.gmail.dleemcewen.tandemfieri.Entities.NotificationMessage;
 import com.gmail.dleemcewen.tandemfieri.EventListeners.QueryCompleteListener;
-import com.gmail.dleemcewen.tandemfieri.Services.NotificationService;
 import com.gmail.dleemcewen.tandemfieri.Tasks.AddEntitiesTask;
 import com.gmail.dleemcewen.tandemfieri.Tasks.AddEntityTask;
+import com.gmail.dleemcewen.tandemfieri.Tasks.AddNotificationMessageTask;
 import com.gmail.dleemcewen.tandemfieri.Tasks.FindEntitiesTask;
 import com.gmail.dleemcewen.tandemfieri.Tasks.GetEntitiesTask;
 import com.gmail.dleemcewen.tandemfieri.Tasks.NetworkConnectivityCheckTask;
 import com.gmail.dleemcewen.tandemfieri.Tasks.RemoveEntitiesTask;
 import com.gmail.dleemcewen.tandemfieri.Tasks.RemoveEntityTask;
-import com.gmail.dleemcewen.tandemfieri.Tasks.SendNotificationTask;
 import com.gmail.dleemcewen.tandemfieri.Tasks.TaskResult;
 import com.gmail.dleemcewen.tandemfieri.Tasks.UpdateEntityTask;
 import com.google.android.gms.tasks.Continuation;
@@ -27,9 +27,7 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.Query;
-import com.google.firebase.database.ValueEventListener;
 
-import java.io.Serializable;
 import java.lang.reflect.ParameterizedType;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -62,9 +60,10 @@ public abstract class Repository<T extends Entity> {
                 childEntityRecord.setKey(dataSnapshot.getKey());
 
                 /*Intent intent = new Intent(context, NotificationService.class);
-                intent.putExtra("action", "Added");
-                intent.putExtra("class", childClass);
+                intent.setAction(NotificationConstants.Action.ADDED.toString());
+                intent.putExtra("notificationClass", childEntityRecord.getClass());
                 intent.putExtra("entity", (Serializable) childEntityRecord);
+                intent.putExtra("key", childEntityRecord.getKey());
                 context.startService(intent);*/
             }
 
@@ -174,7 +173,7 @@ public abstract class Repository<T extends Entity> {
         return Tasks.<Void>forResult(null)
             .continueWithTask(new NetworkConnectivityCheckTask(context))
             .continueWithTask(new AddEntityTask<T>(dataContext, entity))
-            .continueWithTask(new SendNotificationTask<T>(context, "added", entity))
+            .continueWithTask(new AddNotificationMessageTask<T>(getDataContext(NotificationMessage.class.getSimpleName()), NotificationConstants.Action.ADDED, entity))
             .continueWith(new Continuation<TaskResult<T>, TaskResult<T>>() {
                 @Override
                 public TaskResult<T> then(@NonNull Task<TaskResult<T>> task) throws Exception {
@@ -204,7 +203,7 @@ public abstract class Repository<T extends Entity> {
         return Tasks.<Void>forResult(null)
             .continueWithTask(new NetworkConnectivityCheckTask(context))
             .continueWithTask(new UpdateEntityTask<T>(dataContext, entity))
-            .continueWithTask(new SendNotificationTask<T>(context, "updated", entity))
+            .continueWithTask(new AddNotificationMessageTask<T>(getDataContext(NotificationMessage.class.getSimpleName()), NotificationConstants.Action.UPDATED, entity))
             .continueWith(new Continuation<TaskResult<T>, TaskResult<T>>() {
                 @Override
                 public TaskResult<T> then(@NonNull Task<TaskResult<T>> task) throws Exception {
@@ -234,7 +233,7 @@ public abstract class Repository<T extends Entity> {
         return Tasks.<Void>forResult(null)
             .continueWithTask(new NetworkConnectivityCheckTask(context))
             .continueWithTask(new RemoveEntityTask<T>(dataContext, entity))
-            .continueWithTask(new SendNotificationTask<T>(context, "removed", entity))
+            .continueWithTask(new AddNotificationMessageTask<T>(getDataContext(NotificationMessage.class.getSimpleName()), NotificationConstants.Action.REMOVED, entity))
             .continueWith(new Continuation<TaskResult<T>, TaskResult<T>>() {
                 @Override
                 public TaskResult<T> then(@NonNull Task<TaskResult<T>> task) throws Exception {
@@ -257,35 +256,50 @@ public abstract class Repository<T extends Entity> {
      *                     queryString is either in the form of "<field> = <value>" or "<field> between <value1> and <value2>"
      * @return all entities that match the provided query string
      */
-    public Task<TaskResult<T>> find(final String queryString) {
+    public Task<TaskResult<T>> find(String queryString) {
         String[] childNodes = new String[searchNodes.size()];
         childNodes = searchNodes.toArray(childNodes);
+
+        //explictly set the querystring to an empty string if it is null to prevent errors
+        if (queryString == null) {
+            queryString = "";
+        }
 
         dataContext = getDataContext(childClass.getSimpleName(), childNodes);
         Query query = QueryBuilder.build(dataContext, queryString);
 
-        if (queryString != null && !queryString.trim().equals("") && query != null) {
-            return Tasks.<Void>forResult(null)
-                .continueWithTask(new NetworkConnectivityCheckTask(context))
-                .continueWithTask(new FindEntitiesTask<T>(context, childClass, query))
-                .continueWith(new Continuation<Map.Entry<List<T>, DatabaseError>, TaskResult<T>>() {
-                    @Override
-                    public TaskResult<T> then(@NonNull Task<Map.Entry<List<T>, DatabaseError>> task) throws Exception {
-                        TaskCompletionSource<TaskResult<T>> taskCompletionSource =
-                                new TaskCompletionSource<>();
+        return Tasks.<Void>forResult(null)
+            .continueWithTask(new NetworkConnectivityCheckTask(context))
+            .continueWithTask(new FindEntitiesTask<T>(context, childClass, query))
+            .continueWith(new Continuation<Map.Entry<List<T>, DatabaseError>, TaskResult<T>>() {
+                @Override
+                public TaskResult<T> then(@NonNull Task<Map.Entry<List<T>, DatabaseError>> task) throws Exception {
+                    TaskCompletionSource<TaskResult<T>> taskCompletionSource =
+                            new TaskCompletionSource<>();
 
-                        Map.Entry<List<T>, DatabaseError> taskResult = task.getResult();
-                        taskCompletionSource.setResult(new TaskResult<T>("find", taskResult.getKey(), taskResult.getValue()));
+                    Map.Entry<List<T>, DatabaseError> taskResult = task.getResult();
+                    taskCompletionSource.setResult(new TaskResult<T>("find", taskResult.getKey(), taskResult.getValue()));
 
-                        //Clear after find complete
-                        searchNodes.clear();
+                    //Clear after find complete
+                    searchNodes.clear();
 
-                        return taskCompletionSource.getTask().getResult();
-                    }
-                });
-        } else {
-            //no query string was provided - bring back all of the records at the specified node
-            return Tasks.<Void>forResult(null)
+                    return taskCompletionSource.getTask().getResult();
+                }
+            });
+    }
+
+    /**
+     * find entities from the database
+     * @return all entities
+     */
+    public Task<TaskResult<T>> find() {
+        String[] childNodes = new String[searchNodes.size()];
+        childNodes = searchNodes.toArray(childNodes);
+
+        dataContext = getDataContext(childClass.getSimpleName(), childNodes);
+
+        //no query string was provided - bring back all of the records at the specified node
+        return Tasks.<Void>forResult(null)
                 .continueWithTask(new NetworkConnectivityCheckTask(context))
                 .continueWithTask(new GetEntitiesTask<T>(dataContext, childClass))
                 .continueWith(new Continuation<Map.Entry<List<T>, DatabaseError>, TaskResult<T>>() {
@@ -303,7 +317,6 @@ public abstract class Repository<T extends Entity> {
                         return taskCompletionSource.getTask().getResult();
                     }
                 });
-        }
     }
 
     /**
@@ -360,7 +373,7 @@ public abstract class Repository<T extends Entity> {
      * @return child class type
      */
     @SuppressWarnings("unchecked")
-    private Class<T> getChildClassType() {
+    protected Class<T> getChildClassType() {
         return (Class<T>) ((ParameterizedType) this.getClass().getGenericSuperclass()).getActualTypeArguments()[0];
     }
 

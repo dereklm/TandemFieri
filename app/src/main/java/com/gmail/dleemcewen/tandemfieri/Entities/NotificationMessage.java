@@ -1,0 +1,68 @@
+package com.gmail.dleemcewen.tandemfieri.Entities;
+
+import com.gmail.dleemcewen.tandemfieri.Abstracts.Entity;
+
+import java.io.Serializable;
+
+/**
+ * NotificationMessage defines all the properties and behaviors for a NotificationMessage entity
+ */
+
+public class NotificationMessage extends Entity implements Serializable {
+    private String action;
+    private String notificationType;
+    private Object data;
+
+    /**
+     * Default constructor
+     */
+    public NotificationMessage() {}
+
+    /**
+     * getAction returns the action associated with the notification message
+     * @return action
+     */
+    public String getAction() {
+        return action;
+    }
+
+    /**
+     * setAction sets the action associated with the notification message
+     * @param action indicates the action to associate with the notification message
+     */
+    public void setAction(String action) {
+        this.action = action;
+    }
+
+    /**
+     * getData returns the data associated with the notification message
+     * @return data
+     */
+    public Object getData() {
+        return data;
+    }
+
+    /**
+     * setData sets the data associated with the notification message
+     * @param data indicates the data associated with the notification message
+     */
+    public void setData(Object data, Class dataType) {
+        this.data = dataType.cast(data);
+    }
+
+    /**
+     * getNotificationType returns the notification type associated with the notification message
+     * @return notification type
+     */
+    public String getNotificationType() {
+        return notificationType;
+    }
+
+    /**
+     * setNotificationType sets the notification type to be associated with the notification message
+     * @param notificationType indicates the notification type to be associated with the notification message
+     */
+    public void setNotificationType(String notificationType) {
+        this.notificationType = notificationType;
+    }
+}

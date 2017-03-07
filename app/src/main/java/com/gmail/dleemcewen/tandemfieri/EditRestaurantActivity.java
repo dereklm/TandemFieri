@@ -21,18 +21,12 @@ import com.gmail.dleemcewen.tandemfieri.Formatters.StringFormatter;
 import com.gmail.dleemcewen.tandemfieri.Logging.LogWriter;
 import com.gmail.dleemcewen.tandemfieri.Repositories.Restaurants;
 import com.gmail.dleemcewen.tandemfieri.Tasks.TaskResult;
-import com.gmail.dleemcewen.tandemfieri.Utility.Util;
 import com.gmail.dleemcewen.tandemfieri.Validator.Validator;
-import com.google.android.gms.tasks.Continuation;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
-import com.google.android.gms.tasks.TaskCompletionSource;
-import com.google.firebase.database.DatabaseError;
-
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Map;
 import java.util.logging.Level;
 
 public class EditRestaurantActivity extends AppCompatActivity implements AdapterView.OnItemSelectedListener {
@@ -40,6 +34,7 @@ public class EditRestaurantActivity extends AppCompatActivity implements Adapter
     private Restaurants<Restaurant> restaurantsRepository;
     private Restaurant restaurant;
     private TextView title;
+    private TextView restaurantTypeTitle;
     private TextView address;
     private TextView delivery;
     private EditText restaurantName;
@@ -88,6 +83,7 @@ public class EditRestaurantActivity extends AppCompatActivity implements Adapter
      */
     private void findControlReferences() {
         title = (TextView)findViewById(R.id.title);
+        restaurantTypeTitle = (TextView)findViewById(R.id.restaurantType);
         address = (TextView)findViewById(R.id.address);
         delivery = (TextView)findViewById(R.id.delivery);
         restaurantName = (EditText)findViewById(R.id.restaurantName);
@@ -226,6 +222,7 @@ public class EditRestaurantActivity extends AppCompatActivity implements Adapter
         updateRestaurant.setText(resources.getString(R.string.updateButton));
 
         underlineText(title);
+        underlineText(restaurantTypeTitle);
         underlineText(address);
         underlineText(delivery);
     }

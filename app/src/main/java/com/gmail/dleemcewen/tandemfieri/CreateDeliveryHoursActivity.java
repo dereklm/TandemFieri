@@ -119,6 +119,7 @@ public class CreateDeliveryHoursActivity extends AppCompatActivity implements Ti
         mDatabase = FirebaseDatabase.getInstance().getReference().child("DeliveryHours");
 
         restId = this.getIntent().getStringExtra("restId");
+        Toast.makeText(CreateDeliveryHoursActivity.this, restId, Toast.LENGTH_SHORT).show();
         editOrCreate = this.getIntent().getStringExtra("editOrCreate");
 
         timeListener = new TimeListener();
@@ -408,13 +409,20 @@ public class CreateDeliveryHoursActivity extends AppCompatActivity implements Ti
                     new ValueEventListener() {
                         @Override
                         public void onDataChange(DataSnapshot dataSnapshot) {
+                            boolean isFound = false;
                             for (DataSnapshot ps : dataSnapshot.getChildren()) {
                                 DeliveryHours d = ps.getValue(DeliveryHours.class);
-                                if(d.getRestaurantId().equals(restId)){
+                                if(restId != null && d.getRestaurantId().equals(restId)){
                                     //correct restaurant found
+                                    isFound = true;
                                     mDatabase.child(ps.getKey()).removeValue();
                                     mDatabase.child(obj.getKey()).setValue(obj);
                                 }
+                            }
+                            if(!isFound && restId != null){
+
+                                //restaurant # wasn't found in delivery hours so create a new delivery hours
+                                mDatabase.child(obj.getKey()).setValue(obj);
                             }
                         }
 

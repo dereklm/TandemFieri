@@ -1,26 +1,24 @@
 package com.gmail.dleemcewen.tandemfieri.Services;
 
 import android.app.IntentService;
-import android.app.Notification;
 import android.app.NotificationManager;
-import android.app.PendingIntent;
 import android.app.Service;
 import android.content.Context;
 import android.content.Intent;
-import android.net.Uri;
-import android.os.IBinder;
-import android.support.annotation.Nullable;
+import android.os.Bundle;
 import android.support.v7.app.NotificationCompat;
 
 import com.gmail.dleemcewen.tandemfieri.Abstracts.Entity;
-import com.gmail.dleemcewen.tandemfieri.Publishers.Publisher;
+import com.gmail.dleemcewen.tandemfieri.Publishers.NotificationPublisher;
 import com.gmail.dleemcewen.tandemfieri.R;
 
+import java.io.Serializable;
 import java.util.AbstractMap;
 import java.util.Map;
 
 /**
- * NotificationService
+ * NotificationService implements an intent service that will notify all subscribers through
+ * a notification publisher when a database record is added, updated, or deleted
  */
 
 public class NotificationService extends IntentService {
@@ -50,31 +48,15 @@ public class NotificationService extends IntentService {
      */
     @Override
     protected void onHandleIntent(Intent intent) {
-        String action = intent.getStringExtra("action");
         Object entity = intent.getSerializableExtra("entity");
-        ((Entity)entity).setKey(intent.getStringExtra("key"));
 
-        Map.Entry<String, Object> changedEntry = new AbstractMap.SimpleEntry<>(action, entity);
-        Publisher publisher = Publisher.getInstance();
-        publisher.notifySubscribers(changedEntry);
+        Bundle notification = new Bundle();
+        notification.putString("action", intent.getAction());
+        notification.putString("notificationType", intent.getStringExtra("notificationType"));
+        notification.putString("key", intent.getStringExtra("key"));
+        notification.putSerializable("entity", (Serializable)entity);
 
-        if (getResources().getBoolean(R.bool.send_notifications)) {
-            // Send Notification
-            NotificationCompat.Builder mBuilder =
-                    (NotificationCompat.Builder) new NotificationCompat.Builder(this)
-                            .setSmallIcon(R.drawable.ic_tv_light)
-                            .setContentTitle("Order Notification")
-                            .setContentText("A new order was " + action + " for " + ((Entity) entity).getKey() + "!");
-
-            // Sets an ID for the notification
-            int notificationId = 1;
-
-            // Gets an instance of the NotificationManager service
-            NotificationManager notificationManager =
-                    (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
-
-            // Builds the notification and issues it.
-            notificationManager.notify(notificationId, mBuilder.build());
-        }
+        NotificationPublisher notificationPublisher = NotificationPublisher.getInstance();
+        notificationPublisher.notifySubscribers(notification);
     }
 }

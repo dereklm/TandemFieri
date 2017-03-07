@@ -12,12 +12,15 @@ public class StringFormatter {
      */
     public static String toProperCase(String sourceString) {
         StringBuilder properCaseString = new StringBuilder();
-        String[] splitString = sourceString.split(" ");
-        for (String splitPart : splitString) {
-            if (splitPart.length() > 0) {
-                properCaseString
-                        .append(splitPart.substring(0, 1).toUpperCase() + splitPart.substring(1).toLowerCase());
-                properCaseString.append(" ");
+
+        if (sourceString != null && !sourceString.trim().equals("")) {
+            String[] splitString = sourceString.split(" ");
+            for (String splitPart : splitString) {
+                if (splitPart.length() > 0) {
+                    properCaseString
+                            .append(splitPart.substring(0, 1).toUpperCase() + splitPart.substring(1).toLowerCase());
+                    properCaseString.append(" ");
+                }
             }
         }
 

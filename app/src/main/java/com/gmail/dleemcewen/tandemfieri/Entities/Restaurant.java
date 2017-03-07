@@ -4,7 +4,6 @@ import com.gmail.dleemcewen.tandemfieri.Abstracts.Entity;
 import com.gmail.dleemcewen.tandemfieri.menubuilder.MenuCatagory;
 
 import java.io.Serializable;
-import java.util.Map;
 
 /**
  * Restaurant defines all the properties and behaviors for a Restaurant entity
@@ -20,7 +19,7 @@ public class Restaurant extends Entity implements Serializable {
     private Integer deliveryRadius;
     private String id;
     private String restaurantType;
-    private Map<String, String> drivers;
+
     private MenuCatagory menu;
 
 
@@ -195,13 +194,5 @@ public class Restaurant extends Entity implements Serializable {
      * @param deliveryRadius identifies the restaurant delivery radius
      */
     public void setDeliveryRadius(Integer deliveryRadius) { this.deliveryRadius = deliveryRadius;}
-
-    public Map<String, String> getDrivers() {
-        return drivers;
-    }
-
-    public void setDrivers(Map<String, String> drivers) {
-        this.drivers = drivers;
-    }
 
 }

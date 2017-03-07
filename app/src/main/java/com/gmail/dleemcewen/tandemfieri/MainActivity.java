@@ -5,6 +5,7 @@ import android.content.res.Resources;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -13,11 +14,13 @@ import android.widget.Toast;
 
 import com.gmail.dleemcewen.tandemfieri.Entities.User;
 import com.gmail.dleemcewen.tandemfieri.Interfaces.ISubscriber;
+import com.gmail.dleemcewen.tandemfieri.Json.Braintree.ClientToken;
+import com.gmail.dleemcewen.tandemfieri.Json.Braintree.CreateCustomer;
 import com.gmail.dleemcewen.tandemfieri.Logging.LogWriter;
 import com.gmail.dleemcewen.tandemfieri.Logging.ToastLogger;
-import com.gmail.dleemcewen.tandemfieri.Publishers.Publisher;
-import com.gmail.dleemcewen.tandemfieri.Services.NotificationService;
+import com.gmail.dleemcewen.tandemfieri.Publishers.NotificationPublisher;
 import com.gmail.dleemcewen.tandemfieri.Subscribers.RestaurantSubscriber;
+import com.gmail.dleemcewen.tandemfieri.Utility.BraintreeUtil;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
@@ -28,8 +31,18 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.loopj.android.http.AsyncHttpClient;
+import com.loopj.android.http.JsonHttpResponseHandler;
+import com.loopj.android.http.RequestParams;
 
+import org.json.JSONObject;
+
+import java.util.AbstractMap;
 import java.util.logging.Level;
+
+import cz.msebera.android.httpclient.Header;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -49,6 +62,9 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        //Clear token so we can request an updated token
+        BraintreeUtil.setClientToken(this, "");
 
         resources = getResources();
         setupLogging();
@@ -132,6 +148,92 @@ public class MainActivity extends AppCompatActivity {
         });//end sign in button
     }//end onCreate
 
+    private void createBraintreeCustomer(User diner) {
+        AsyncHttpClient client = new AsyncHttpClient();
+        RequestParams params = new RequestParams();
+
+        params.put("clientID", diner.getAuthUserID());
+
+        String url = getString(R.string.braintreeBaseURL) + "createcustomer";
+
+        //Start rest api
+        client.post(this
+                ,url
+                ,params
+                ,new JsonHttpResponseHandler() {
+                    @Override
+                    public void onSuccess(int status, Header[] headers, JSONObject resp) {
+                        String json = resp.toString();
+
+                        GsonBuilder builder = new GsonBuilder();
+                        Gson gson = builder.create();
+
+                        CreateCustomer customer = gson.fromJson(json, CreateCustomer.class);
+
+                        if (customer.success.equals("true")) {
+                            requestBraintreeClientToken(customer.customerID);
+                            FirebaseDatabase.getInstance().getReference()
+                                    .child("User")
+                                    .child("Diner")
+                                    .child(customer.clientID)
+                                    .child("braintreeId")
+                                    .setValue(customer.customerID);
+
+                            LogWriter.log(getApplicationContext(), Level.FINEST, "CreateCustomerCustomerID: " + customer.customerID);
+                        }
+
+                        LogWriter.log(getApplicationContext(), Level.FINEST, "CreateCustomerResult: " + customer.success);
+                    }
+
+                    @Override
+                    public void onFailure(int status, Header[] headers, String res, Throwable t) {
+                        LogWriter.log(getApplicationContext(), Level.WARNING, "BraintreeCreateCustomerFailed: " + t.getMessage());
+                    }
+                });
+        //End rest api
+    }
+
+    private void requestBraintreeClientToken(String customerID) {
+        AsyncHttpClient client = new AsyncHttpClient();
+        RequestParams params = new RequestParams();
+
+        params.put("customerID", customerID);
+
+        String url = getString(R.string.braintreeBaseURL) + "generatetoken";
+
+        //Start rest api
+        client.post(this
+                ,url
+                ,params
+                ,new JsonHttpResponseHandler() {
+                    @Override
+                    public void onSuccess(int status, Header[] headers, JSONObject resp) {
+                        String json = resp.toString();
+
+                        GsonBuilder builder = new GsonBuilder();
+                        Gson gson = builder.create();
+
+                        ClientToken token = gson.fromJson(json, ClientToken.class);
+
+                        if (token.status.equals("true")) {
+                            Log.v("BRAINTREE DEBUG", "TOKEN: " + token.token);  //REMOVE ME, TESTING ONLY
+                            Log.v("BRAINTREE DEBUG", "CUST ID: " + token.customerID);  //REMOVE ME, TESTING ONLY
+                            BraintreeUtil.setClientToken(getApplicationContext(), token.token);
+
+                            LogWriter.log(getApplicationContext(), Level.FINEST, "BraintreeClientToken: " + token.token);
+                        } else {
+                            LogWriter.log(getApplicationContext(), Level.WARNING, "BraintreeClientTokenRequestFailed: customer does not exist");
+                        }
+                    }
+
+                    @Override
+                    public void onFailure(int status, Header[] headers, String res, Throwable t) {
+                        LogWriter.log(getApplicationContext(), Level.WARNING, "BraintreeClientTokenRequestFailed: " + t.getMessage());
+                    }
+                });
+        //End rest api
+    }
+
     public void navigateToMenu(DataSnapshot dataSnapshot) {
 
         Bundle bundle = new Bundle();
@@ -145,12 +247,22 @@ public class MainActivity extends AppCompatActivity {
         if(diner != null){
             intent = new Intent(MainActivity.this, DinerMainMenu.class);
             bundle.putSerializable("User", diner);
+
+            if (diner.getBraintreeId() == null || diner.getBraintreeId().equals("")) {
+                createBraintreeCustomer(diner);
+            } else {
+                Log.v("BRAINTREE DEBUG", "CUS ID FROM MENU: " + diner.getBraintreeId());  //REMOVE ME, TESTING ONLY
+                requestBraintreeClientToken(diner.getBraintreeId());
+            }
         }else if(driver != null){
             intent = new Intent(MainActivity.this, DriverMainMenu.class);
             bundle.putSerializable("User", driver);
         }else if(restaurantOwner != null){
             //register new restaurant subscriber
-            registerNewSubscriber(new RestaurantSubscriber(MainActivity.this));
+            registerNewSubscriber(new RestaurantSubscriber(
+                    MainActivity.this,
+                    restaurantOwner,
+                    new AbstractMap.SimpleEntry<>("ownerId", mAuth.getCurrentUser().getUid())));
 
             intent = new Intent(MainActivity.this, RestaurantMainMenu.class);
             bundle.putSerializable("User", restaurantOwner);
@@ -166,8 +278,8 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void registerNewSubscriber(ISubscriber subscriber) {
-        Publisher publisher = Publisher.getInstance();
-        publisher.subscribe(subscriber);
+        NotificationPublisher notificationPublisher = NotificationPublisher.getInstance();
+        notificationPublisher.subscribe(subscriber);
     }
 
     private void clear(){

@@ -8,7 +8,7 @@ import java.io.Serializable;
  * Created by Nexusrex on 2/5/2017.
  */
 
-public class User extends Entity implements Serializable{
+public class User extends Entity implements Serializable {
 
     private String firstName;
     private String lastName;
@@ -20,6 +20,7 @@ public class User extends Entity implements Serializable{
     private String email;
     private String authUserID;
     private String restaurantId;
+    private String braintreeId;
 
     public User(){
 
@@ -65,6 +66,12 @@ public class User extends Entity implements Serializable{
         return email;
     }
 
+    public String getRestaurantId() {
+        return restaurantId;
+    }
+
+    public String getBraintreeId() { return braintreeId; }
+
     public void setFirstName(String firstName) {
         this.firstName = firstName;
     }
@@ -97,19 +104,11 @@ public class User extends Entity implements Serializable{
         this.email = email;
     }
 
-    /**
-     * get the restaurant id the driver is assigned to
-     * @return unique identifier of the restaurant
-     */
-    public String getRestaurantId() {
-        return restaurantId;
-    }
-
-    /**
-     * sets the restaurant the driver is assigned to
-     * @param restaurantId indicates the unique identifier of the restaurant
-     */
     public void setRestaurantId(String restaurantId) {
         this.restaurantId = restaurantId;
+    }
+
+    public void setBraintreeId(String braintreeId) {
+        this.braintreeId = braintreeId;
     }
 }
