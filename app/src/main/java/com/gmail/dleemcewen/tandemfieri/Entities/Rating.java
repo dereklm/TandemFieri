@@ -1,6 +1,7 @@
 package com.gmail.dleemcewen.tandemfieri.Entities;
 
 import com.gmail.dleemcewen.tandemfieri.Abstracts.Entity;
+import com.google.firebase.database.Exclude;
 
 /**
  * Rating defines all the properties and behaviors for a Rating entity
@@ -10,7 +11,7 @@ public class Rating extends Entity {
     private String restaurantId;
     private String orderId;
     private String driverId;
-    private int rating;
+    private Float rating;
     private String date;
 
     /**
@@ -33,6 +34,7 @@ public class Rating extends Entity {
      *
      * @return String uniquely identifying the rating
      */
+    @Exclude
     public String getId() {
         return getKey();
     }
@@ -94,9 +96,9 @@ public class Rating extends Entity {
     /**
      * returns the rating
      *
-     * @return integer indicating the rating
+     * @return float  indicating the rating
      */
-    public int getRating() {
+    public Float getRating() {
         return rating;
     }
 
@@ -105,7 +107,7 @@ public class Rating extends Entity {
      *
      * @param rating identifies the rating
      */
-    public void setRating(int rating) {
+    public void setRating(Float rating) {
         this.rating = rating;
     }
 

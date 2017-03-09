@@ -30,7 +30,6 @@ import java.util.logging.Level;
  */
 
 public class Users<T extends Entity> extends Repository<User> {
-    private DatabaseReference dataContext;
     private Context context;
 
     /**

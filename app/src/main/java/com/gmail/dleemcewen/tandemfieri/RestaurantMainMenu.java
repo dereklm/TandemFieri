@@ -1,19 +1,27 @@
 package com.gmail.dleemcewen.tandemfieri;
 
+import android.app.Activity;
 import android.app.NotificationManager;
 import android.content.Intent;
+import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 
+import com.gmail.dleemcewen.tandemfieri.Adapters.ManageRestaurantExpandableListAdapter;
 import com.gmail.dleemcewen.tandemfieri.Entities.NotificationMessage;
+import com.gmail.dleemcewen.tandemfieri.Entities.Restaurant;
 import com.gmail.dleemcewen.tandemfieri.Entities.User;
 import com.gmail.dleemcewen.tandemfieri.Logging.LogWriter;
 import com.gmail.dleemcewen.tandemfieri.Repositories.NotificationMessages;
+import com.gmail.dleemcewen.tandemfieri.Tasks.TaskResult;
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 
+import java.util.List;
 import java.util.logging.Level;
 
 public class RestaurantMainMenu extends AppCompatActivity {
@@ -37,10 +45,37 @@ public class RestaurantMainMenu extends AppCompatActivity {
                     (NotificationManager) this.getSystemService(NOTIFICATION_SERVICE);
 
             notificationManager.cancel(notificationId);
+
+            notificationsRepository
+                .find("notificationId = '" + notificationId + "'")
+                .addOnCompleteListener(RestaurantMainMenu.this, new OnCompleteListener<TaskResult<NotificationMessage>>() {
+                    @Override
+                    public void onComplete(@NonNull Task<TaskResult<NotificationMessage>> task) {
+                        List<NotificationMessage> messages = task.getResult().getResults();
+                        if (!messages.isEmpty()) {
+                            notificationsRepository.remove(messages.get(0));
+                        }
+                    }
+                });
         }
 
         LogWriter.log(getApplicationContext(), Level.INFO, "The user is " + user.getEmail());
     }//end onCreate
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+        if (notificationsRepository == null) {
+            notificationsRepository = new NotificationMessages<>(RestaurantMainMenu.this);
+        }
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+        notificationsRepository.finalize();
+        notificationsRepository = null;
+    }
 
     //create menu
     @Override

@@ -67,6 +67,7 @@
             android:name=".Services.NotificationService"
             android:exported="false" />
 
+        <activity android:name=".RestaurantRatings"></activity>
         <activity android:name=".DeliveryMapActivity" />
         <activity
             android:name=".DriverDeliveryActivity"
