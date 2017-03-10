@@ -1,5 +1,6 @@
 package com.gmail.dleemcewen.tandemfieri.Tasks;
 
+import android.support.annotation.IntegerRes;
 import android.support.annotation.NonNull;
 
 import com.gmail.dleemcewen.tandemfieri.Abstracts.Entity;
@@ -11,10 +12,12 @@ import com.google.android.gms.tasks.TaskCompletionSource;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
-import java.util.AbstractMap;
+import java.text.SimpleDateFormat;
 import java.util.Arrays;
+import java.util.Date;
 import java.util.Map;
 
 
@@ -44,11 +47,15 @@ public class AddNotificationMessageTask<T extends Entity> implements Continuatio
 
         //only check the database if the result from the previous task was successful
         if (task.getResult().getKey()) {
+            Date currentDateTime = new Date();
+            String formattedDate = new SimpleDateFormat("SSSssmmHH").format(currentDateTime);
+
             //Create a new notificationmessage entity to add
             NotificationMessage notificationMessageEntity = new NotificationMessage();
             notificationMessageEntity.setAction(NotificationConstants.Action.ADDED.toString());
             notificationMessageEntity.setNotificationType(entity.getClass().getSimpleName());
             notificationMessageEntity.setData(entity, entity.getClass());
+            notificationMessageEntity.setNotificationId(formattedDate);
 
             dataContext.child(notificationMessageEntity.getKey().toString()).setValue(notificationMessageEntity);
             dataContext.addListenerForSingleValueEvent(new ValueEventListener() {

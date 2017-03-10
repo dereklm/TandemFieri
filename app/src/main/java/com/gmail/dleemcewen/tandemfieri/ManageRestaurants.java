@@ -117,7 +117,7 @@ public class ManageRestaurants extends AppCompatActivity {
     private void retrieveData() {
         //find all the restaurants where the ownerid matches the current user id
         restaurants
-            .find("ownerId = " + currentUser.getAuthUserID())
+            .find("ownerId = '" + currentUser.getAuthUserID() + "'")
             .addOnCompleteListener(ManageRestaurants.this, new OnCompleteListener<TaskResult<Restaurant>>() {
                 @Override
                 public void onComplete(@NonNull Task<TaskResult<Restaurant>> task) {

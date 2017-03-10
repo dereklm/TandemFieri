@@ -56,6 +56,7 @@
     <string name="yes">Yes</string>
     <string name="no">No</string>
     <string name="ok">Ok</string>
+    <string name="save">Save</string>
     <string name="cancel">Cancel</string>
     <string name="startDate">Start date</string>
     <string name="endDate">End date</string>
@@ -74,4 +75,7 @@
     <string name="manageRestaurantDriversActivityTitle">Managing restaurant drivers</string>
     <string name="updateRestaurant">Update Restaurant</string>
     <string name="restaurantType">Type of restaurant</string>
+    <string name="rateRestaurant">Rate restaurant</string>
+    <string name="rateableRestaurantsTitle">Which restaurant would you like to rate?</string>
+    <string name="title_activity_driver_delivery">DriverDeliveryActivity</string>
 </resources>

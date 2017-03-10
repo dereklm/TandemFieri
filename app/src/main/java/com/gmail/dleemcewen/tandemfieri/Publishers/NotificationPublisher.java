@@ -61,9 +61,12 @@ public class NotificationPublisher implements IPublish {
             if (notification.getString("notificationType").equals(subscriber.getNotificationType())) {
                 if (filter != null) {
                     Object entity = notification.getSerializable("entity");
-                    if (((HashMap)entity)
+                    HashMap entityHashMap = (HashMap)entity;
+
+                    if (entityHashMap
                         .get(filter.getKey())
                         .equals(filter.getValue())) {
+                        entityHashMap.put("notificationId", notification.getString("notificationId"));
                         subscriber.update(notification);
                     }
                 } else {

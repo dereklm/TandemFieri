@@ -10,12 +10,17 @@ import android.content.Intent;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
+import android.view.View;
+import android.widget.Button;
 import android.widget.Toast;
 
+import com.gmail.dleemcewen.tandemfieri.Abstracts.Entity;
+import com.gmail.dleemcewen.tandemfieri.Constants.NotificationConstants;
 import com.gmail.dleemcewen.tandemfieri.Entities.NotificationMessage;
 import com.gmail.dleemcewen.tandemfieri.Entities.Restaurant;
 import com.gmail.dleemcewen.tandemfieri.Entities.User;
 import com.gmail.dleemcewen.tandemfieri.Logging.LogWriter;
+import com.gmail.dleemcewen.tandemfieri.Repositories.NotificationMessages;
 import com.gmail.dleemcewen.tandemfieri.Repositories.Restaurants;
 import com.gmail.dleemcewen.tandemfieri.Repositories.Users;
 import com.gmail.dleemcewen.tandemfieri.Tasks.TaskResult;
@@ -31,7 +36,7 @@ import static com.gmail.dleemcewen.tandemfieri.DinerMapActivity.MY_PERMISSIONS_R
 
 public class DinerMainMenu extends AppCompatActivity {
     User user;
-    private Restaurants<Restaurant> restaurantsRepository;
+    private Button rateRestaurant;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -42,9 +47,10 @@ public class DinerMainMenu extends AppCompatActivity {
         bundle = this.getIntent().getExtras();
         user = (User) bundle.getSerializable("User");
 
-        restaurantsRepository = new Restaurants<>(DinerMainMenu.this);
-
         LogWriter.log(getApplicationContext(), Level.INFO, "The user is " + user.getEmail());
+
+        findControlReferences();
+        bindEventHandlers();
     }//end onCreate
 
     //create menu
@@ -76,7 +82,9 @@ public class DinerMainMenu extends AppCompatActivity {
                     }else{
                     }
                 }
-
+                return true;
+            case R.id.delivery:
+                launchDelivery();
                 return true;
             case R.id.sendSimulatedNotification:
                 //TODO: remove this after ordering and payment processing are in place
@@ -95,6 +103,26 @@ public class DinerMainMenu extends AppCompatActivity {
             default:
                 return super.onOptionsItemSelected(item);
         }
+    }
+
+    /**
+     * find all control references
+     */
+    private void findControlReferences() {
+        rateRestaurant = (Button)findViewById(R.id.rateRestaurant);
+    }
+
+    /**
+     * bind required event handlers
+     */
+    private void bindEventHandlers() {
+        rateRestaurant.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(getApplicationContext(), RestaurantRatings.class);
+                startActivity(intent);
+            }
+        });
     }
 
     //called when user selects sign out from the drop down menu
@@ -139,6 +167,16 @@ public class DinerMainMenu extends AppCompatActivity {
         startActivity(intent);
     }
 
+    private void launchDelivery(){
+        //need to send user type so that the user can be located in the database
+        //Bundle dinerBundle = new Bundle();
+        Intent intent = new Intent(DinerMainMenu.this, DeliveryMapActivity.class);
+        //dinerBundle.putSerializable("User", user);
+        //intent.putExtras(dinerBundle);
+        //intent.putExtra("UserType", "Diner");
+        startActivity(intent);
+    }
+
     /**
      * simulate a completed order
      */
@@ -146,15 +184,18 @@ public class DinerMainMenu extends AppCompatActivity {
         //After the order entity and repository are in place, this will be handled from there
         //since they aren't available yet, instead produce a notification that will appear
         //to go to a restaurant
+
+        Restaurants<Restaurant> restaurantsRepository = new Restaurants<>(DinerMainMenu.this);
+        final NotificationMessages<NotificationMessage> notificationsRepository = new NotificationMessages<>(DinerMainMenu.this);
+
         restaurantsRepository
-            .find("id = 26804931-17e3-403a-ab75-a43e96e86814")
+            .find("id = '26804931-17e3-403a-ab75-a43e96e86814'")
             .addOnCompleteListener(new OnCompleteListener<TaskResult<Restaurant>>() {
                 @Override
                 public void onComplete(@NonNull Task<TaskResult<Restaurant>> task) {
                     Restaurant testRestaurant = task.getResult().getResults().get(0);
 
-                    restaurantsRepository
-                        .update(testRestaurant);
+                    notificationsRepository.sendNotification(NotificationConstants.Action.ADDED, testRestaurant);
                 }
             });
     }

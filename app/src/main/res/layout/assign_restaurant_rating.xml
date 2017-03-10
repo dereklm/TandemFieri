@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical" android:layout_width="match_parent"
+    android:layout_height="128dp">
+    <RatingBar
+        android:id="@+id/restaurantRatingBar"
+        android:theme="@style/RatingBar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:stepSize="0.5"
+        android:numStars="5"/>
+    <TextView
+        android:id="@+id/restaurantRatingText"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal"
+        android:gravity="center_horizontal"
+        android:textSize="@dimen/regular_text_size"/>
+</LinearLayout>

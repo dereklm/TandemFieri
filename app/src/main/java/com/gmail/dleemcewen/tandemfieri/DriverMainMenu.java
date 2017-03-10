@@ -15,6 +15,8 @@ import com.google.firebase.auth.FirebaseAuth;
 
 import java.util.logging.Level;
 
+import static com.paypal.android.sdk.onetouch.core.metadata.ah.t;
+
 public class DriverMainMenu extends AppCompatActivity {
 
     User user;
@@ -55,6 +57,9 @@ public class DriverMainMenu extends AppCompatActivity {
             case R.id.edit_password:
                 editPassword();
                 return true;
+            case R.id.delivery:
+                startDelivery();
+                return true;
             default:
                 return super.onOptionsItemSelected(item);
         }
@@ -68,6 +73,11 @@ public class DriverMainMenu extends AppCompatActivity {
         intent.putExtra("Exit me", true);
         startActivity(intent);
         finish();
+    }
+
+    private void startDelivery(){
+        Intent intent = new Intent(DriverMainMenu.this, DriverDeliveryActivity.class);
+        startActivity(intent);
     }
 
     //called when user selects edit information from the drop down menu

@@ -18,7 +18,7 @@ import com.gmail.dleemcewen.tandemfieri.Comparators.RatingsByDriverInAscendingOr
 import com.gmail.dleemcewen.tandemfieri.Entities.Rating;
 import com.gmail.dleemcewen.tandemfieri.Entities.Restaurant;
 import com.gmail.dleemcewen.tandemfieri.Entities.User;
-import com.gmail.dleemcewen.tandemfieri.EventListeners.QueryCompleteListener;
+import com.gmail.dleemcewen.tandemfieri.Formatters.DateFormatter;
 import com.gmail.dleemcewen.tandemfieri.Repositories.Ratings;
 import com.gmail.dleemcewen.tandemfieri.Repositories.Users;
 import com.gmail.dleemcewen.tandemfieri.Tasks.TaskResult;
@@ -30,7 +30,6 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.AbstractMap;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Collections;
 import java.util.Date;
@@ -168,7 +167,7 @@ public class DriverRatings extends AppCompatActivity {
         if (startDate.getText().toString().equals("") && endDate.getText().toString().equals("")) {
             //no start and end date range has been provided, so get all of the ratings for the current restaurant
             ratingsRepository
-                .find("restaurantId = " + restaurant.getKey())
+                .find("restaurantId = '" + restaurant.getKey() + "'")
                 .addOnCompleteListener(DriverRatings.this, new OnCompleteListener<TaskResult<Rating>>() {
                     @Override
                     public void onComplete(@NonNull Task<TaskResult<Rating>> task) {
@@ -180,7 +179,7 @@ public class DriverRatings extends AppCompatActivity {
         } else {
             //get all the ratings that are in the start and end date range
             ratingsRepository
-                .find("date between " + startDate.getText().toString() + " and " + endDate.getText().toString())
+                .find("date between " + DateFormatter.toTimeStamp(startDate.getText().toString()) + " and " + DateFormatter.toTimeStamp(endDate.getText().toString()))
                 .addOnCompleteListener(DriverRatings.this, new OnCompleteListener<TaskResult<Rating>>() {
                     @Override
                     public void onComplete(@NonNull Task<TaskResult<Rating>> task) {

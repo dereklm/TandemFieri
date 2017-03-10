@@ -26,10 +26,10 @@ public class QueryBuilder {
             if (splitQueryString.size() > 2) {
                 //use assignment to determine what kind of query to build
                 //TODO: refactor this to use strategies instead of a conditional
-                if (splitQueryString.get(1).toLowerCase().trim() == "between") {
+                if (splitQueryString.get(1).toLowerCase().trim().equals("between")) {
                     //set the assignment values
                     String assignmentValue1 = splitQueryString.get(2);
-                    String assignmentValue2 = splitQueryString.get(4);
+                    String assignmentValue2 = splitQueryString.get(5);
                     query = buildRangeQuery(dataContext, assignmentValue1, assignmentValue2, splitQueryString.get(0));
                 } else {
                     //set the assignment value
@@ -51,11 +51,15 @@ public class QueryBuilder {
      *                         of the desired data
      * @return query that can be executed by firebase to find desired records
      */
-    private static Query buildEqualsQuery(DatabaseReference dataContext, String equalsValue, String childNode) {
+    private static Query buildEqualsQuery(DatabaseReference dataContext, Object equalsValue, String childNode) {
         Query query = buildQuery(dataContext, childNode);
 
-        if (equalsValue != null && !equalsValue.equals("")) {
-            query = query.equalTo(equalsValue);
+        if (equalsValue != null && !equalsValue.toString().equals("")) {
+            if (equalsValue.toString().startsWith("'") && equalsValue.toString().endsWith("'")) {
+                query = query.equalTo(equalsValue.toString().replace("'", ""));
+            } else {
+                query = query.equalTo(Integer.valueOf(equalsValue.toString()));
+            }
         }
 
         return query;

@@ -39,12 +39,13 @@ import java.util.Map;
  */
 public abstract class Repository<T extends Entity> {
     private Context context;
-    private DatabaseReference dataContext;
     private final Class<T> childClass;
-    private List<String> searchNodes;
+    protected DatabaseReference dataContext;
+    protected List<String> searchNodes;
 
     /**
      * Default constructor
+     *
      * @param context identifies the current application context
      */
     public Repository(final Context context) {
@@ -93,50 +94,54 @@ public abstract class Repository<T extends Entity> {
 
     /**
      * add a single entity to the database
-     * @param entity indicates the entity to add
+     *
+     * @param entity     indicates the entity to add
      * @param childNodes indicates the variable number of string arguments that identify the
      */
     public Task<Map.Entry<Boolean, DatabaseError>> add(T entity, String... childNodes) {
         dataContext = getDataContext(entity.getClass().getSimpleName(), childNodes);
 
         return Tasks.<Void>forResult(null)
-            .continueWithTask(new NetworkConnectivityCheckTask(context))
-            .continueWithTask(new AddEntityTask<T>(dataContext, entity));
+                .continueWithTask(new NetworkConnectivityCheckTask(context))
+                .continueWithTask(new AddEntityTask<T>(dataContext, entity));
     }
 
     /**
      * add multiple entities to the database
-     * @param entities indicates a list of entities to add
+     *
+     * @param entities   indicates a list of entities to add
      * @param childNodes indicates the variable number of string arguments that identify the
-     *                         child nodes that identify the location of the desired data
+     *                   child nodes that identify the location of the desired data
      */
     public Task<Map.Entry<Boolean, DatabaseError>> add(List<T> entities, String... childNodes) {
         dataContext = getDataContext(entities.get(0).getClass().getSimpleName(), childNodes);
 
         return Tasks.<Void>forResult(null)
-            .continueWithTask(new NetworkConnectivityCheckTask(context))
-            .continueWithTask(new AddEntitiesTask<T>(dataContext, entities));
+                .continueWithTask(new NetworkConnectivityCheckTask(context))
+                .continueWithTask(new AddEntitiesTask<T>(dataContext, entities));
     }
 
     /**
      * updates the specified entity
-     * @param entity indicates the entity to update with the new values
+     *
+     * @param entity     indicates the entity to update with the new values
      * @param childNodes indicates the variable number of string arguments that identify the
-     *                         child nodes that identify the location of the desired data
+     *                   child nodes that identify the location of the desired data
      */
     public Task<Map.Entry<Boolean, DatabaseError>> update(T entity, String... childNodes) {
         dataContext = getDataContext(entity.getClass().getSimpleName(), childNodes);
 
         return Tasks.<Void>forResult(null)
-            .continueWithTask(new NetworkConnectivityCheckTask(context))
-            .continueWithTask(new UpdateEntityTask<T>(dataContext, entity));
+                .continueWithTask(new NetworkConnectivityCheckTask(context))
+                .continueWithTask(new UpdateEntityTask<T>(dataContext, entity));
     }
 
     /**
      * remove a single entity from the database
-     * @param entity indicates the entity to remove
+     *
+     * @param entity     indicates the entity to remove
      * @param childNodes indicates the variable number of string arguments that identify the
-     *                         child nodes that identify the location of the desired data
+     *                   child nodes that identify the location of the desired data
      */
     public Task<Map.Entry<Boolean, DatabaseError>> remove(T entity, String... childNodes) {
         dataContext = getDataContext(entity.getClass().getSimpleName(), childNodes);
@@ -148,9 +153,10 @@ public abstract class Repository<T extends Entity> {
 
     /**
      * remove multiple entities from the database
-     * @param entities indicates a list of entities to remove
+     *
+     * @param entities   indicates a list of entities to remove
      * @param childNodes indicates the variable number of string arguments that identify the
-     *                         child nodes that identify the location of the desired data
+     *                   child nodes that identify the location of the desired data
      */
     public Task<Map.Entry<Boolean, DatabaseError>> remove(List<T> entities, String... childNodes) {
         dataContext = getDataContext(entities.get(0).getClass().getSimpleName(), childNodes);
@@ -162,6 +168,7 @@ public abstract class Repository<T extends Entity> {
 
     /**
      * add a single entity to the database
+     *
      * @param entity indicates the entity to add
      */
     public Task<TaskResult<T>> add(T entity) {
@@ -173,16 +180,14 @@ public abstract class Repository<T extends Entity> {
         return Tasks.<Void>forResult(null)
             .continueWithTask(new NetworkConnectivityCheckTask(context))
             .continueWithTask(new AddEntityTask<T>(dataContext, entity))
-            .continueWithTask(new AddNotificationMessageTask<T>(getDataContext(NotificationMessage.class.getSimpleName()), NotificationConstants.Action.ADDED, entity))
-            .continueWith(new Continuation<TaskResult<T>, TaskResult<T>>() {
+            .continueWith(new Continuation<Map.Entry<Boolean, DatabaseError>, TaskResult<T>>() {
                 @Override
-                public TaskResult<T> then(@NonNull Task<TaskResult<T>> task) throws Exception {
+                public TaskResult<T> then(@NonNull Task<Map.Entry<Boolean, DatabaseError>> task) throws Exception {
                     TaskCompletionSource<TaskResult<T>> taskCompletionSource =
                             new TaskCompletionSource<>();
+                    taskCompletionSource.setResult(new TaskResult<T>(NotificationConstants.Action.ADDED.toString(), null, task.getResult().getValue()));
 
-                    taskCompletionSource.setResult(task.getResult());
-
-                    //Clear after find complete
+                    //Clear after action complete
                     searchNodes.clear();
 
                     return taskCompletionSource.getTask().getResult();
@@ -203,16 +208,14 @@ public abstract class Repository<T extends Entity> {
         return Tasks.<Void>forResult(null)
             .continueWithTask(new NetworkConnectivityCheckTask(context))
             .continueWithTask(new UpdateEntityTask<T>(dataContext, entity))
-            .continueWithTask(new AddNotificationMessageTask<T>(getDataContext(NotificationMessage.class.getSimpleName()), NotificationConstants.Action.UPDATED, entity))
-            .continueWith(new Continuation<TaskResult<T>, TaskResult<T>>() {
+            .continueWith(new Continuation<Map.Entry<Boolean, DatabaseError>, TaskResult<T>>() {
                 @Override
-                public TaskResult<T> then(@NonNull Task<TaskResult<T>> task) throws Exception {
+                public TaskResult<T> then(@NonNull Task<Map.Entry<Boolean, DatabaseError>> task) throws Exception {
                     TaskCompletionSource<TaskResult<T>> taskCompletionSource =
                             new TaskCompletionSource<>();
+                    taskCompletionSource.setResult(new TaskResult<T>(NotificationConstants.Action.UPDATED.toString(), null, task.getResult().getValue()));
 
-                    taskCompletionSource.setResult(task.getResult());
-
-                    //Clear after find complete
+                    //Clear after action complete
                     searchNodes.clear();
 
                     return taskCompletionSource.getTask().getResult();
@@ -233,16 +236,14 @@ public abstract class Repository<T extends Entity> {
         return Tasks.<Void>forResult(null)
             .continueWithTask(new NetworkConnectivityCheckTask(context))
             .continueWithTask(new RemoveEntityTask<T>(dataContext, entity))
-            .continueWithTask(new AddNotificationMessageTask<T>(getDataContext(NotificationMessage.class.getSimpleName()), NotificationConstants.Action.REMOVED, entity))
-            .continueWith(new Continuation<TaskResult<T>, TaskResult<T>>() {
+            .continueWith(new Continuation<Map.Entry<Boolean, DatabaseError>, TaskResult<T>>() {
                 @Override
-                public TaskResult<T> then(@NonNull Task<TaskResult<T>> task) throws Exception {
+                public TaskResult<T> then(@NonNull Task<Map.Entry<Boolean, DatabaseError>> task) throws Exception {
                     TaskCompletionSource<TaskResult<T>> taskCompletionSource =
                             new TaskCompletionSource<>();
+                    taskCompletionSource.setResult(new TaskResult<T>(NotificationConstants.Action.REMOVED.toString(), null, task.getResult().getValue()));
 
-                    taskCompletionSource.setResult(task.getResult());
-
-                    //Clear after find complete
+                    //Clear after action complete
                     searchNodes.clear();
 
                     return taskCompletionSource.getTask().getResult();

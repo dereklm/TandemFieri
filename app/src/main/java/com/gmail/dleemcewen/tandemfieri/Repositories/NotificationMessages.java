@@ -2,6 +2,7 @@ package com.gmail.dleemcewen.tandemfieri.Repositories;
 
 import android.content.Context;
 import android.content.Intent;
+import android.support.annotation.NonNull;
 
 import com.gmail.dleemcewen.tandemfieri.Abstracts.Entity;
 import com.gmail.dleemcewen.tandemfieri.Abstracts.Repository;
@@ -9,7 +10,14 @@ import com.gmail.dleemcewen.tandemfieri.Constants.NotificationConstants;
 import com.gmail.dleemcewen.tandemfieri.Entities.NotificationMessage;
 import com.gmail.dleemcewen.tandemfieri.EventListeners.QueryCompleteListener;
 import com.gmail.dleemcewen.tandemfieri.Services.NotificationService;
+import com.gmail.dleemcewen.tandemfieri.Tasks.AddEntityTask;
+import com.gmail.dleemcewen.tandemfieri.Tasks.AddNotificationMessageTask;
+import com.gmail.dleemcewen.tandemfieri.Tasks.NetworkConnectivityCheckTask;
+import com.gmail.dleemcewen.tandemfieri.Tasks.TaskResult;
+import com.google.android.gms.tasks.Continuation;
 import com.google.android.gms.tasks.Task;
+import com.google.android.gms.tasks.TaskCompletionSource;
+import com.google.android.gms.tasks.Tasks;
 import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -28,6 +36,7 @@ public class NotificationMessages<T extends Entity> extends Repository<Notificat
     private Context context;
     private DatabaseReference dataContext;
     private boolean sendNotificationMessages = false;
+    private ChildEventListener notificationChildEventListener;
 
     /**
      * Default constructor
@@ -38,7 +47,7 @@ public class NotificationMessages<T extends Entity> extends Repository<Notificat
         this.context = context;
 
         dataContext = getDataContext(NotificationMessage.class.getSimpleName());
-        dataContext.addChildEventListener(new ChildEventListener() {
+        notificationChildEventListener = dataContext.addChildEventListener(new ChildEventListener() {
             @Override
             public void onChildAdded(DataSnapshot dataSnapshot, String s) {
                 if (sendNotificationMessages) {
@@ -47,6 +56,7 @@ public class NotificationMessages<T extends Entity> extends Repository<Notificat
 
                     Intent intent = new Intent(context, NotificationService.class);
                     intent.setAction( childNotificationMessageRecord.getAction());
+                    intent.putExtra("notificationId", childNotificationMessageRecord.getNotificationId());
                     intent.putExtra("notificationType", childNotificationMessageRecord.getNotificationType());
                     intent.putExtra("entity", (Serializable) childNotificationMessageRecord.getData());
                     intent.putExtra("key", childNotificationMessageRecord.getKey());
@@ -87,6 +97,49 @@ public class NotificationMessages<T extends Entity> extends Repository<Notificat
 
             }
         });
+    }
+
+    /**
+     * finalize cleans up the child event listener when the repository removed
+     */
+    public void finalize() {
+        dataContext.removeEventListener(notificationChildEventListener);
+    }
+
+    /**
+     * sends a new notification containing the data from the supplied entity
+     * @param action indicates the notification constant to include in the activity
+     * @param entity indicates the data from the supplied entity to include
+     */
+    public <V extends Entity> Task<TaskResult<NotificationMessage>> sendNotification(final NotificationConstants.Action action, V entity) {
+        String[] childNodes = new String[searchNodes.size()];
+        childNodes = searchNodes.toArray(childNodes);
+
+        dataContext = getDataContext(NotificationMessage.class.getSimpleName(), childNodes);
+
+        return Tasks.<Void>forResult(null)
+                .continueWithTask(new NetworkConnectivityCheckTask(context))
+                .continueWithTask(new AddNotificationMessageTask<>(dataContext, action, entity))
+                .continueWith(new Continuation<TaskResult<V>, TaskResult<NotificationMessage>>() {
+                    @Override
+                    public TaskResult<NotificationMessage> then(@NonNull Task<TaskResult<V>> task) throws Exception {
+                        TaskCompletionSource<TaskResult<NotificationMessage>> taskCompletionSource =
+                                new TaskCompletionSource<>();
+
+                        List<V> entities = task.getResult().getResults();
+                        List<NotificationMessage> messages = new ArrayList<>();
+                        if (!entities.isEmpty()) {
+                            messages.add((NotificationMessage)entities.get(0));
+
+                            taskCompletionSource.setResult(new TaskResult<>(action.toString(), messages, null));
+                        }
+
+                        //Clear after find complete
+                        searchNodes.clear();
+
+                        return taskCompletionSource.getTask().getResult();
+                    }
+                });
     }
 
     /**

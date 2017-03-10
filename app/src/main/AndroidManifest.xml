@@ -63,10 +63,17 @@
         <service
             android:name=".Utility.FetchAddressIntentService"
             android:exported="false" />
-
         <service
             android:name=".Services.NotificationService"
             android:exported="false" />
+
+        <activity android:name=".RestaurantRatings"></activity>
+        <activity android:name=".DeliveryMapActivity" />
+        <activity
+            android:name=".DriverDeliveryActivity"
+            android:label="@string/title_activity_driver_delivery"
+            android:theme="@style/AppTheme.NoActionBar"></activity>
       
     </application>
+
 </manifest>

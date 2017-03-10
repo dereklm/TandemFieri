@@ -27,7 +27,7 @@ public class Order extends Entity implements Serializable {
     public Order(String key) {
         setKey(key);
     }
-
+  
     public double calculateSubTotal() {
         double subTotal = 0;
         for (OrderItem item : items) {
@@ -41,8 +41,7 @@ public class Order extends Entity implements Serializable {
         subTotal += deliveryCharge;
         return subTotal;
     }
-
-
+  
     public void addItem(OrderItem item) {
         items.add(item);
         this.subTotal = calculateSubTotal();
@@ -96,6 +95,7 @@ public class Order extends Entity implements Serializable {
     }
 
     public void setCustomerId(String customerId) {
+
         this.customerId = customerId;
     }
 

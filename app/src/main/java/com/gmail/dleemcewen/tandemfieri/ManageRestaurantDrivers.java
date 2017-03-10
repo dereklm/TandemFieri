@@ -194,7 +194,7 @@ public class ManageRestaurantDrivers extends AppCompatActivity {
         //find all the users where the restaurant id matches the current restaurant id
         users
             .atNode("Driver")
-            .find("restaurantId = " + restaurant.getKey())
+            .find("restaurantId = '" + restaurant.getKey() + "'")
             .addOnCompleteListener(ManageRestaurantDrivers.this, new OnCompleteListener<TaskResult<User>>() {
                 @Override
                 public void onComplete(@NonNull Task<TaskResult<User>> task) {
