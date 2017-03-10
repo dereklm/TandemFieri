@@ -76,8 +76,17 @@ public class OrderMenuActivity extends AppCompatActivity {
             public void onClick(View v) {
                 Intent intent = new Intent(OrderMenuActivity.this, CartActivity.class);
                 intent.putExtra("cart", order);
+                intent.putExtra("restaurantId", restaurant.getKey());
+                intent.putExtra("ownerId", restaurant.getOwnerId());
+                intent.putExtra("deliveryCharge", restaurant.getCharge());
                 startActivity(intent);
             }
         });
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        if (order.getItems().size() > 0) order = new Order();
     }
 }
