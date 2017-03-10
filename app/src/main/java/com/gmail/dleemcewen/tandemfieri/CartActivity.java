@@ -1,5 +1,6 @@
 package com.gmail.dleemcewen.tandemfieri;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
@@ -9,6 +10,11 @@ import android.widget.TextView;
 
 import com.gmail.dleemcewen.tandemfieri.Adapters.OrderItemAdapter;
 import com.gmail.dleemcewen.tandemfieri.Entities.Order;
+import com.gmail.dleemcewen.tandemfieri.Enums.OrderEnum;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
 
 import java.text.NumberFormat;
 
@@ -16,15 +22,37 @@ public class CartActivity extends AppCompatActivity {
 
     private Order order;
     private Button cancelButton, checkoutButton;
+    private double deliveryCharge;
     private ExpandableListView cartItems;
     private OrderItemAdapter orderItemAdapter;
     private TextView total, subtotal, tax;
+    private DatabaseReference mDatabase;
+    private String uid = "", ownerId = "", restaurantId = "";
+    private FirebaseUser fireuser;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_cart);
         order = (Order) getIntent().getSerializableExtra("cart");
+        restaurantId = (String) getIntent().getSerializableExtra("restaurantId");
+        ownerId = (String) getIntent().getSerializableExtra("ownerId");
+        deliveryCharge = (double) getIntent().getSerializableExtra("deliveryCharge");
+
+        mDatabase = FirebaseDatabase.getInstance().getReference();
+
+        fireuser = FirebaseAuth.getInstance().getCurrentUser();
+        if (fireuser != null) {
+            // User is signed in
+            uid = fireuser.getUid();
+        } else {
+            // No user is signed in
+            Intent intent = new Intent(this, MainActivity.class);
+            intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+            intent.putExtra("Exit me", true);
+            startActivity(intent);
+            finish();
+        }
 
         total = (TextView) findViewById(R.id.total);
         subtotal = (TextView) findViewById(R.id.subTotal);
@@ -35,10 +63,14 @@ public class CartActivity extends AppCompatActivity {
         orderItemAdapter = new OrderItemAdapter(CartActivity.this, this, order.getItems());
 
         NumberFormat formatter = NumberFormat.getCurrencyInstance();
+        order.setDeliveryCharge(deliveryCharge);
         total.setText("Total: " + formatter.format(order.getTotal()));
         tax.setText("Tax: " + formatter.format(order.getTax()));
         subtotal.setText("Subtotal: " + formatter.format(order.getSubTotal()));
 
+        order.getKey();
+        order.setCustomerId(uid);
+        order.setRestaurantId(restaurantId);
 
         cancelButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -51,6 +83,8 @@ public class CartActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 // Brandon, this is where you will hook into brain tree.
+
+                mDatabase.child("Order").child(ownerId).child(order.getKey()).setValue(order);
                 finish();
             }
         });

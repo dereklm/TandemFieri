@@ -2,6 +2,7 @@ package com.gmail.dleemcewen.tandemfieri.Entities;
 
 import com.gmail.dleemcewen.tandemfieri.Abstracts.Entity;
 import com.gmail.dleemcewen.tandemfieri.Constants.OrderConstants;
+import com.gmail.dleemcewen.tandemfieri.Enums.OrderEnum;
 
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -13,15 +14,20 @@ import java.util.List;
 
 public class Order extends Entity implements Serializable {
     private List<OrderItem> items = new ArrayList<>();
-    private int orderId;
-    private int restaurantId;
-    private int customerId;
+    private OrderEnum status;
+    private String restaurantId;
+    private String customerId;
     private double subTotal;
     private double tax;
     private double total;
+    private double deliveryCharge;
 
     public Order() {}
 
+    public Order(String key) {
+        setKey(key);
+    }
+  
     public double calculateSubTotal() {
         double subTotal = 0;
         for (OrderItem item : items) {
@@ -32,14 +38,24 @@ public class Order extends Entity implements Serializable {
                 }
             }
         }
+        subTotal += deliveryCharge;
         return subTotal;
     }
-
+  
     public void addItem(OrderItem item) {
         items.add(item);
         this.subTotal = calculateSubTotal();
         this.tax = calculateTax();
         this.total = calculateTotal();
+        this.status = OrderEnum.CREATING;
+    }
+
+    public double getDeliveryCharge() {
+        return deliveryCharge;
+    }
+
+    public void setDeliveryCharge(double deliveryCharge) {
+        this.deliveryCharge = deliveryCharge;
     }
 
     public double calculateTax() {
@@ -50,6 +66,14 @@ public class Order extends Entity implements Serializable {
         return this.subTotal + this.tax;
     }
 
+    public OrderEnum getStatus() {
+        return status;
+    }
+
+    public void setStatus(OrderEnum status) {
+        this.status = status;
+    }
+
     public List<OrderItem> getItems() {
         return items;
     }
@@ -58,27 +82,20 @@ public class Order extends Entity implements Serializable {
         this.items = items;
     }
 
-    public int getOrderId() {
-        return orderId;
-    }
-
-    public void setOrderId(int orderId) {
-        this.orderId = orderId;
-    }
-
-    public int getRestaurantId() {
+    public String getRestaurantId() {
         return restaurantId;
     }
 
-    public void setRestaurantId(int restaurantId) {
+    public void setRestaurantId(String restaurantId) {
         this.restaurantId = restaurantId;
     }
 
-    public int getCustomerId() {
+    public String getCustomerId() {
         return customerId;
     }
 
-    public void setCustomerId(int customerId) {
+    public void setCustomerId(String customerId) {
+
         this.customerId = customerId;
     }
 
