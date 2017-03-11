@@ -18,6 +18,7 @@ import com.gmail.dleemcewen.tandemfieri.menubuilder.MenuItem;
 import com.gmail.dleemcewen.tandemfieri.menubuilder.OptionSelection;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 public class OrderMenuActivity extends AppCompatActivity {
@@ -28,6 +29,7 @@ public class OrderMenuActivity extends AppCompatActivity {
     private List<MenuItem> menuItems;
     private Restaurant restaurant;
     private ExpandableListView expandableListView;
+    private HashMap<String, List<OrderItem>> menuCategories;
     private Button goToCart;
 
     @Override
@@ -35,6 +37,7 @@ public class OrderMenuActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_order_menu);
 
+        menuCategories = new HashMap<>();
         menuItems = new ArrayList<>();
         restaurant = (Restaurant) getIntent().getSerializableExtra("Restaurant");
         menuItems.addAll(restaurant.getMenu().getSubItems());
@@ -42,6 +45,8 @@ public class OrderMenuActivity extends AppCompatActivity {
         expandableListView = (ExpandableListView) findViewById(R.id.menu_items);
         goToCart = (Button) findViewById(R.id.cart);
         order = new Order();
+
+        setupCategories(restaurant, menuCategories);
 
         for (MenuItem item : menuItems) {
             items.add(new OrderItem(item));
@@ -53,6 +58,7 @@ public class OrderMenuActivity extends AppCompatActivity {
                 }
             }
         }
+        menuCategories.put(restaurant.getMenu().getName(), items);
 
         orderItemAdapter = new OrderItemAdapter(OrderMenuActivity.this, this, items);
         expandableListView.setAdapter(orderItemAdapter);
@@ -82,6 +88,10 @@ public class OrderMenuActivity extends AppCompatActivity {
                 startActivity(intent);
             }
         });
+    }
+
+    public void setupCategories(Restaurant restaurant, HashMap<String, List<OrderItem>> menuCategories) {
+
     }
 
     @Override

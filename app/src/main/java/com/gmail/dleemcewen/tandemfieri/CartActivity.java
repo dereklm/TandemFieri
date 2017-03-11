@@ -10,7 +10,6 @@ import android.widget.TextView;
 
 import com.gmail.dleemcewen.tandemfieri.Adapters.OrderItemAdapter;
 import com.gmail.dleemcewen.tandemfieri.Entities.Order;
-import com.gmail.dleemcewen.tandemfieri.Enums.OrderEnum;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DatabaseReference;
@@ -61,6 +60,7 @@ public class CartActivity extends AppCompatActivity {
         checkoutButton = (Button) findViewById(R.id.checkout);
         cartItems = (ExpandableListView) findViewById(R.id.cart_items);
         orderItemAdapter = new OrderItemAdapter(CartActivity.this, this, order.getItems());
+
 
         NumberFormat formatter = NumberFormat.getCurrencyInstance();
         order.setDeliveryCharge(deliveryCharge);

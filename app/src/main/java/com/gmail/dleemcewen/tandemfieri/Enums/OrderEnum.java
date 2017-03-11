@@ -12,5 +12,4 @@ public enum OrderEnum implements Serializable {
     RECEIVED,
     EN_ROUTE,
     COMPLETE;
-
 }
