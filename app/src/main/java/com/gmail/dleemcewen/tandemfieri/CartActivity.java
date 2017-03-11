@@ -10,7 +10,6 @@ import android.widget.TextView;
 
 import com.gmail.dleemcewen.tandemfieri.Adapters.OrderItemAdapter;
 import com.gmail.dleemcewen.tandemfieri.Entities.Order;
-import com.gmail.dleemcewen.tandemfieri.Enums.OrderEnum;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DatabaseReference;
@@ -84,7 +83,7 @@ public class CartActivity extends AppCompatActivity {
             public void onClick(View v) {
                 // Brandon, this is where you will hook into brain tree.
 
-                mDatabase.child("Order").child(ownerId).child(order.getKey()).setValue(order);
+                mDatabase.child("Order").child(ownerId).child(restaurantId).child(order.getKey()).setValue(order);
                 finish();
             }
         });
