@@ -110,7 +110,7 @@ public class DriverDeliveryActivity extends AppCompatActivity implements GoogleA
                 .child("Delivery");
 
         mDatabase.child("Latitude").setValue(currentLocation.getLatitude()).equals("Latitude");
-        mDatabase.child("Longtitude").setValue(currentLocation.getLongitude()).equals("Longitude");
+        mDatabase.child("Longitude").setValue(currentLocation.getLongitude()).equals("Longitude");
         mDatabase.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {

@@ -8,6 +8,8 @@
         android:title="Sign Out"/>
     <item android:id="@+id/payment"
         android:title="Payment"/>
+    <item android:id="@+id/rateRestaurant"
+        android:title="Rate a restaurant"/>
     <item android:id="@+id/account"
         android:title="Account" >
         <menu>

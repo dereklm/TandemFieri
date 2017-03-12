@@ -58,6 +58,7 @@
     <string name="ok">Ok</string>
     <string name="save">Save</string>
     <string name="cancel">Cancel</string>
+    <string name="close">Close</string>
     <string name="startDate">Start date</string>
     <string name="endDate">End date</string>
     <string name="hintStartDate">Select start date</string>
@@ -78,4 +79,6 @@
     <string name="rateRestaurant">Rate restaurant</string>
     <string name="rateableRestaurantsTitle">Which restaurant would you like to rate?</string>
     <string name="title_activity_driver_delivery">DriverDeliveryActivity</string>
+    <string name="myDeliveries">My deliveries</string>
+    <string name="selectCurrentDelivery">Select current delivery</string>
 </resources>

@@ -73,7 +73,6 @@ public class EditRestaurantActivity extends AppCompatActivity implements Adapter
 
         Bundle bundle = getIntent().getExtras();
         restaurant = (Restaurant)bundle.getSerializable("Restaurant");
-        restaurant.setKey(bundle.getString("key"));
 
         LogWriter.log(getApplicationContext(), Level.FINE, "The restaurant key is " + restaurant.getKey());
     }

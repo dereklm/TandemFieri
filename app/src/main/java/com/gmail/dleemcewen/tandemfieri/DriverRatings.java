@@ -72,7 +72,6 @@ public class DriverRatings extends AppCompatActivity {
 
         Bundle bundle = this.getIntent().getExtras();
         restaurant = (Restaurant)bundle.getSerializable("Restaurant");
-        restaurant.setKey(bundle.getString("key"));
     }
 
     /**

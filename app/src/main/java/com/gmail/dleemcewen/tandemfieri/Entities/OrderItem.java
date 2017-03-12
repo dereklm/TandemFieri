@@ -18,6 +18,11 @@ public class OrderItem implements Serializable {
     private double basePrice;
     private List<OrderItemOptionGroup> optionGroups;
 
+    /**
+     * Empty constructor required for firebase deserialization
+     */
+    public OrderItem() {}
+
     public OrderItem(MenuItem menuItem) {
         basePrice = 0;
         this.name = menuItem.getName();

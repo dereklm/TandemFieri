@@ -46,7 +46,7 @@ public class GetEntitiesTask<T extends Entity> implements Continuation<Map.Entry
 
                 @Override
                 public void onDataChange(DataSnapshot dataSnapshot) {
-                    List<T> entities = new ArrayList<T>();
+                    List<T> entities = new ArrayList<>();
 
                     for (DataSnapshot record : dataSnapshot.getChildren()) {
                         T childRecord = record.getValue(entityClass);

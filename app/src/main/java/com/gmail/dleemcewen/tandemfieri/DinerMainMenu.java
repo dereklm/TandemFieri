@@ -48,9 +48,6 @@ public class DinerMainMenu extends AppCompatActivity {
         user = (User) bundle.getSerializable("User");
 
         LogWriter.log(getApplicationContext(), Level.INFO, "The user is " + user.getEmail());
-
-        findControlReferences();
-        bindEventHandlers();
     }//end onCreate
 
     //create menu
@@ -100,29 +97,12 @@ public class DinerMainMenu extends AppCompatActivity {
                 startActivity(intent);
 
                 return true;
+            case R.id.rateRestaurant:
+                rateRestaurant();
+                return true;
             default:
                 return super.onOptionsItemSelected(item);
         }
-    }
-
-    /**
-     * find all control references
-     */
-    private void findControlReferences() {
-        rateRestaurant = (Button)findViewById(R.id.rateRestaurant);
-    }
-
-    /**
-     * bind required event handlers
-     */
-    private void bindEventHandlers() {
-        rateRestaurant.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent intent = new Intent(getApplicationContext(), RestaurantRatings.class);
-                startActivity(intent);
-            }
-        });
     }
 
     //called when user selects sign out from the drop down menu
@@ -175,6 +155,11 @@ public class DinerMainMenu extends AppCompatActivity {
         //intent.putExtras(dinerBundle);
         //intent.putExtra("UserType", "Diner");
         startActivity(intent);
+    }
+
+    private void rateRestaurant() {
+        Intent rateRestaurantIntent = new Intent(getApplicationContext(), RestaurantRatings.class);
+        startActivity(rateRestaurantIntent);
     }
 
     /**

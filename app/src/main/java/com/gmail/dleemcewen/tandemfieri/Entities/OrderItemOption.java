@@ -13,6 +13,11 @@ public class OrderItemOption implements Serializable {
     private double addedPrice;
     private String description;
 
+    /**
+     * Empty constructor required for firebase deserialization
+     */
+    public OrderItemOption() {}
+
     public OrderItemOption(OptionSelection optionSelection) {
         this.name = optionSelection.getSelectionName();
         this.addedPrice = optionSelection.getAddedPrice();

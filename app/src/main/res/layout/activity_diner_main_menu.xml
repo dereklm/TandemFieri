@@ -16,13 +16,4 @@
         android:layout_height="wrap_content"
         android:text="Diner Main Menu"
         android:textSize="35sp"/>
-
-    <Button
-        android:id="@+id/rateRestaurant"
-        android:layout_marginTop="@dimen/activity_vertical_margin"
-        android:layout_width="match_parent"
-        android:layout_height="64dp"
-        android:layout_below="@id/dinerMainMenu"
-        android:text="@string/rateRestaurant"
-        android:drawableLeft="@drawable/ic_star_half_white" />
 </RelativeLayout>

@@ -1,5 +1,7 @@
 package com.gmail.dleemcewen.tandemfieri;
 
+import android.app.FragmentManager;
+import android.app.FragmentTransaction;
 import android.os.Bundle;
 import android.content.Intent;
 import android.os.Bundle;
@@ -18,18 +20,14 @@ import java.util.logging.Level;
 import static com.paypal.android.sdk.onetouch.core.metadata.ah.t;
 
 public class DriverMainMenu extends AppCompatActivity {
-
-    User user;
+    private User user;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_driver_main_menu);
 
-        User user = new User();
-
-        Bundle bundle = new Bundle();
-        bundle = this.getIntent().getExtras();
+        Bundle bundle = this.getIntent().getExtras();
         user = (User) bundle.getSerializable("User");
 
         LogWriter.log(getApplicationContext(), Level.INFO, "The user is " + user.getEmail());
@@ -60,6 +58,9 @@ public class DriverMainMenu extends AppCompatActivity {
             case R.id.delivery:
                 startDelivery();
                 return true;
+            case R.id.myDeliveries:
+                showMyDeliveries();
+                return true;
             default:
                 return super.onOptionsItemSelected(item);
         }
@@ -78,6 +79,23 @@ public class DriverMainMenu extends AppCompatActivity {
     private void startDelivery(){
         Intent intent = new Intent(DriverMainMenu.this, DriverDeliveryActivity.class);
         startActivity(intent);
+    }
+
+    /**
+     * showMyDeliveries displays all of the deliveries assigned to the current driver
+     */
+    private void showMyDeliveries() {
+        FragmentManager fragmentManager = getFragmentManager();
+        FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+
+        DriverOrdersFragment driverOrders = new DriverOrdersFragment();
+        Bundle args = new Bundle();
+        args.putString("driverId", user.getAuthUserID());
+        args.putString("restaurantId", user.getRestaurantId());
+        driverOrders.setArguments(args);
+
+        fragmentTransaction.add(R.id.activity_driver_main_menu, driverOrders);
+        fragmentTransaction.commit();
     }
 
     //called when user selects edit information from the drop down menu
