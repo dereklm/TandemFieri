@@ -14,7 +14,10 @@ import android.widget.Toast;
 
 import com.gmail.dleemcewen.tandemfieri.Entities.User;
 import com.gmail.dleemcewen.tandemfieri.Formatters.StringFormatter;
+import com.gmail.dleemcewen.tandemfieri.Interfaces.AsyncHttpResponse;
+import com.gmail.dleemcewen.tandemfieri.Json.AddressGeocode.AddressGeocode;
 import com.gmail.dleemcewen.tandemfieri.Logging.LogWriter;
+import com.gmail.dleemcewen.tandemfieri.RestClient.AddressToLatLng;
 import com.gmail.dleemcewen.tandemfieri.Utility.MapUtil;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
@@ -38,8 +41,7 @@ public class EditAccountActivity extends AppCompatActivity implements AdapterVie
     private String type = "";
     private String uid = "";
 
-    private boolean emailIsDuplicated, userIsValid;
-
+    private boolean emailIsDuplicated;
 
     private DatabaseReference mDatabase;
     private FirebaseUser fireuser;
@@ -148,22 +150,42 @@ public class EditAccountActivity extends AppCompatActivity implements AdapterVie
             public void onClick(View view) {
                 //collect information
                 getChangedUserInformation();
-                userIsValid = validInput();
-                //emailIsDuplicated = false;
-                //Is email changed?
-                if(!currentUser.getEmail().equals(changedUser.getEmail())){
-                    //Toast.makeText(getApplicationContext(),"new Email has been entered" , Toast.LENGTH_LONG).show();
-                    //yes - is email valid?
+                //userIsValid = validInput();
 
-                        //yes - check for duplicate email
-                        //Toast.makeText(getApplicationContext(),"new email is valid." , Toast.LENGTH_LONG).show();
-                        DatabaseReference rodb = FirebaseDatabase.getInstance().getReference().child("User");
+                if (formValid()) {
+                    String url = MapUtil.addressToURL(getApplicationContext()
+                            ,address.getText().toString()
+                            ,city.getText().toString()
+                            ,state
+                            ,zip.getText().toString());
 
-                        VEListener listener = new VEListener();
-                        rodb.addListenerForSingleValueEvent(listener);
-                    }
+                    AddressToLatLng client = AddressToLatLng.getInstance();
+                    client.verifyAddress(getApplicationContext(),url, new AsyncHttpResponse() {
+                        @Override
+                        public void requestComplete(boolean success, AddressGeocode addr) {
+                            if (success) {
+                                //emailIsDuplicated = false;
+                                //Is email changed?
+                                //if(!currentUser.getEmail().equals(changedUser.getEmail())){
+                                    //Toast.makeText(getApplicationContext(),"new Email has been entered" , Toast.LENGTH_LONG).show();
+                                    //yes - is email valid?
 
+                                        //yes - check for duplicate email
+                                        //Toast.makeText(getApplicationContext(),"new email is valid." , Toast.LENGTH_LONG).show();
+                                        DatabaseReference rodb = FirebaseDatabase.getInstance().getReference().child("User");
 
+                                        VEListener listener = new VEListener();
+                                        rodb.addListenerForSingleValueEvent(listener);
+                                   // }
+                            } else {
+                                address.setError(FormConstants.ERROR_TAG_ADDRESS);
+                                city.setError(FormConstants.ERROR_TAG_CITY);
+                                zip.setError(FormConstants.ERROR_TAG_ZIP);
+                                Toast.makeText(getApplicationContext(), "Not a valid address!", Toast.LENGTH_LONG).show();
+                            }
+                        }
+                    });
+                }
             }
         });
     }//end onCreate
@@ -181,39 +203,15 @@ public class EditAccountActivity extends AppCompatActivity implements AdapterVie
         changedUser.setAuthUserID(currentUser.getAuthUserID());
     }
 
-    public boolean validInput(){
-        boolean result = false; //return value
-
-        boolean firstNameValid = isValid(firstName, FormConstants.REG_EX_FIRSTNAME, FormConstants.ERROR_TAG_FIRSTNAME);
-        boolean lastNameValid = isValid(lastName, FormConstants.REG_EX_LASTNAME, FormConstants.ERROR_TAG_LASTNAME);
-        boolean addressValid = isValid(address, FormConstants.REG_EX_ADDRESS, FormConstants.ERROR_TAG_ADDRESS);
-        boolean cityValid = isValid(city, FormConstants.REG_EX_CITY, FormConstants.ERROR_TAG_CITY);
-        boolean emailValid = isValid(email, FormConstants.REG_EX_EMAIL, FormConstants.ERROR_TAG_EMAIL);
-        boolean phoneNumberValid = isValid(phoneNumber, FormConstants.REG_EX_PHONE, FormConstants.ERROR_TAG_PHONE);
-        boolean zipValid = isValid(zip, FormConstants.REG_EX_ZIP, FormConstants.ERROR_TAG_ZIP);
-
-        synchronized (this) {
-            if (!MapUtil.verifyAddress(getApplicationContext(), address, city, state, zip)) {
-                address.setError(FormConstants.ERROR_TAG_ADDRESS);
-                city.setError(FormConstants.ERROR_TAG_CITY);
-                zip.setError(FormConstants.ERROR_TAG_ZIP);
-                return result;
-            }
-        }
-
-        if (    firstNameValid      &&
-                lastNameValid       &&
-                addressValid        &&
-                cityValid           &&
-                zipValid            &&
-                phoneNumberValid    &&
-                emailValid) {
-
-            result = true;
-        }
-        return result;
+    public boolean formValid() {
+        return isValid(firstName, FormConstants.REG_EX_FIRSTNAME, FormConstants.ERROR_TAG_FIRSTNAME)
+                && isValid(lastName, FormConstants.REG_EX_LASTNAME, FormConstants.ERROR_TAG_LASTNAME)
+                && isValid(address, FormConstants.REG_EX_ADDRESS, FormConstants.ERROR_TAG_ADDRESS)
+                && isValid(city, FormConstants.REG_EX_CITY, FormConstants.ERROR_TAG_CITY)
+                && isValid(email, FormConstants.REG_EX_EMAIL, FormConstants.ERROR_TAG_EMAIL)
+                && isValid(phoneNumber, FormConstants.REG_EX_PHONE, FormConstants.ERROR_TAG_PHONE)
+                && isValid(zip, FormConstants.REG_EX_ZIP, FormConstants.ERROR_TAG_ZIP);
     }
-
 
     /**
      * <p>Callback method to be invoked when an item in this view has been
@@ -256,7 +254,7 @@ public class EditAccountActivity extends AppCompatActivity implements AdapterVie
             for (DataSnapshot ps : ro.getChildren()) {
                 User u = ps.getValue(User.class);
                 //Toast.makeText(getApplicationContext(), u.getEmail(), Toast.LENGTH_SHORT).show();
-                if (u.getEmail().equals(changedUser.getEmail())) {
+                if (u.getEmail().equals(changedUser.getEmail()) && !u.getEmail().equals(currentUser.getEmail())) {
                     Toast.makeText(getApplicationContext(), "In u.getEmail == changeduser email", Toast.LENGTH_SHORT).show();
                     emailIsDuplicated = true;
                     msg = "Invalid email.";
@@ -266,7 +264,7 @@ public class EditAccountActivity extends AppCompatActivity implements AdapterVie
             for (DataSnapshot ps : diner.getChildren()) {
                 User u = ps.getValue(User.class);
                 //Toast.makeText(getApplicationContext(), u.getEmail(), Toast.LENGTH_SHORT).show();
-                if (u.getEmail().equals(changedUser.getEmail())) {
+                if (u.getEmail().equals(changedUser.getEmail()) && !u.getEmail().equals(currentUser.getEmail())) {
                     Toast.makeText(getApplicationContext(), "In u.getEmail == changeduser email", Toast.LENGTH_SHORT).show();
                     emailIsDuplicated = true;
                     msg = "Invalid email.";
@@ -276,14 +274,14 @@ public class EditAccountActivity extends AppCompatActivity implements AdapterVie
             for (DataSnapshot ps : driver.getChildren()) {
                 User u = ps.getValue(User.class);
                 Toast.makeText(getApplicationContext(), u.getEmail(), Toast.LENGTH_SHORT).show();
-                if (u.getEmail().equals(changedUser.getEmail())) {
+                if (u.getEmail().equals(changedUser.getEmail()) && !u.getEmail().equals(currentUser.getEmail())) {
                     //Toast.makeText(getApplicationContext(), "In u.getEmail == changeduser email", Toast.LENGTH_SHORT).show();
                     emailIsDuplicated = true;
                     msg = "Invalid email.";
                 }
             }
             //is all info valid?
-            if(userIsValid && !emailIsDuplicated){
+            if(!emailIsDuplicated){
                 //Toast.makeText(getApplicationContext(),"About to save" , Toast.LENGTH_LONG).show();
                 saveUserToDatabase();
                 Toast.makeText(getApplicationContext(),msg , Toast.LENGTH_LONG).show();
@@ -335,7 +333,7 @@ public class EditAccountActivity extends AppCompatActivity implements AdapterVie
                     @Override
                     public void onComplete(@NonNull Task<Void> task) {
                         if (task.isSuccessful()) {
-                            LogWriter.log(getApplicationContext(), Level.INFO, "User email address updated.");
+                            LogWriter.log(getApplicationContext(), Level.INFO, "User information updated.");
                         }
                     }
                 });
