@@ -182,7 +182,7 @@ public class ManageRestaurantExpandableListAdapter extends BaseExpandableListAda
             public void onClick(View v) {
                 Bundle bundle = new Bundle();
                 bundle.putSerializable("Restaurant", restaurant);
-                bundle.putString("key", restaurant.getKey());
+                bundle.putString("key", restaurant.getRestaurantKey());
                 Intent intent = new Intent(context, EditRestaurantActivity.class);
                 intent.putExtras(bundle);
                 context.startActivityForResult(intent, UPDATE_RESTAURANT);

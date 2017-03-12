@@ -10,11 +10,30 @@
     android:paddingTop="@dimen/activity_vertical_margin"
     tools:context="com.gmail.dleemcewen.tandemfieri.RestaurantMainMenu">
 
-    <TextView
+    <LinearLayout
+        android:id="@+id/restaurantMainMenuHeader"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="@string/restaurant_main_menu"
-	android:id="@+id/restaurant_text_view"
-        android:textSize="35sp"/>
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true"
+        android:layout_alignParentTop="true"
+        android:orientation="horizontal">
+        <TextView
+            android:layout_weight="2"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:id="@+id/header" />
+    </LinearLayout>
+
+    <ExpandableListView
+        android:id="@+id/order_list"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_below="@id/restaurantMainMenuHeader"
+        android:indicatorLeft="?android:attr/expandableListPreferredItemIndicatorLeft"
+        android:divider="@android:color/darker_gray"
+        android:dividerHeight="0.5dp" />
+
+
 
 </RelativeLayout>
