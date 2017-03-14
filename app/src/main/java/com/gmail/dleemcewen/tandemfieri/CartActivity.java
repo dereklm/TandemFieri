@@ -2,23 +2,29 @@ package com.gmail.dleemcewen.tandemfieri;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ExpandableListView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.gmail.dleemcewen.tandemfieri.Adapters.OrderItemAdapter;
 import com.gmail.dleemcewen.tandemfieri.Constants.NotificationConstants;
 import com.gmail.dleemcewen.tandemfieri.Entities.NotificationMessage;
 import com.gmail.dleemcewen.tandemfieri.Entities.Order;
 import com.gmail.dleemcewen.tandemfieri.Repositories.NotificationMessages;
+import com.gmail.dleemcewen.tandemfieri.Tasks.TaskResult;
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 
 import java.text.NumberFormat;
+import java.util.List;
 
 public class CartActivity extends AppCompatActivity {
 
@@ -91,7 +97,22 @@ public class CartActivity extends AppCompatActivity {
                 mDatabase.child("Order").child(ownerId).child(restaurantId).child(order.getKey()).setValue(order);
 
                 //sent order notification to restaurant
-                notificationsRepository.sendNotification(NotificationConstants.Action.ADDED, order);
+                notificationsRepository
+                    .sendNotification(NotificationConstants.Action.ADDED, order)
+                    .addOnCompleteListener(CartActivity.this, new OnCompleteListener<TaskResult<NotificationMessage>>() {
+                        @Override
+                        public void onComplete(@NonNull Task<TaskResult<NotificationMessage>> task) {
+                            if (task.isSuccessful()) {
+                                Toast
+                                    .makeText(CartActivity.this, "Your order has been placed successfully.", Toast.LENGTH_LONG)
+                                    .show();
+                            } else {
+                                Toast
+                                    .makeText(CartActivity.this, "An error occurred while placing your order.  Please verify the status of your order with the restaurant.", Toast.LENGTH_LONG)
+                                    .show();
+                            }
+                        }
+                    });
 
                 finish();
             }

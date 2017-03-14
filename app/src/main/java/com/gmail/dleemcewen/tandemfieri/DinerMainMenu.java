@@ -7,7 +7,6 @@ import android.location.Geocoder;
 import android.location.Location;
 import android.location.LocationManager;
 import android.os.Bundle;
-import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
@@ -17,21 +16,13 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
-import android.widget.Button;
 import android.widget.ListView;
 import android.widget.Toast;
 
-import com.gmail.dleemcewen.tandemfieri.Constants.NotificationConstants;
-import com.gmail.dleemcewen.tandemfieri.Entities.NotificationMessage;
 import com.gmail.dleemcewen.tandemfieri.Entities.Restaurant;
 import com.gmail.dleemcewen.tandemfieri.Entities.User;
 import com.gmail.dleemcewen.tandemfieri.Logging.LogWriter;
-import com.gmail.dleemcewen.tandemfieri.Repositories.NotificationMessages;
-import com.gmail.dleemcewen.tandemfieri.Repositories.Restaurants;
-import com.gmail.dleemcewen.tandemfieri.Tasks.TaskResult;
 import com.google.android.gms.maps.model.LatLng;
-import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -50,7 +41,6 @@ import static com.gmail.dleemcewen.tandemfieri.DinerMapActivity.MY_PERMISSIONS_R
 
 public class DinerMainMenu extends AppCompatActivity {
     User user;
-    private Button rateRestaurant;
     ListView listview;
     List<Restaurant> restaurantsList;
     DatabaseReference mDatabase;
@@ -119,11 +109,6 @@ public class DinerMainMenu extends AppCompatActivity {
             case R.id.delivery:
                 launchDelivery();
                 return true;
-            case R.id.sendSimulatedNotification:
-                //TODO: remove this after ordering and payment processing are in place
-                //this is just for testing and demo purposes
-                simulateCompletedOrder();
-                return true;
             case R.id.payment:
                 Bundle bundle = new Bundle();
                 bundle.putSerializable("User", user);
@@ -174,6 +159,8 @@ public class DinerMainMenu extends AppCompatActivity {
     }
 
     private void launchMap(){
+        //need to send user type so that the user can be located in the database
+        Bundle dinerBundle = new Bundle();
         Intent intent = new Intent(DinerMainMenu.this, DinerMapActivity.class);
         Bundle userBundle = new Bundle();
         userBundle.putSerializable("User", user);
@@ -182,6 +169,8 @@ public class DinerMainMenu extends AppCompatActivity {
     }
 
     private void launchDelivery(){
+        //need to send user type so that the user can be located in the database
+        Bundle dinerBundle = new Bundle();
         Intent intent = new Intent(DinerMainMenu.this, DeliveryMapActivity.class);
         Bundle userBundle = new Bundle();
         userBundle.putSerializable("User", user);
@@ -192,29 +181,6 @@ public class DinerMainMenu extends AppCompatActivity {
     private void rateRestaurant() {
         Intent rateRestaurantIntent = new Intent(getApplicationContext(), RestaurantRatings.class);
         startActivity(rateRestaurantIntent);
-    }
-
-    /**
-     * simulate a completed order
-     */
-    private void simulateCompletedOrder() {
-        //After the order entity and repository are in place, this will be handled from there
-        //since they aren't available yet, instead produce a notification that will appear
-        //to go to a restaurant
-
-        Restaurants<Restaurant> restaurantsRepository = new Restaurants<>(DinerMainMenu.this);
-        final NotificationMessages<NotificationMessage> notificationsRepository = new NotificationMessages<>(DinerMainMenu.this);
-
-        restaurantsRepository
-            .find("id = '26804931-17e3-403a-ab75-a43e96e86814'")
-            .addOnCompleteListener(new OnCompleteListener<TaskResult<Restaurant>>() {
-                @Override
-                public void onComplete(@NonNull Task<TaskResult<Restaurant>> task) {
-                    Restaurant testRestaurant = task.getResult().getResults().get(0);
-
-                    notificationsRepository.sendNotification(NotificationConstants.Action.ADDED, testRestaurant);
-                }
-            });
     }
 
     public boolean checkLocationPermission() {
