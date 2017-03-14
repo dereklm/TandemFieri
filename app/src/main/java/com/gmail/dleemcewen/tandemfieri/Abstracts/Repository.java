@@ -168,7 +168,7 @@ public abstract class Repository<T extends Entity> {
 
         return Tasks.<Void>forResult(null)
             .continueWithTask(new NetworkConnectivityCheckTask(context))
-            .continueWithTask(new UpdateEntityTask<T>(dataContext, entity))
+            .continueWithTask(new UpdateEntityTask<>(dataContext, entity))
             .continueWith(new Continuation<Map.Entry<Boolean, DatabaseError>, TaskResult<T>>() {
                 @Override
                 public TaskResult<T> then(@NonNull Task<Map.Entry<Boolean, DatabaseError>> task) throws Exception {

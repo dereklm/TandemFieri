@@ -61,7 +61,7 @@ public class AddNotificationMessageTask<T extends Entity> implements Continuatio
             dataContext.addListenerForSingleValueEvent(new ValueEventListener() {
                 @Override
                 public void onDataChange(DataSnapshot dataSnapshot) {
-                    taskCompletionSource.setResult(new TaskResult<T>(action.toString(), Arrays.asList(entity), null));
+                    taskCompletionSource.setResult(new TaskResult<>(action.toString(), Arrays.asList(entity), null));
                 }
 
                 @Override

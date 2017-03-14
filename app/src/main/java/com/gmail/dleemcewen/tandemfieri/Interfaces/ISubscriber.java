@@ -2,6 +2,7 @@ package com.gmail.dleemcewen.tandemfieri.Interfaces;
 
 import android.os.Bundle;
 
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -19,7 +20,7 @@ public interface ISubscriber {
      * getFilter returns the record filter supplied by the subscriber
      * @return record filter
      */
-    Map.Entry<String, String> getFilter();
+    Map.Entry<String, List<Object>> getFilter();
 
     /**
      * update provides the subscriber with updated information

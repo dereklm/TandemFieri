@@ -56,16 +56,17 @@ public class NotificationPublisher implements IPublish {
     @Override
     public void notifySubscribers(Bundle notification) {
         for (ISubscriber subscriber : subscribers) {
-            Map.Entry<String, String> filter = subscriber.getFilter();
+            Map.Entry<String, List<Object>> filter = subscriber.getFilter();
 
             if (notification.getString("notificationType").equals(subscriber.getNotificationType())) {
                 if (filter != null) {
                     Object entity = notification.getSerializable("entity");
                     HashMap entityHashMap = (HashMap)entity;
 
-                    if (entityHashMap
-                        .get(filter.getKey())
-                        .equals(filter.getValue())) {
+                    Object entityValue = entityHashMap.get(filter.getKey());
+
+                    if (entityValue != null &&
+                        filter.getValue().contains(entityValue)) {
                         entityHashMap.put("notificationId", notification.getString("notificationId"));
                         subscriber.update(notification);
                     }

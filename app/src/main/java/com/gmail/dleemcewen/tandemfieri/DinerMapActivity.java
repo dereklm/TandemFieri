@@ -21,6 +21,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.gmail.dleemcewen.tandemfieri.Entities.Restaurant;
+import com.gmail.dleemcewen.tandemfieri.Entities.User;
 import com.gmail.dleemcewen.tandemfieri.Json.AddressGeocode.AddressGeocode;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
@@ -53,6 +54,7 @@ public class DinerMapActivity extends FragmentActivity implements GoogleApiClien
         GoogleApiClient.OnConnectionFailedListener,
         LocationListener, OnMapReadyCallback, GoogleMap.OnMarkerClickListener {
 
+    private User user;
     private GoogleMap mMap;
     GoogleApiClient mGoogleApiClient;
     Location mLastLocation, currentLocation;
@@ -77,10 +79,11 @@ public class DinerMapActivity extends FragmentActivity implements GoogleApiClien
             finish();
             Toast.makeText(getApplicationContext(),"Location services must be turned on", Toast.LENGTH_LONG).show();
         }
-        restaurants = new ArrayList<Restaurant>();
-        tempRestaurants = new ArrayList<Restaurant>();
+        restaurants = new ArrayList<>();
+        tempRestaurants = new ArrayList<>();
         currentLocation = new Location("");
-
+        Bundle bundle = this.getIntent().getExtras();
+        user = (User) bundle.getSerializable("User");
 
         LocationManager locManager = (LocationManager)getSystemService(Context.LOCATION_SERVICE);
         if(locManager == null){
@@ -190,6 +193,7 @@ public class DinerMapActivity extends FragmentActivity implements GoogleApiClien
                             Intent intent = new Intent(DinerMapActivity.this, LookAtMenuActivity.class);
                             Bundle bundle = new Bundle();
                             bundle.putSerializable("Restaurant",  restaurants.get(k));
+                            bundle.putSerializable("User", user);
                             intent.putExtras(bundle);
                             startActivity(intent);
                         }

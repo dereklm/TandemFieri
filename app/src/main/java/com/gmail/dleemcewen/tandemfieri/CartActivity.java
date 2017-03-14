@@ -9,7 +9,10 @@ import android.widget.ExpandableListView;
 import android.widget.TextView;
 
 import com.gmail.dleemcewen.tandemfieri.Adapters.OrderItemAdapter;
+import com.gmail.dleemcewen.tandemfieri.Constants.NotificationConstants;
+import com.gmail.dleemcewen.tandemfieri.Entities.NotificationMessage;
 import com.gmail.dleemcewen.tandemfieri.Entities.Order;
+import com.gmail.dleemcewen.tandemfieri.Repositories.NotificationMessages;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DatabaseReference;
@@ -28,6 +31,7 @@ public class CartActivity extends AppCompatActivity {
     private DatabaseReference mDatabase;
     private String uid = "", ownerId = "", restaurantId = "";
     private FirebaseUser fireuser;
+    private NotificationMessages<NotificationMessage> notificationsRepository;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -37,6 +41,7 @@ public class CartActivity extends AppCompatActivity {
         restaurantId = (String) getIntent().getSerializableExtra("restaurantId");
         ownerId = (String) getIntent().getSerializableExtra("ownerId");
         deliveryCharge = (double) getIntent().getSerializableExtra("deliveryCharge");
+        notificationsRepository = new NotificationMessages<>(CartActivity.this);
 
         mDatabase = FirebaseDatabase.getInstance().getReference();
 
@@ -84,6 +89,10 @@ public class CartActivity extends AppCompatActivity {
                 // Brandon, this is where you will hook into brain tree.
 
                 mDatabase.child("Order").child(ownerId).child(restaurantId).child(order.getKey()).setValue(order);
+
+                //sent order notification to restaurant
+                notificationsRepository.sendNotification(NotificationConstants.Action.ADDED, order);
+
                 finish();
             }
         });

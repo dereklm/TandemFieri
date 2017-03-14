@@ -81,4 +81,5 @@
     <string name="title_activity_driver_delivery">DriverDeliveryActivity</string>
     <string name="myDeliveries">My deliveries</string>
     <string name="selectCurrentDelivery">Select current delivery</string>
+    <string name="manageOrders">Manage Orders</string>
 </resources>

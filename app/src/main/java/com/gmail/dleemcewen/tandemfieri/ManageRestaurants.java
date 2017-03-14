@@ -122,7 +122,7 @@ public class ManageRestaurants extends AppCompatActivity {
                 @Override
                 public void onComplete(@NonNull Task<TaskResult<Restaurant>> task) {
                     List<Restaurant> entities = task.getResult().getResults();
-                    listAdapter = new ManageRestaurantExpandableListAdapter((Activity)context, entities, buildExpandableChildData(entities));
+                    listAdapter = new ManageRestaurantExpandableListAdapter((Activity)context, entities, buildExpandableChildData(entities), currentUser);
                     restaurantsList.setAdapter(listAdapter);
                 }
             });

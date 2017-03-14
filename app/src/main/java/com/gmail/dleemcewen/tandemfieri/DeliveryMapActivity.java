@@ -10,12 +10,11 @@ import android.location.Geocoder;
 import android.location.Location;
 import android.location.LocationManager;
 import android.os.Build;
+import android.os.Bundle;
 import android.provider.Settings;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.content.ContextCompat;
-import android.support.v7.app.AppCompatActivity;
-import android.os.Bundle;
 import android.text.TextUtils;
 import android.view.Gravity;
 import android.view.View;
@@ -24,6 +23,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.gmail.dleemcewen.tandemfieri.Entities.Restaurant;
+import com.gmail.dleemcewen.tandemfieri.Entities.User;
 import com.gmail.dleemcewen.tandemfieri.Json.AddressGeocode.AddressGeocode;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
@@ -50,7 +50,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import static android.os.Build.VERSION_CODES.M;
-import static com.gmail.dleemcewen.tandemfieri.R.string.restaurant;
 import static com.google.android.gms.location.LocationServices.FusedLocationApi;
 
 public class DeliveryMapActivity extends FragmentActivity implements GoogleApiClient.ConnectionCallbacks,
@@ -71,6 +70,7 @@ public class DeliveryMapActivity extends FragmentActivity implements GoogleApiCl
     public Marker[] markers;
     public Location tempLocation;
     public MarkerOptions driver;
+    public User user;
 
 
     @Override
@@ -86,6 +86,9 @@ public class DeliveryMapActivity extends FragmentActivity implements GoogleApiCl
         tempRestaurants = new ArrayList<Restaurant>();
         currentLocation = new Location("");
 
+        user = new User();
+        Bundle bundle = this.getIntent().getExtras();
+        user = (User) bundle.getSerializable("User");
 
 
         LocationManager locManager = (LocationManager)getSystemService(Context.LOCATION_SERVICE);
@@ -113,7 +116,7 @@ public class DeliveryMapActivity extends FragmentActivity implements GoogleApiCl
                 .findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
         mDatabase = FirebaseDatabase.getInstance().getReference()
-                .child("Delivery");
+                .child("Delivery Location").child(user.getAuthUserID());
         mDatabase.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
@@ -121,7 +124,7 @@ public class DeliveryMapActivity extends FragmentActivity implements GoogleApiCl
                     finish();
                     Toast.makeText(getApplicationContext(),"Location services must be turned on", Toast.LENGTH_LONG).show();
                 }
-                Toast.makeText(getApplicationContext(),""+dataSnapshot.child("Longitude").getValue(), Toast.LENGTH_LONG).show();
+
                 double lat = Double.parseDouble(""+dataSnapshot.child("Latitude").getValue());
                 double lon = Double.parseDouble(""+dataSnapshot.child("Longitude").getValue());
 
@@ -463,6 +466,5 @@ public class DeliveryMapActivity extends FragmentActivity implements GoogleApiCl
     }
 
 }
-
 
 

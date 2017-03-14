@@ -4,12 +4,10 @@ import android.app.FragmentManager;
 import android.app.FragmentTransaction;
 import android.os.Bundle;
 import android.content.Intent;
-import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
-import android.widget.Toast;
 
 import com.gmail.dleemcewen.tandemfieri.Entities.User;
 import com.gmail.dleemcewen.tandemfieri.Logging.LogWriter;
@@ -17,10 +15,11 @@ import com.google.firebase.auth.FirebaseAuth;
 
 import java.util.logging.Level;
 
-import static com.paypal.android.sdk.onetouch.core.metadata.ah.t;
+
 
 public class DriverMainMenu extends AppCompatActivity {
     private User user;
+    private String customerId;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -31,6 +30,22 @@ public class DriverMainMenu extends AppCompatActivity {
         user = (User) bundle.getSerializable("User");
 
         LogWriter.log(getApplicationContext(), Level.INFO, "The user is " + user.getEmail());
+
+        /*
+        mDatabaseDelivery.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                for (DataSnapshot child : dataSnapshot.getChildren()) {
+                    customerId = (String) child.child("Order").child("CustomerId").getValue();
+                    //order = child.child("Order").getValue(Order.class);
+                }
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+            }
+        });
+        */
     }//end onCreate
 
     //create menu
@@ -77,7 +92,17 @@ public class DriverMainMenu extends AppCompatActivity {
     }
 
     private void startDelivery(){
+        Bundle driverBundle = new Bundle();
         Intent intent = new Intent(DriverMainMenu.this, DriverDeliveryActivity.class);
+        driverBundle.putString("customerId", customerId);
+        driverBundle.putSerializable("User", user);
+        intent.putExtras(driverBundle);
+        startActivity(intent);
+    }
+
+    private void connect(){
+        Intent intent = new Intent(DriverMainMenu.this, ConnectActivity.class);
+        intent.putExtra("ID", user.getAuthUserID());
         startActivity(intent);
     }
 

@@ -12,6 +12,7 @@ import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.gmail.dleemcewen.tandemfieri.Entities.Restaurant;
 import com.gmail.dleemcewen.tandemfieri.Entities.User;
 import com.gmail.dleemcewen.tandemfieri.Interfaces.ISubscriber;
 import com.gmail.dleemcewen.tandemfieri.Json.Braintree.ClientToken;
@@ -19,7 +20,9 @@ import com.gmail.dleemcewen.tandemfieri.Json.Braintree.CreateCustomer;
 import com.gmail.dleemcewen.tandemfieri.Logging.LogWriter;
 import com.gmail.dleemcewen.tandemfieri.Logging.ToastLogger;
 import com.gmail.dleemcewen.tandemfieri.Publishers.NotificationPublisher;
+import com.gmail.dleemcewen.tandemfieri.Repositories.Restaurants;
 import com.gmail.dleemcewen.tandemfieri.Subscribers.RestaurantSubscriber;
+import com.gmail.dleemcewen.tandemfieri.Tasks.TaskResult;
 import com.gmail.dleemcewen.tandemfieri.Utility.BraintreeUtil;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
@@ -40,6 +43,8 @@ import com.loopj.android.http.RequestParams;
 import org.json.JSONObject;
 
 import java.util.AbstractMap;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.logging.Level;
 
 import cz.msebera.android.httpclient.Header;
@@ -55,6 +60,7 @@ public class MainActivity extends AppCompatActivity {
     private DatabaseReference dBase;
     private User user;
     private Resources resources;
+    private Restaurants<Restaurant> restaurantsRepository;
 
     private boolean verifiedEmailNotRequiredForLogin;
 
@@ -82,6 +88,7 @@ public class MainActivity extends AppCompatActivity {
         password = (EditText) findViewById(R.id.password);
 
         dBase = FirebaseDatabase.getInstance().getReference().child("User");
+        restaurantsRepository = new Restaurants<>(MainActivity.this);
 
         user = new User();
         mAuth = FirebaseAuth.getInstance();
@@ -240,7 +247,7 @@ public class MainActivity extends AppCompatActivity {
                            
         User diner = dataSnapshot.child("Diner").child(mAuth.getCurrentUser().getUid()).getValue(User.class);
         User driver = dataSnapshot.child("Driver").child(mAuth.getCurrentUser().getUid()).getValue(User.class);
-        User restaurantOwner = dataSnapshot.child("Restaurant").child(mAuth.getCurrentUser().getUid()).getValue(User.class);
+        final User restaurantOwner = dataSnapshot.child("Restaurant").child(mAuth.getCurrentUser().getUid()).getValue(User.class);
 
         Intent intent = null;
 
@@ -254,22 +261,43 @@ public class MainActivity extends AppCompatActivity {
                 Log.v("BRAINTREE DEBUG", "CUS ID FROM MENU: " + diner.getBraintreeId());  //REMOVE ME, TESTING ONLY
                 requestBraintreeClientToken(diner.getBraintreeId());
             }
+
+            intent.putExtras(bundle);
+            startActivity(intent);
         }else if(driver != null){
             intent = new Intent(MainActivity.this, DriverMainMenu.class);
             bundle.putSerializable("User", driver);
+            intent.putExtras(bundle);
+            startActivity(intent);
         }else if(restaurantOwner != null){
-            //register new restaurant subscriber
-            registerNewSubscriber(new RestaurantSubscriber(
-                    MainActivity.this,
-                    restaurantOwner,
-                    new AbstractMap.SimpleEntry<>("ownerId", mAuth.getCurrentUser().getUid())));
+            //Find all the restaurant ids for the restaurant owner
+            //to be able to associate them with the notifications
+            restaurantsRepository
+                .find("ownerId = '" + mAuth.getCurrentUser().getUid() + "'")
+                .addOnCompleteListener(MainActivity.this, new OnCompleteListener<TaskResult<Restaurant>>() {
+                    @Override
+                    public void onComplete(@NonNull Task<TaskResult<Restaurant>> task) {
+                        List<Restaurant> restaurants = task.getResult().getResults();
 
-            intent = new Intent(MainActivity.this, RestaurantMainMenu.class);
-            bundle.putSerializable("User", restaurantOwner);
+                        List<Object> restaurantIds = new ArrayList<>();
+                        for (Restaurant ownerRestaurant : restaurants) {
+                            restaurantIds.add(ownerRestaurant.getKey());
+                        }
+
+                        //register new restaurant subscriber
+                        registerNewSubscriber(new RestaurantSubscriber(
+                                MainActivity.this,
+                                restaurantOwner,
+                                new AbstractMap.SimpleEntry<>("restaurantId", restaurantIds)));
+
+                        Intent restaurantIntent = new Intent(MainActivity.this, RestaurantMainMenu.class);
+                        Bundle restaurantBundle = new Bundle();
+                        restaurantBundle.putSerializable("User", restaurantOwner);
+                        restaurantIntent.putExtras(restaurantBundle);
+                        startActivity(restaurantIntent);
+                    }
+                });
         }
-
-        intent.putExtras(bundle);
-        startActivity(intent);
     }
 
     private void setupLogging() {

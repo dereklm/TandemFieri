@@ -21,13 +21,15 @@ import com.gmail.dleemcewen.tandemfieri.DriverRatings;
 import com.gmail.dleemcewen.tandemfieri.EditRestaurantActivity;
 import com.gmail.dleemcewen.tandemfieri.Entities.DeliveryHours;
 import com.gmail.dleemcewen.tandemfieri.Entities.Restaurant;
+import com.gmail.dleemcewen.tandemfieri.Entities.User;
+import com.gmail.dleemcewen.tandemfieri.ManageOrders;
 import com.gmail.dleemcewen.tandemfieri.ManageRestaurantDrivers;
-import com.gmail.dleemcewen.tandemfieri.menubuilder.MenuIterator;
 import com.gmail.dleemcewen.tandemfieri.R;
 import com.gmail.dleemcewen.tandemfieri.Repositories.Restaurants;
 import com.gmail.dleemcewen.tandemfieri.RestaurantMapActivity;
 import com.gmail.dleemcewen.tandemfieri.menubuilder.MenuBuilderActivity;
 import com.gmail.dleemcewen.tandemfieri.menubuilder.MenuCatagory;
+import com.gmail.dleemcewen.tandemfieri.menubuilder.MenuIterator;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -51,14 +53,16 @@ public class ManageRestaurantExpandableListAdapter extends BaseExpandableListAda
     private Restaurants<Restaurant> restaurantsRepository;
     private static final int UPDATE_RESTAURANT = 2;
     DatabaseReference mDatabase;
+    private User user;
 
     public ManageRestaurantExpandableListAdapter(Activity context, List<Restaurant> restaurantsList,
-                                                 Map<String, List<Restaurant>> childDataList) {
+                                                 Map<String, List<Restaurant>> childDataList, User currentUser) {
         this.context = context;
         this.restaurantsList = restaurantsList;
         this.childDataList = childDataList;
         resources = context.getResources();
         restaurantsRepository = new Restaurants<>(context);
+        user = currentUser;
     }
 
     /**
@@ -201,9 +205,9 @@ public class ManageRestaurantExpandableListAdapter extends BaseExpandableListAda
 
                 AlertDialog.Builder removalConfirmationDialog  = new AlertDialog.Builder(context);
                 removalConfirmationDialog
-                    .setMessage(dialogMessageBuilder.toString());
+                        .setMessage(dialogMessageBuilder.toString());
                 removalConfirmationDialog
-                    .setTitle(resources.getString(R.string.manageRestaurantsActivityTitle));
+                        .setTitle(resources.getString(R.string.manageRestaurantsActivityTitle));
                 removalConfirmationDialog.setCancelable(false);
                 removalConfirmationDialog.setPositiveButton(
                         resources.getString(R.string.yes),
@@ -269,6 +273,8 @@ public class ManageRestaurantExpandableListAdapter extends BaseExpandableListAda
         Button manageDrivers = (Button)convertView.findViewById(R.id.manageDrivers);
         Button rateDrivers = (Button)convertView.findViewById(R.id.rateDrivers);
         Button deliveryHours = (Button)convertView.findViewById(R.id.deliveryHours);
+        Button manageOrders = (Button)convertView.findViewById(R.id.manageOrders);
+
 
         manageMenuItems.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -291,16 +297,16 @@ public class ManageRestaurantExpandableListAdapter extends BaseExpandableListAda
                 context.startActivity(intent);
 
                 Toast
-                    .makeText(context, "Managing menu items for " + selectedChild.getName(), Toast.LENGTH_SHORT)
-                    .show();
+                        .makeText(context, "Managing menu items for " + selectedChild.getName(), Toast.LENGTH_SHORT)
+                        .show();
             }
         });
         viewSales.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 Toast
-                    .makeText(context, "Viewing sales for " + selectedChild.getName(), Toast.LENGTH_SHORT)
-                    .show();
+                        .makeText(context, "Viewing sales for " + selectedChild.getName(), Toast.LENGTH_SHORT)
+                        .show();
             }
         });
         viewDeliveryArea.setOnClickListener(new View.OnClickListener() {
@@ -341,6 +347,16 @@ public class ManageRestaurantExpandableListAdapter extends BaseExpandableListAda
                 Intent intent = new Intent(context, CreateDeliveryHoursActivity.class);
                 intent.putExtra("restId",selectedChild.getKey());
                 intent.putExtra("editOrCreate", "edit");
+                context.startActivity(intent);
+            }
+        });
+
+        manageOrders.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent(context, ManageOrders.class);
+                intent.putExtra("restId",selectedChild.getKey());
+                intent.putExtra("ID", user.getAuthUserID());
                 context.startActivity(intent);
             }
         });

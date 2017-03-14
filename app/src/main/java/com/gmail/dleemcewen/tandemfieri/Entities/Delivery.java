@@ -10,6 +10,7 @@ import java.io.Serializable;
 
 public class Delivery extends Entity implements Serializable {
     private String customerId;
+    private String orderId;
     private Boolean isCurrentOrder;
 
     /**
@@ -32,6 +33,22 @@ public class Delivery extends Entity implements Serializable {
      */
     public void setCustomerId(String customerId) {
         this.customerId = customerId;
+    }
+
+    /**
+     * getOrderId returns the order id associated with the delivery
+     * @return order id associated with the delivery
+     */
+    public String getOrderId() {
+        return orderId;
+    }
+
+    /**
+     * setOrderId sets the order id associated with the delivery
+     * @param orderId uniquely identifies the order associated with the delivery
+     */
+    public void setOrderId(String orderId) {
+        this.orderId = orderId;
     }
 
     /**

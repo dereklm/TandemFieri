@@ -130,7 +130,9 @@ public class DriverOrdersFragment extends DialogFragment {
                                     delivery.setIsCurrentOrder(false);
                                 }
 
-                                deliveriesRepository.update(delivery);
+                                deliveriesRepository
+                                        .atNode(driverId)
+                                        .update(delivery);
                             }
                         }
                     });
@@ -159,6 +161,7 @@ public class DriverOrdersFragment extends DialogFragment {
                 //Now with the ownerid we can get all the orders for the restaurant owner
                 //additionally filter them by restaurantid because the order could be for a
                 //restaurant owned by the owner that the driver isn't associated with
+                //also ensure that the order isn't already complete
                 ordersRepository
                     .atNode(ownerId)
                     .atNode(restaurantId)
@@ -171,13 +174,9 @@ public class DriverOrdersFragment extends DialogFragment {
                             if (!restaurantOrders.isEmpty()) {
                                 driverOrders.clear();
 
-                                for (Order restaurantOrder : restaurantOrders) {
-                                    if (restaurantOrder.getStatus() != OrderEnum.COMPLETE) {
-                                        //TODO: need way to identify which of these orders should be associated with a driver
-                                        //for now, just assign all of them
-                                        driverOrders.add(restaurantOrder);
-                                    }
-                                }
+                                //TODO: need way to identify which of these orders should be associated with a driver
+                                //for now, just assign all of them
+                                driverOrders.addAll(restaurantOrders);
 
                                 //bind the orders to the listview
                                 listAdapter = new DriverOrdersListAdapter(getActivity(), DriverOrdersFragment.this, driverOrders);

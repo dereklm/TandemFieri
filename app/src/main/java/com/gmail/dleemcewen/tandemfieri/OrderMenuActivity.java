@@ -13,6 +13,7 @@ import com.gmail.dleemcewen.tandemfieri.Entities.Order;
 import com.gmail.dleemcewen.tandemfieri.Entities.OrderItem;
 import com.gmail.dleemcewen.tandemfieri.Entities.OrderItemOption;
 import com.gmail.dleemcewen.tandemfieri.Entities.Restaurant;
+import com.gmail.dleemcewen.tandemfieri.Entities.User;
 import com.gmail.dleemcewen.tandemfieri.menubuilder.ItemOption;
 import com.gmail.dleemcewen.tandemfieri.menubuilder.MenuItem;
 import com.gmail.dleemcewen.tandemfieri.menubuilder.OptionSelection;
@@ -21,7 +22,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class OrderMenuActivity extends AppCompatActivity {
-
+    User user;
     private Order order;
     private OrderItemAdapter orderItemAdapter;
     private List<OrderItem> items;
@@ -37,6 +38,7 @@ public class OrderMenuActivity extends AppCompatActivity {
 
         menuItems = new ArrayList<>();
         restaurant = (Restaurant) getIntent().getSerializableExtra("Restaurant");
+        user = (User) getIntent().getSerializableExtra("User");
         menuItems.addAll(restaurant.getMenu().getSubItems());
         items = new ArrayList<>();
         expandableListView = (ExpandableListView) findViewById(R.id.menu_items);

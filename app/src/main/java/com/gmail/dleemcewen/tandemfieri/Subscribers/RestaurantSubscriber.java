@@ -13,6 +13,7 @@ import com.gmail.dleemcewen.tandemfieri.R;
 import com.gmail.dleemcewen.tandemfieri.RestaurantMainMenu;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import static android.content.Context.NOTIFICATION_SERVICE;
@@ -23,9 +24,9 @@ import static android.content.Context.NOTIFICATION_SERVICE;
 
 public class RestaurantSubscriber implements ISubscriber {
     private Context context;
-    private Map.Entry<String, String> filter;
+    private Map.Entry<String, List<Object>> filter;
     private User restaurantUser;
-    private static final String notificationType = "Restaurant";
+    private static final String notificationType = "Order";
 
     /**
      * Default constructor
@@ -33,7 +34,7 @@ public class RestaurantSubscriber implements ISubscriber {
      * @param restaurantUser identifies the restaurant user
      * @param filter indicates the record filter supplied by the subscriber
      */
-    public RestaurantSubscriber(Context context, User restaurantUser, Map.Entry<String, String> filter) {
+    public RestaurantSubscriber(Context context, User restaurantUser, Map.Entry<String, List<Object>> filter) {
         this.context = context;
         this.restaurantUser = restaurantUser;
         this.filter = filter;
@@ -54,7 +55,7 @@ public class RestaurantSubscriber implements ISubscriber {
     }
 
     @Override
-    public Map.Entry<String, String> getFilter() {
+    public Map.Entry<String, List<Object>> getFilter() {
         return filter;
     }
 
@@ -67,13 +68,15 @@ public class RestaurantSubscriber implements ISubscriber {
 
             StringBuilder contentTextBuilder = new StringBuilder();
             contentTextBuilder.append("Order received for ");
-            contentTextBuilder.append(notificationData.get("name"));
+            contentTextBuilder.append(String.format("$%.2f", notificationData.get("total")));
 
             StringBuilder notificationTextBuilder = new StringBuilder();
-            notificationTextBuilder.append(notificationData.get("name"));
-            notificationTextBuilder.append(" received ");
-            notificationTextBuilder.append(notification.getString("action") == "ADDED" ? "a new " : "an updated ");
-            notificationTextBuilder.append(" order!");
+            notificationTextBuilder.append(notification.getString("action") == "ADDED" ? "A new " : "An updated ");
+            notificationTextBuilder.append("order containing ");
+            notificationTextBuilder.append(((List)notificationData.get("items")).size());
+            notificationTextBuilder.append(" items was received for ");
+            notificationTextBuilder.append(String.format("$%.2f", notificationData.get("total")));
+            notificationTextBuilder.append(".");
 
             //set an id for the notification
             int notificationId = Integer.valueOf(notificationData.get("notificationId").toString());
