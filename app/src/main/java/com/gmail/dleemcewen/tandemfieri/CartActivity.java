@@ -4,6 +4,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ExpandableListView;
@@ -114,10 +115,18 @@ public class CartActivity extends AppCompatActivity {
                         }
                     });
 
+                //enable delivery map option in main menu
+                enableDeliveryMap();
+
                 finish();
             }
         });
 
         cartItems.setAdapter(orderItemAdapter);
+    }
+
+    private void enableDeliveryMap(){
+        MenuItem item = DinerMainMenu.getDeliveryMenuItem();
+        item.setVisible(true);
     }
 }

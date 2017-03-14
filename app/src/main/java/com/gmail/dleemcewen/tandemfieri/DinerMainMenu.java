@@ -44,6 +44,7 @@ public class DinerMainMenu extends AppCompatActivity {
     ListView listview;
     List<Restaurant> restaurantsList;
     DatabaseReference mDatabase;
+    static MenuItem deliveryOption;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -86,8 +87,11 @@ public class DinerMainMenu extends AppCompatActivity {
     public boolean onCreateOptionsMenu(Menu menu) {
         MenuInflater inflater = getMenuInflater();
         inflater.inflate(R.menu.diner_menu, menu);
+        deliveryOption = menu.findItem(R.id.delivery);
         return true;
     }
+
+    public static MenuItem getDeliveryMenuItem(){return deliveryOption;}
 
     //determine which menu option was selected and call that option's action method
     @Override
