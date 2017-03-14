@@ -175,11 +175,17 @@ public class DinerMainMenu extends AppCompatActivity {
 
     private void launchMap(){
         Intent intent = new Intent(DinerMainMenu.this, DinerMapActivity.class);
+        Bundle userBundle = new Bundle();
+        userBundle.putSerializable("User", user);
+        intent.putExtras(userBundle);
         startActivity(intent);
     }
 
     private void launchDelivery(){
         Intent intent = new Intent(DinerMainMenu.this, DeliveryMapActivity.class);
+        Bundle userBundle = new Bundle();
+        userBundle.putSerializable("User", user);
+        intent.putExtras(userBundle);
         startActivity(intent);
     }
 
