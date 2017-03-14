@@ -213,4 +213,8 @@ public class Restaurant extends Entity implements Serializable {
     public Double getLongitude() { return longitude; }
 
     public void setLongitude(Double longitude) { this.longitude = longitude; }
+
+    public String toString(){
+        return name;
+    }
 }

@@ -9,6 +9,7 @@ import android.view.MenuInflater;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ListView;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.gmail.dleemcewen.tandemfieri.Entities.Restaurant;
@@ -30,6 +31,7 @@ public class LookAtMenuActivity extends AppCompatActivity {
     private MenuCatagory current;
     private ArrayList<MenuCompenet> allItems;
     private ListView listView;
+    private TextView restaurantName;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -50,7 +52,8 @@ public class LookAtMenuActivity extends AppCompatActivity {
         listView.setAdapter(adapter);
         context= this;
 
-        //listview = (ListView) findViewById(R.id.menuItemsOrder);
+        restaurantName = (TextView)findViewById(R.id.restaurant_name);
+        restaurantName.setText(restaurant.getName());
 
         //Toast.makeText(getApplicationContext(),"The Restaurant is " + restaurant.getName(), Toast.LENGTH_LONG).show();
 

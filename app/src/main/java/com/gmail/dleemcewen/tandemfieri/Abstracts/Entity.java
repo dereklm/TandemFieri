@@ -8,7 +8,9 @@ import java.util.UUID;
 /**
  * BaseEntity provides the application logic used by all entities for database access
  */
+
 public abstract class Entity implements Serializable {
+
     private String key;
 
     /**
