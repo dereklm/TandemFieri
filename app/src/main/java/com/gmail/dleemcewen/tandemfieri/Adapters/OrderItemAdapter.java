@@ -34,6 +34,10 @@ public class OrderItemAdapter extends BaseExpandableListAdapter {
         inflater = (LayoutInflater) context.getSystemService(context.LAYOUT_INFLATER_SERVICE);
     }
 
+    public void setItems(List<OrderItem> itemList) {
+        this.items = itemList;
+    }
+
     @Override
     public int getGroupCount() {
         return items.size();
@@ -108,7 +112,7 @@ public class OrderItemAdapter extends BaseExpandableListAdapter {
                     height += groupsListView.getChildAt(i).getMeasuredHeight();
                     height += groupsListView.getDividerHeight();
                 }
-                groupsListView.getLayoutParams().height = (height+6)*(groupsListView.getChildCount()*2);
+                groupsListView.getLayoutParams().height = (height+6)*(5);
             }
         });
 
