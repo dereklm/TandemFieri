@@ -82,4 +82,5 @@
     <string name="myDeliveries">My deliveries</string>
     <string name="selectCurrentDelivery">Select current delivery</string>
     <string name="manageOrders">Manage Orders</string>
+    <string name="assignOrders">Assign Orders</string>
 </resources>

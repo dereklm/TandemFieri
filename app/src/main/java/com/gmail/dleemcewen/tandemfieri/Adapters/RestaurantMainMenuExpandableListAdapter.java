@@ -2,8 +2,10 @@ package com.gmail.dleemcewen.tandemfieri.Adapters;
 
 import android.app.Activity;
 import android.content.Context;
+import android.content.Intent;
 import android.content.res.Resources;
 import android.graphics.Typeface;
+import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -14,6 +16,7 @@ import android.widget.Toast;
 
 import com.gmail.dleemcewen.tandemfieri.Entities.Order;
 import com.gmail.dleemcewen.tandemfieri.Entities.Restaurant;
+import com.gmail.dleemcewen.tandemfieri.ManageOrders;
 import com.gmail.dleemcewen.tandemfieri.R;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -23,6 +26,9 @@ import com.google.firebase.database.ValueEventListener;
 
 import java.util.List;
 import java.util.Map;
+
+import static com.paypal.android.sdk.onetouch.core.metadata.ah.o;
+
 
 /**
  * Created by Ruth on 3/11/2017.
@@ -37,6 +43,8 @@ public class RestaurantMainMenuExpandableListAdapter extends BaseExpandableListA
     private DatabaseReference mDatabase;
     private TextView orderName;
     private Order order;
+    private LayoutInflater inflater;
+    private Button manage_button;
 
     public RestaurantMainMenuExpandableListAdapter(Activity context, List<Order> orderList,
                                                    Map<String, List<Order>> childList) {
@@ -88,7 +96,7 @@ public class RestaurantMainMenuExpandableListAdapter extends BaseExpandableListA
 
         orderName = (TextView)convertView.findViewById(R.id.order_name);
         orderName.setTypeface(null, Typeface.BOLD);
-        orderName.setText(order.getStatus().toString());
+        orderName.setText(order.getCustomerId().toString());
         orderName.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -113,6 +121,18 @@ public class RestaurantMainMenuExpandableListAdapter extends BaseExpandableListA
                     .getSystemService(Context.LAYOUT_INFLATER_SERVICE);
             convertView = layoutInflater.inflate(R.layout.restaurant_main_menu_list_item, null);
         }
+
+        Button manage_button = (Button) convertView.findViewById(R.id.manage_button);
+        manage_button.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Bundle bundle = new Bundle();
+                bundle.putSerializable("Order", selectedOrder);
+                Intent intent = new Intent(context, ManageOrders.class);
+                intent.putExtras(bundle);
+                context.startActivity(intent);
+            }
+        });
 
         Button status_button = (Button) convertView.findViewById(R.id.order_button);
         status_button.setText("Change Status");

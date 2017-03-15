@@ -2,16 +2,22 @@ package com.gmail.dleemcewen.tandemfieri;
 
 import android.app.FragmentManager;
 import android.app.FragmentTransaction;
-import android.os.Bundle;
 import android.content.Intent;
+import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
+import android.widget.Toast;
 
 import com.gmail.dleemcewen.tandemfieri.Entities.User;
 import com.gmail.dleemcewen.tandemfieri.Logging.LogWriter;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 
 import java.util.logging.Level;
 
@@ -20,7 +26,7 @@ import java.util.logging.Level;
 public class DriverMainMenu extends AppCompatActivity {
     private User user;
     private String customerId;
-
+    private DatabaseReference mDatabaseDelivery;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -29,23 +35,27 @@ public class DriverMainMenu extends AppCompatActivity {
         Bundle bundle = this.getIntent().getExtras();
         user = (User) bundle.getSerializable("User");
 
-        LogWriter.log(getApplicationContext(), Level.INFO, "The user is " + user.getEmail());
+        LogWriter.log(getApplicationContext(), Level.INFO, "The user is " + user.getAuthUserID());
+        mDatabaseDelivery = FirebaseDatabase.getInstance().getReference().child("Delivery").child(user.getAuthUserID());
 
-        /*
         mDatabaseDelivery.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
+                Toast.makeText(getApplicationContext(), ""+dataSnapshot.child("Order").child("restaurantId").getValue(), Toast.LENGTH_LONG).show();
+                /*
                 for (DataSnapshot child : dataSnapshot.getChildren()) {
-                    customerId = (String) child.child("Order").child("CustomerId").getValue();
+                    customerId = (String) child.child("Order").child("customerId").getValue();
+                    Toast.makeText(getApplicationContext(), ""+child.child("Order").getValue(), Toast.LENGTH_LONG).show();
                     //order = child.child("Order").getValue(Order.class);
                 }
+                */
             }
 
             @Override
             public void onCancelled(DatabaseError databaseError) {
             }
         });
-        */
+
     }//end onCreate
 
     //create menu

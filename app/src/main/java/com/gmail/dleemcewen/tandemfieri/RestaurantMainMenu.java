@@ -209,6 +209,7 @@ public class RestaurantMainMenu extends AppCompatActivity {
                             for(DataSnapshot orders : number.getChildren()){
                                 Order order = orders.getValue(Order.class);
                                 //add the children to the adapter list
+                                Toast.makeText(getApplicationContext(), ""+orders.child("customerId").getValue(), Toast.LENGTH_LONG).show();
                                 orderEntities.add(order);
                                 //Toast.makeText((Activity)context, "innner loop: " + order.getCustomerId(), Toast.LENGTH_SHORT).show();
                             }
