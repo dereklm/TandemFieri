@@ -81,6 +81,7 @@ public class OrderMenuActivity extends AppCompatActivity {
                 intent.putExtra("restaurantId", restaurant.getRestaurantKey());
                 intent.putExtra("ownerId", restaurant.getOwnerId());
                 intent.putExtra("deliveryCharge", restaurant.getCharge());
+                intent.putExtra("restaurantName", restaurant.getName());
                 startActivity(intent);
             }
         });

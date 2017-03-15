@@ -25,7 +25,6 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 
 import java.text.NumberFormat;
-import java.util.List;
 
 public class CartActivity extends AppCompatActivity {
 
@@ -36,7 +35,7 @@ public class CartActivity extends AppCompatActivity {
     private OrderItemAdapter orderItemAdapter;
     private TextView total, subtotal, tax;
     private DatabaseReference mDatabase;
-    private String uid = "", ownerId = "", restaurantId = "";
+    private String uid = "", ownerId = "", restaurantId = "", restName = "";
     private FirebaseUser fireuser;
     private NotificationMessages<NotificationMessage> notificationsRepository;
 
@@ -48,6 +47,7 @@ public class CartActivity extends AppCompatActivity {
         restaurantId = (String) getIntent().getSerializableExtra("restaurantId");
         ownerId = (String) getIntent().getSerializableExtra("ownerId");
         deliveryCharge = (double) getIntent().getSerializableExtra("deliveryCharge");
+        restName = (String) getIntent().getSerializableExtra("restaurantName");
         notificationsRepository = new NotificationMessages<>(CartActivity.this);
 
         mDatabase = FirebaseDatabase.getInstance().getReference();
@@ -82,6 +82,7 @@ public class CartActivity extends AppCompatActivity {
         order.getKey();
         order.setCustomerId(uid);
         order.setRestaurantId(restaurantId);
+        order.setRestaurantName(restName);
 
         cancelButton.setOnClickListener(new View.OnClickListener() {
             @Override

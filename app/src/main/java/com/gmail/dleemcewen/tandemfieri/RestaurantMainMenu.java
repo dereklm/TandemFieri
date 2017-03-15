@@ -12,6 +12,7 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.widget.ExpandableListView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.gmail.dleemcewen.tandemfieri.Adapters.RestaurantMainMenuExpandableListAdapter;
 import com.gmail.dleemcewen.tandemfieri.Entities.NotificationMessage;
@@ -211,9 +212,13 @@ public class RestaurantMainMenu extends AppCompatActivity {
                                 orderEntities.add(order);
                                 //Toast.makeText((Activity)context, "innner loop: " + order.getCustomerId(), Toast.LENGTH_SHORT).show();
                             }
-                            listAdapter = new RestaurantMainMenuExpandableListAdapter(
-                                    (Activity)context, orderEntities, buildExpandableChildData(orderEntities));
-                            orderList.setAdapter(listAdapter);
+                            if(orderEntities.isEmpty()){
+                                Toast.makeText(getApplicationContext(), "There are no orders on file.", Toast.LENGTH_LONG).show();
+                            }else {
+                                listAdapter = new RestaurantMainMenuExpandableListAdapter(
+                                        (Activity) context, orderEntities, buildExpandableChildData(orderEntities));
+                                orderList.setAdapter(listAdapter);
+                            }
                         }
                     }//end on data change
 

@@ -6,7 +6,9 @@ import com.gmail.dleemcewen.tandemfieri.Enums.OrderEnum;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
+import java.util.Locale;
 
 /**
  * Created by Derek on 3/1/2017.
@@ -21,11 +23,14 @@ public class Order extends Entity implements Serializable {
     private double tax;
     private double total;
     private double deliveryCharge;
+    private String restaurantName;
+    private Date orderDate;
 
-    public Order() {}
+    public Order() {orderDate = new Date();}
 
     public Order(String key) {
         setKey(key);
+        orderDate = new Date();
     }
   
     public double calculateSubTotal() {
@@ -121,5 +126,25 @@ public class Order extends Entity implements Serializable {
 
     public void setTotal(double total) {
         this.total = total;
+    }
+
+    public String getRestaurantName() {
+        return restaurantName;
+    }
+
+    public void setRestaurantName(String restaurantName) {
+        this.restaurantName = restaurantName;
+    }
+
+    public Date getOrderDate() {
+        return orderDate;
+    }
+
+    public void setOrderDate(Date orderDate) {
+        this.orderDate = orderDate;
+    }
+
+    public String toString(){
+        return restaurantName + " $" + String.format(Locale.US, "%.2f", total);
     }
 }
