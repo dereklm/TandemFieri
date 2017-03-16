@@ -4,12 +4,15 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
+import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.ExpandableListView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.gmail.dleemcewen.tandemfieri.Adapters.OrderItemAdapter;
 import com.gmail.dleemcewen.tandemfieri.Entities.Order;
+import com.gmail.dleemcewen.tandemfieri.Entities.OrderItem;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DatabaseReference;
@@ -24,7 +27,7 @@ public class CartActivity extends AppCompatActivity {
     private double deliveryCharge;
     private ExpandableListView cartItems;
     private OrderItemAdapter orderItemAdapter;
-    private TextView total, subtotal, tax;
+    private TextView delivery, total, subtotal, tax;
     private DatabaseReference mDatabase;
     private String uid = "", ownerId = "", restaurantId = "";
     private FirebaseUser fireuser;
@@ -56,17 +59,15 @@ public class CartActivity extends AppCompatActivity {
         total = (TextView) findViewById(R.id.total);
         subtotal = (TextView) findViewById(R.id.subTotal);
         tax = (TextView) findViewById(R.id.tax);
+        delivery = (TextView) findViewById(R.id.delivery_charge);
         cancelButton = (Button) findViewById(R.id.cancel_purchase);
         checkoutButton = (Button) findViewById(R.id.checkout);
         cartItems = (ExpandableListView) findViewById(R.id.cart_items);
         orderItemAdapter = new OrderItemAdapter(CartActivity.this, this, order.getItems());
 
-
-        NumberFormat formatter = NumberFormat.getCurrencyInstance();
         order.setDeliveryCharge(deliveryCharge);
-        total.setText("Total: " + formatter.format(order.getTotal()));
-        tax.setText("Tax: " + formatter.format(order.getTax()));
-        subtotal.setText("Subtotal: " + formatter.format(order.getSubTotal()));
+        order.updateTotals();
+        updateTextViews();
 
         order.getKey();
         order.setCustomerId(uid);
@@ -83,6 +84,11 @@ public class CartActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 // Brandon, this is where you will hook into brain tree.
+                if (order.getItems().size() == 0) {
+                    Toast.makeText(getApplicationContext(),
+                            "Please add items to your order.", Toast.LENGTH_SHORT).show();
+                    finish();
+                }
 
                 mDatabase.child("Order").child(ownerId).child(order.getKey()).setValue(order);
                 finish();
@@ -90,5 +96,57 @@ public class CartActivity extends AppCompatActivity {
         });
 
         cartItems.setAdapter(orderItemAdapter);
+
+        cartItems.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
+            @Override
+            public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id) {
+                if (ExpandableListView.getPackedPositionType(id) == ExpandableListView.PACKED_POSITION_TYPE_GROUP) {
+                    int groupPosition = ExpandableListView.getPackedPositionGroup(id);
+                    OrderItem item = (OrderItem) orderItemAdapter.getGroup(groupPosition);
+                    order.removeItem(item);
+                    order.updateTotals();
+                    updateTextViews();
+                    orderItemAdapter.notifyDataSetChanged();
+                    return true;
+                }
+
+                return false;
+            }
+        });
+
+        onSaveInstanceState(new Bundle());
+    }
+
+    private void updateTextViews() {
+        NumberFormat formatter = NumberFormat.getCurrencyInstance();
+        total.setText("Total: " + formatter.format(order.getTotal()));
+        tax.setText("Tax: " + formatter.format(order.getTax()));
+        subtotal.setText("Subtotal: " + formatter.format(order.getSubTotal()));
+        delivery.setText("Delivery: " + formatter.format(deliveryCharge));
+    }
+
+    @Override
+    public void onSaveInstanceState(Bundle savedInstanceState) {
+        super.onSaveInstanceState(savedInstanceState);
+        savedInstanceState.putSerializable("previousItems", order);
+    }
+
+    @Override
+    public void onRestoreInstanceState(Bundle savedInstanceState) {
+        super.onRestoreInstanceState(savedInstanceState);
+
+        if (savedInstanceState != null) {
+            order = (Order) savedInstanceState.getSerializable("previousItems");
+            Toast.makeText(getApplicationContext(), "restored", Toast.LENGTH_SHORT).show();
+        }
+        else {
+            Toast.makeText(getApplicationContext(), "restored but null", Toast.LENGTH_SHORT).show();
+        }
+    }
+
+    @Override
+    public void onBackPressed() {
+        // TODO: figure out how to save order when going back to menu.
+        super.onBackPressed();
     }
 }

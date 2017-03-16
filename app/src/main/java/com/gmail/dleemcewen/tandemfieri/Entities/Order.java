@@ -38,7 +38,6 @@ public class Order extends Entity implements Serializable {
                 }
             }
         }
-        subTotal += deliveryCharge;
         return subTotal;
     }
   
@@ -48,6 +47,16 @@ public class Order extends Entity implements Serializable {
         this.tax = calculateTax();
         this.total = calculateTotal();
         this.status = OrderEnum.CREATING;
+    }
+
+    public void updateTotals() {
+        this.subTotal = calculateSubTotal();
+        this.tax = calculateTax();
+        this.total = calculateTotal();
+    }
+
+    public void removeItem(OrderItem item) {
+        if (items.contains(item)) items.remove(item);
     }
 
     public double getDeliveryCharge() {
@@ -63,7 +72,8 @@ public class Order extends Entity implements Serializable {
     }
 
     public double calculateTotal() {
-        return this.subTotal + this.tax;
+        if (this.items.size() == 0) return 0;
+        return this.subTotal + this.tax + this.deliveryCharge;
     }
 
     public OrderEnum getStatus() {

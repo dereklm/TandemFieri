@@ -46,7 +46,7 @@
         <activity android:name=".menubuilder.OptionSelectionEditActivity" />
         <activity android:name=".LookAtMenuActivity"></activity>
         <activity android:name=".OrderMenuActivity" />
-        <activity android:name=".CartActivity"></activity>
+        <activity android:name=".CartActivity" />
         <activity
             android:name=".DinerMapActivity"
             android:label="@string/title_activity_diner_map" />
