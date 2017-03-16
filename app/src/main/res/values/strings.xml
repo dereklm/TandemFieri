@@ -82,5 +82,12 @@
     <string name="myDeliveries">My deliveries</string>
     <string name="selectCurrentDelivery">Select current delivery</string>
     <string name="manageOrders">Manage Orders</string>
-    <string name="assignOrders">Assign Orders</string>
+
+    <string-array name="order_statuses">
+        <item>All</item>
+        <item>CREATING</item>
+        <item>PAYMENT PENDING</item>
+        <item>EN ROUTE</item>
+        <item>COMPLETE</item>
+    </string-array>
 </resources>

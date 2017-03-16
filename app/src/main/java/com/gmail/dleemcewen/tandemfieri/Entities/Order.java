@@ -33,7 +33,7 @@ public class Order extends Entity implements Serializable {
         setKey(key);
         orderDate = new Date();
     }
-  
+
     public double calculateSubTotal() {
         double subTotal = 0;
         for (OrderItem item : items) {
@@ -47,7 +47,7 @@ public class Order extends Entity implements Serializable {
         subTotal += deliveryCharge;
         return subTotal;
     }
-  
+
     public void addItem(OrderItem item) {
         items.add(item);
         this.subTotal = calculateSubTotal();
