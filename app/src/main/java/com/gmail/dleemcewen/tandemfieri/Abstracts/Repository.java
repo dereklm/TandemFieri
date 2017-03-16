@@ -64,7 +64,7 @@ public abstract class Repository<T extends Entity> {
 
         return Tasks.<Void>forResult(null)
                 .continueWithTask(new NetworkConnectivityCheckTask(context))
-                .continueWithTask(new AddEntityTask<T>(dataContext, entity));
+                .continueWithTask(new AddEntityTask<>(dataContext, entity));
     }
 
     /**
@@ -79,7 +79,7 @@ public abstract class Repository<T extends Entity> {
 
         return Tasks.<Void>forResult(null)
                 .continueWithTask(new NetworkConnectivityCheckTask(context))
-                .continueWithTask(new AddEntitiesTask<T>(dataContext, entities));
+                .continueWithTask(new AddEntitiesTask<>(dataContext, entities));
     }
 
     /**
@@ -94,7 +94,7 @@ public abstract class Repository<T extends Entity> {
 
         return Tasks.<Void>forResult(null)
                 .continueWithTask(new NetworkConnectivityCheckTask(context))
-                .continueWithTask(new UpdateEntityTask<T>(dataContext, entity));
+                .continueWithTask(new UpdateEntityTask<>(dataContext, entity));
     }
 
     /**
@@ -109,7 +109,7 @@ public abstract class Repository<T extends Entity> {
 
         return Tasks.<Void>forResult(null)
                 .continueWithTask(new NetworkConnectivityCheckTask(context))
-                .continueWithTask(new RemoveEntityTask<T>(dataContext, entity));
+                .continueWithTask(new RemoveEntityTask<>(dataContext, entity));
     }
 
     /**
@@ -124,7 +124,7 @@ public abstract class Repository<T extends Entity> {
 
         return Tasks.<Void>forResult(null)
                 .continueWithTask(new NetworkConnectivityCheckTask(context))
-                .continueWithTask(new RemoveEntitiesTask<T>(dataContext, entities));
+                .continueWithTask(new RemoveEntitiesTask<>(dataContext, entities));
     }
 
     /**

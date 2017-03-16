@@ -30,7 +30,7 @@ public class TaskResult<T> {
      * @param error indicates a database error
      */
     public TaskResult(DatabaseError error) {
-        results = new ArrayList<T>();
+        results = new ArrayList<>();
         this.error = error;
     }
 

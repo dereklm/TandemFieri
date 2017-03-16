@@ -15,7 +15,9 @@ import com.gmail.dleemcewen.tandemfieri.DriverOrdersFragment;
 import com.gmail.dleemcewen.tandemfieri.Entities.Order;
 import com.gmail.dleemcewen.tandemfieri.R;
 
+import java.text.SimpleDateFormat;
 import java.util.List;
+import java.util.Locale;
 
 /**
  * DriverOrdersListAdapter provides the required methods to render the
@@ -139,8 +141,12 @@ public class DriverOrdersListAdapter extends BaseAdapter {
     private void setOrderText(TextView orderTextView, int position) {
         Order order = (Order)getItem(position);
         StringBuilder orderInformationBuilder = new StringBuilder();
+        SimpleDateFormat formatOrderDate = new SimpleDateFormat("MM/dd/yyyy", Locale.US);
 
         if (selectedIndex == position) {
+            orderInformationBuilder.append("Order date: ");
+            orderInformationBuilder.append(formatOrderDate.format(order.getOrderDate()));
+            orderInformationBuilder.append("\r\n");
             orderInformationBuilder.append("Items: ");
             orderInformationBuilder.append(order.getItems().size());
             orderInformationBuilder.append(", ");
@@ -156,6 +162,9 @@ public class DriverOrdersListAdapter extends BaseAdapter {
             }
             orderInformationBuilder.append(")");
         } else {
+            orderInformationBuilder.append("Order date: ");
+            orderInformationBuilder.append(formatOrderDate.format(order.getOrderDate()));
+            orderInformationBuilder.append("\r\n");
             orderInformationBuilder.append("Items: ");
             orderInformationBuilder.append(order.getItems().size());
             orderInformationBuilder.append(", ");

@@ -55,15 +55,25 @@ public class ManageOrders extends AppCompatActivity {
         });
 
         Bundle bundle = this.getIntent().getExtras();
-        order = (Order) bundle.getSerializable("Order");
 
+        // This is causing an error....
+        // doesn't look like Order is ever added to the bundle
+        order = (Order) bundle.getSerializable("Order");
         restID = order.getRestaurantId();
 
+
+        //restId and ID were included in the bundle from the ManageRestaurantExpandableListAdapter
+        //not sure how to identify which order to look up since there could be multiple orders
+        //under a restaurant for the same customer (not likely, but possible with the current design)
+        restID = bundle.getString("restId");
+        ID = bundle.getString("ID");
 
         mDatabaseDrivers = FirebaseDatabase.getInstance().getReference()
                 .child("User").child("Driver");
 
-
+        //TODO: need to remove valueeventlistener or use addListenerForSingleValueEvent
+        //otherwise this will keep listening and toasting throughout the entire application
+        //after ManageOrders is visited
         mDatabaseDrivers.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {

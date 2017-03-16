@@ -111,7 +111,7 @@ public class NotificationMessages<T extends Entity> extends Repository<Notificat
      * @param action indicates the notification constant to include in the activity
      * @param entity indicates the data from the supplied entity to include
      */
-    public <V extends Entity> Task<TaskResult<NotificationMessage>> sendNotification(final NotificationConstants.Action action, V entity) {
+    public <T extends Entity> Task<TaskResult<T>> sendNotification(final NotificationConstants.Action action, T entity) {
         String[] childNodes = new String[searchNodes.size()];
         childNodes = searchNodes.toArray(childNodes);
 
@@ -120,22 +120,19 @@ public class NotificationMessages<T extends Entity> extends Repository<Notificat
         return Tasks.<Void>forResult(null)
                 .continueWithTask(new NetworkConnectivityCheckTask(context))
                 .continueWithTask(new AddNotificationMessageTask<>(dataContext, action, entity))
-                .continueWith(new Continuation<TaskResult<V>, TaskResult<NotificationMessage>>() {
+                .continueWith(new Continuation<TaskResult<T>, TaskResult<T>>() {
                     @Override
-                    public TaskResult<NotificationMessage> then(@NonNull Task<TaskResult<V>> task) throws Exception {
-                        TaskCompletionSource<TaskResult<NotificationMessage>> taskCompletionSource =
+                    public TaskResult<T> then(@NonNull Task<TaskResult<T>> task) throws Exception {
+                        TaskCompletionSource<TaskResult<T>> taskCompletionSource =
                                 new TaskCompletionSource<>();
 
-                        List<V> entities = task.getResult().getResults();
-                        List<NotificationMessage> messages = new ArrayList<>();
-                        if (!entities.isEmpty()) {
-                            messages.add((NotificationMessage)entities.get(0));
+                        if (task.getResult().getError() == null) {
+                            List<T> entities = task.getResult().getResults();
+                            taskCompletionSource.setResult(new TaskResult<>(action.toString(), entities, null));
 
-                            taskCompletionSource.setResult(new TaskResult<>(action.toString(), messages, null));
+                            //Clear after find complete
+                            searchNodes.clear();
                         }
-
-                        //Clear after find complete
-                        searchNodes.clear();
 
                         return taskCompletionSource.getTask().getResult();
                     }

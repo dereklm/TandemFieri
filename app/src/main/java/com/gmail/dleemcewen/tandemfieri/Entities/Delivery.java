@@ -3,15 +3,15 @@ package com.gmail.dleemcewen.tandemfieri.Entities;
 import com.gmail.dleemcewen.tandemfieri.Abstracts.Entity;
 
 import java.io.Serializable;
+import java.util.List;
 
 /**
  * Delivery identifies a delivery for a driver
  */
 
 public class Delivery extends Entity implements Serializable {
-    private String customerId;
-    private String orderId;
-    private Boolean isCurrentOrder;
+    private List<Order> order;
+    private String currentOrderId;
 
     /**
      * Default constructor
@@ -20,51 +20,36 @@ public class Delivery extends Entity implements Serializable {
     }
 
     /**
-     * getCustomerId returns the customer id associated with the delivery
-     * @return customer id associated with the delivery
+     * getOrder returns the orders associated with the delivery
+     * @return order associated with the delivery
      */
-    public String getCustomerId() {
-        return customerId;
+    public List<Order> getOrder() {
+        return order;
     }
 
     /**
-     * setCustomerId sets the customer id associated with the delivery
-     * @param customerId uniquely identifies the customer associated with the delivery
+     * setOrder sets the orders associated with the delivery
+     * @param order indicates the orders associated with the delivery
      */
-    public void setCustomerId(String customerId) {
-        this.customerId = customerId;
+    public void setOrder(List<Order> order) {
+        this.order = order;
     }
 
     /**
-     * getOrderId returns the order id associated with the delivery
-     * @return order id associated with the delivery
+     * getCurrentOrderId returns the current order id
+     * @return the id of the driver's current order
      */
-    public String getOrderId() {
-        return orderId;
+    public String getCurrentOrderId() {
+        return currentOrderId;
     }
 
     /**
-     * setOrderId sets the order id associated with the delivery
-     * @param orderId uniquely identifies the order associated with the delivery
+     * setCurrentOrderId sets the current order id for a driver to be able to identify which order
+     * is the driver's current order
+     * @param currentOrderId indicates the current order id
      */
-    public void setOrderId(String orderId) {
-        this.orderId = orderId;
-    }
-
-    /**
-     * getIsCurrentOrder returns the IsCurrentOrder flag
-     * @return true or false
-     */
-    public Boolean getIsCurrentOrder() {
-        return isCurrentOrder;
-    }
-
-    /**
-     * setIsCurrentOrder sets the IsCurrentOrder flag that identifies which order is the current order
-     * @param isCurrentOrder indicates if the order is the current order
-     */
-    public void setIsCurrentOrder(Boolean isCurrentOrder) {
-        this.isCurrentOrder = isCurrentOrder;
+    public void setCurrentOrderId(String currentOrderId) {
+        this.currentOrderId = currentOrderId;
     }
 
 }
