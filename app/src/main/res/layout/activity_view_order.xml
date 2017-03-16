@@ -18,6 +18,22 @@
         android:layout_weight="1"
         android:textSize="30sp"/>
 
+    <TextView
+        android:id="@+id/date"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textSize="20sp"/>
+
+    <ListView
+        android:id="@+id/cart_items"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="8"
+        android:divider="@android:color/darker_gray"
+        android:dividerHeight="0.5dp"
+        >
+    </ListView>
+
         <LinearLayout
             android:paddingTop="20dp"
             android:orientation="horizontal"
@@ -51,11 +67,5 @@
             android:id="@+id/total"
             />
 
-        <ExpandableListView
-            android:id="@+id/cart_items"
-            android:layout_width="match_parent"
-            android:layout_height="0dp"
-            android:layout_weight="8"
-            >
-        </ExpandableListView>
+
     </LinearLayout>

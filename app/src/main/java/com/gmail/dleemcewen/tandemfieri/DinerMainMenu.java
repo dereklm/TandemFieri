@@ -119,7 +119,6 @@ public class DinerMainMenu extends AppCompatActivity {
             case R.id.payment:
                 Bundle bundle = new Bundle();
                 bundle.putSerializable("User", user);
-
                 Intent intent = new Intent(DinerMainMenu.this, FakePayment.class);
                 intent.putExtras(bundle);
                 startActivity(intent);
@@ -175,7 +174,6 @@ public class DinerMainMenu extends AppCompatActivity {
 
     private void launchMap(){
         //need to send user type so that the user can be located in the database
-        Bundle dinerBundle = new Bundle();
         Intent intent = new Intent(DinerMainMenu.this, DinerMapActivity.class);
         Bundle userBundle = new Bundle();
         userBundle.putSerializable("User", user);
@@ -185,7 +183,6 @@ public class DinerMainMenu extends AppCompatActivity {
 
     private void launchDelivery(){
         //need to send user type so that the user can be located in the database
-        Bundle dinerBundle = new Bundle();
         Intent intent = new Intent(DinerMainMenu.this, DeliveryMapActivity.class);
         Bundle userBundle = new Bundle();
         userBundle.putSerializable("User", user);

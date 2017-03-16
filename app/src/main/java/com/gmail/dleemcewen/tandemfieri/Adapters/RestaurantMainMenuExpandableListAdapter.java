@@ -15,20 +15,12 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.gmail.dleemcewen.tandemfieri.Entities.Order;
-import com.gmail.dleemcewen.tandemfieri.Entities.Restaurant;
-import com.gmail.dleemcewen.tandemfieri.ManageOrders;
 import com.gmail.dleemcewen.tandemfieri.R;
-import com.google.firebase.database.DataSnapshot;
-import com.google.firebase.database.DatabaseError;
+import com.gmail.dleemcewen.tandemfieri.ViewOrderActivity;
 import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.database.ValueEventListener;
 
 import java.util.List;
 import java.util.Map;
-
-import static com.paypal.android.sdk.onetouch.core.metadata.ah.o;
-
 
 /**
  * Created by Ruth on 3/11/2017.
@@ -43,8 +35,6 @@ public class RestaurantMainMenuExpandableListAdapter extends BaseExpandableListA
     private DatabaseReference mDatabase;
     private TextView orderName;
     private Order order;
-    private LayoutInflater inflater;
-    private Button manage_button;
 
     public RestaurantMainMenuExpandableListAdapter(Activity context, List<Order> orderList,
                                                    Map<String, List<Order>> childList) {
@@ -96,15 +86,16 @@ public class RestaurantMainMenuExpandableListAdapter extends BaseExpandableListA
 
         orderName = (TextView)convertView.findViewById(R.id.order_name);
         orderName.setTypeface(null, Typeface.BOLD);
-        orderName.setText(order.getCustomerId().toString());
+        orderName.setText(order.toString());
         orderName.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Toast.makeText(context, "This should open the order", Toast.LENGTH_SHORT).show();
-            /*Bundle bundle = new Bundle();
-            bundle.putSerializable("Order", order);
-            Intent intent = new Intent(context, ?.class);
-            intent.putExtras(bundle);*/
+                //LogWriter.log(context, Level.INFO, "This should open the order");
+                Intent intent = new Intent(context, ViewOrderActivity.class);
+                Bundle orderBundle = new Bundle();
+                orderBundle.putSerializable("Order", order);
+                intent.putExtras(orderBundle);
+                context.startActivity(intent);
             }
         });
 
@@ -122,18 +113,6 @@ public class RestaurantMainMenuExpandableListAdapter extends BaseExpandableListA
             convertView = layoutInflater.inflate(R.layout.restaurant_main_menu_list_item, null);
         }
 
-        Button manage_button = (Button) convertView.findViewById(R.id.manage_button);
-        manage_button.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Bundle bundle = new Bundle();
-                bundle.putSerializable("Order", selectedOrder);
-                Intent intent = new Intent(context, ManageOrders.class);
-                intent.putExtras(bundle);
-                context.startActivity(intent);
-            }
-        });
-
         Button status_button = (Button) convertView.findViewById(R.id.order_button);
         status_button.setText("Change Status");
         status_button.setOnClickListener(new View.OnClickListener() {
@@ -147,34 +126,5 @@ public class RestaurantMainMenuExpandableListAdapter extends BaseExpandableListA
 
         return convertView;
     }//end get child view
-
-    /* DO NOT USE YET*/
-    private void getRestaurantName(final String id){
-        //mDatabase = FirebaseDatabase.getInstance().getReference().child("Order").child(user.getAuthUserID());
-        //for testing: v92RjQq9sMQT7ShyQWtIWBtnNrn1
-        mDatabase = FirebaseDatabase.getInstance().getReference().child("Restaurant");
-        mDatabase.addListenerForSingleValueEvent(
-                new ValueEventListener() {
-                    @Override
-                    public void onDataChange(DataSnapshot restaurantSnapShot) {
-                        //Toast.makeText((Activity)context, "the id to find: " + id, Toast.LENGTH_SHORT).show();
-                        for (DataSnapshot r : restaurantSnapShot.getChildren()) {
-                            Restaurant restaurant = r.getValue(Restaurant.class);
-                            //Toast.makeText((Activity)context, restaurant.getRestaurantKey(), Toast.LENGTH_SHORT).show();
-                            if(restaurant.getRestaurantKey().equals(id)){
-                                //orderName.setText(restaurant.getName());
-
-                            }
-                            //Toast.makeText((Activity)context, name, Toast.LENGTH_SHORT).show();
-                        }
-                    }//end on data change
-
-                    @Override
-                    public void onCancelled(DatabaseError databaseError) {
-
-                    }
-                }
-        );
-    }
 
 }//end class

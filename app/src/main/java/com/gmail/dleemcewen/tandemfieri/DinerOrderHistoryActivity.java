@@ -47,12 +47,12 @@ public class DinerOrderHistoryActivity extends AppCompatActivity {
         orderHistoryView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, final View view, int position, long id) {
-                openOrder((Order) parent.getItemAtPosition(position));
+                openOrder((Order) parent.getItemAtPosition(position), position);
             }
         });
     }
 
-    private void openOrder(Order order){
+    private void openOrder(Order order, int position){
         LogWriter.log(getApplicationContext(), Level.INFO, "This will open the Order");
         Bundle orderBundle = new Bundle();
         Intent intent = new Intent(DinerOrderHistoryActivity.this, ViewOrderActivity.class);
@@ -76,7 +76,6 @@ public class DinerOrderHistoryActivity extends AppCompatActivity {
                             Order o = child.getValue(Order.class);
                             if(o.getCustomerId().equals(user.getAuthUserID())) {
                                 ordersList.add(o);
-                                LogWriter.log(getApplicationContext(), Level.INFO, o.toString());
                             }
                         }
 

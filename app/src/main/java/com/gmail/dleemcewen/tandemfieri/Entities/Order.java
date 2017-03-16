@@ -9,6 +9,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
+import java.text.SimpleDateFormat;
 
 /**
  * Created by Derek on 3/1/2017.
@@ -145,6 +146,12 @@ public class Order extends Entity implements Serializable {
     }
 
     public String toString(){
-        return restaurantName + " $" + String.format(Locale.US, "%.2f", total);
+
+        return dateToString() + " " + restaurantName + " $" + String.format(Locale.US, "%.2f", total);
+    }
+
+    public String dateToString(){
+        SimpleDateFormat formatDateJava = new SimpleDateFormat("MM/dd/yyyy", Locale.US);
+        return formatDateJava.format(orderDate);
     }
 }

@@ -21,9 +21,9 @@ public class TimePickerFragment extends DialogFragment  {
     }
 
     private TimePicker timePicker;
-    public interface TimeDialogListener {
+    /*public interface TimeDialogListener {
         void onFinishDialog(int time);
-    }
+    }*/
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState){
         View v = LayoutInflater.from(getActivity())

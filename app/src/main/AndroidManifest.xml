@@ -75,7 +75,8 @@
             android:label="@string/title_activity_driver_delivery"
             android:theme="@style/AppTheme.NoActionBar" />
         <activity android:name=".DinerOrderHistoryActivity" />
-        <activity android:name=".ViewOrderActivity"></activity>
+        <activity android:name=".ViewOrderActivity" />
+        <activity android:name=".ProductHistoryActivity"></activity>
     </application>
 
 </manifest>

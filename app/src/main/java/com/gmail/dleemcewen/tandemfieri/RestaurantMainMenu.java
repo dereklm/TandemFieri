@@ -1,15 +1,20 @@
 package com.gmail.dleemcewen.tandemfieri;
 
 import android.app.Activity;
+import android.app.AlertDialog;
+import android.app.DialogFragment;
 import android.app.NotificationManager;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
+import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
+import android.view.View;
 import android.widget.ExpandableListView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -18,6 +23,7 @@ import com.gmail.dleemcewen.tandemfieri.Adapters.RestaurantMainMenuExpandableLis
 import com.gmail.dleemcewen.tandemfieri.Entities.NotificationMessage;
 import com.gmail.dleemcewen.tandemfieri.Entities.Order;
 import com.gmail.dleemcewen.tandemfieri.Entities.User;
+import com.gmail.dleemcewen.tandemfieri.Enums.OrderEnum;
 import com.gmail.dleemcewen.tandemfieri.Logging.LogWriter;
 import com.gmail.dleemcewen.tandemfieri.Repositories.NotificationMessages;
 import com.gmail.dleemcewen.tandemfieri.Tasks.TaskResult;
@@ -32,14 +38,17 @@ import com.google.firebase.database.ValueEventListener;
 
 import org.greenrobot.eventbus.EventBus;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.logging.Level;
 
-public class RestaurantMainMenu extends AppCompatActivity {
+public class RestaurantMainMenu extends AppCompatActivity  implements DatePickerFragment.DateListener{
 
     private User user;
     private NotificationMessages<NotificationMessage> notificationsRepository;
@@ -47,7 +56,9 @@ public class RestaurantMainMenu extends AppCompatActivity {
     private RestaurantMainMenuExpandableListAdapter listAdapter;
     private DatabaseReference mDatabase;
     private Context context;
-    private TextView header;
+    int id;
+    private TextView fromDate;
+    private TextView toDate;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -61,7 +72,7 @@ public class RestaurantMainMenu extends AppCompatActivity {
         Bundle bundle = this.getIntent().getExtras();
         user = (User) bundle.getSerializable("User");
         orderList = (ExpandableListView)findViewById(R.id.order_list);
-        header = (TextView) findViewById(R.id.header);
+        //header = (TextView) findViewById(header);
 
         int notificationId = bundle.getInt("notificationId");
         if (notificationId != 0) {
@@ -134,6 +145,8 @@ public class RestaurantMainMenu extends AppCompatActivity {
             case R.id.manage_restaurants:
                 goToManageRestaurants();
                 return true;
+            case R.id.product_history:
+                displayProductHistoryDateDialog();
             default:
                 return super.onOptionsItemSelected(item);
         }
@@ -196,8 +209,6 @@ public class RestaurantMainMenu extends AppCompatActivity {
         //Order table: userID -> order# -> order entity
 
         mDatabase = FirebaseDatabase.getInstance().getReference().child("Order").child(user.getAuthUserID());
-        //for testing: v92RjQq9sMQT7ShyQWtIWBtnNrn1  and 5be9598e-89a4-48ec-9308-8f234f4109b8
-        //mDatabase = FirebaseDatabase.getInstance().getReference().child("Order").child("v92RjQq9sMQT7ShyQWtIWBtnNrn1");
         mDatabase.addListenerForSingleValueEvent(
                 new ValueEventListener() {
                     @Override
@@ -209,9 +220,10 @@ public class RestaurantMainMenu extends AppCompatActivity {
                             for(DataSnapshot orders : number.getChildren()){
                                 Order order = orders.getValue(Order.class);
                                 //add the children to the adapter list
-                                Toast.makeText(getApplicationContext(), ""+orders.child("customerId").getValue(), Toast.LENGTH_LONG).show();
-                                orderEntities.add(order);
-                                //Toast.makeText((Activity)context, "innner loop: " + order.getCustomerId(), Toast.LENGTH_SHORT).show();
+                                if(!order.getStatus().equals(OrderEnum.COMPLETE)) {
+                                    orderEntities.add(order);
+                                    //Toast.makeText((Activity)context, "innner loop: " + order.getCustomerId(), Toast.LENGTH_SHORT).show();
+                                }
                             }
                             if(orderEntities.isEmpty()){
                                 Toast.makeText(getApplicationContext(), "There are no orders on file.", Toast.LENGTH_LONG).show();
@@ -224,9 +236,7 @@ public class RestaurantMainMenu extends AppCompatActivity {
                     }//end on data change
 
                     @Override
-                    public void onCancelled(DatabaseError databaseError) {
-
-                    }
+                    public void onCancelled(DatabaseError databaseError) {}
                 }
         );
     }
@@ -243,6 +253,71 @@ public class RestaurantMainMenu extends AppCompatActivity {
         }
 
         return childData;
+    }
+
+    @Override
+    public void onFinishDialog(Date date) {
+        SimpleDateFormat formatDateJava = new SimpleDateFormat("MM/dd/yyyy", Locale.US);
+        if(id == fromDate.getId()){
+            fromDate.setText(formatDateJava.format(date));
+        }else if(id == toDate.getId()){
+            toDate.setText(formatDateJava.format(date));
+        }
+    }
+
+    public class DateListener implements View.OnClickListener{
+
+        @Override
+        public void onClick(View view) {
+            //begin date picker
+            id = view.getId();
+            DialogFragment fragment = new DatePickerFragment();
+            fragment.show(getFragmentManager(), "datePicker");
+        }
+    }
+
+    public void displayProductHistoryDateDialog(){
+        LogWriter.log(getApplicationContext(), Level.INFO, "open dialog to get date range");
+        // get date_dialog.xml view
+        LayoutInflater li = LayoutInflater.from(context);
+        View dateDialogView = li.inflate(R.layout.date_dialog, null);
+
+        AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(
+                context);
+
+        // set date_dialog.xml to alertdialog builder
+        alertDialogBuilder.setView(dateDialogView);
+
+        DateListener dateListener = new DateListener();
+
+        fromDate = (TextView) dateDialogView.findViewById(R.id.from_date);
+        toDate = (TextView) dateDialogView.findViewById(R.id.to_date);
+        fromDate.setOnClickListener(dateListener);
+        toDate.setOnClickListener(dateListener);
+
+        // set dialog message
+        alertDialogBuilder
+                .setCancelable(false)
+                .setPositiveButton("OK",
+                        new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog,int id) {
+                                // get user input and set it to result
+                                // edit text
+                                //result.setText(userInput.getText());
+                            }
+                        })
+                .setNegativeButton("Cancel",
+                        new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog,int id) {
+                                dialog.cancel();
+                            }
+                        });
+
+        // create alert dialog
+        AlertDialog alertDialog = alertDialogBuilder.create();
+
+        // show it
+        alertDialog.show();
     }
 
 }//end Activity

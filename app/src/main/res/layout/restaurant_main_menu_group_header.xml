@@ -8,11 +8,13 @@
     <TextView
         android:id="@+id/order_name"
         android:layout_weight="1"
-        android:layout_width="wrap_content"
-        android:layout_height="match_parent"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
         android:layout_gravity="center_vertical"
         android:gravity="center_vertical"
         android:layout_marginLeft="?android:attr/expandableListPreferredItemPaddingLeft"
         android:paddingLeft="16dp"
+        android:layout_marginRight="?android:attr/expandableListPreferredItemPaddingLeft"
+        android:paddingRight="16dp"
         android:textSize="@dimen/regular_text_size" />
 </LinearLayout>
