@@ -6,6 +6,7 @@
     android:orientation="vertical">
 
     <ExpandableListView
+        android:listSelector="@drawable/selector_list_item"
         android:id="@+id/item_groups"
         android:layout_width="match_parent"
         android:layout_weight="1"

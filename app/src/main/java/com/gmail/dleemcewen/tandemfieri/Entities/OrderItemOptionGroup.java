@@ -16,16 +16,27 @@ public class OrderItemOptionGroup implements Serializable {
     private List<OrderItemOption> options;
     private boolean required;
     private boolean exclusive;
+    private boolean hasChildSelected;
 
     public OrderItemOptionGroup(ItemOption itemOption) {
         options = new ArrayList<>();
         this.name = itemOption.getOptionName();
         required = itemOption.isRequired();
         exclusive = !itemOption.isAndRelationship();
+        this.hasChildSelected = false;
     }
 
     public void addOption(OrderItemOption option) {
         options.add(option);
+    }
+
+
+    public boolean isHasChildSelected() {
+        return hasChildSelected;
+    }
+
+    public void setHasChildSelected(boolean hasChildSelected) {
+        this.hasChildSelected = hasChildSelected;
     }
 
     public String getName() {

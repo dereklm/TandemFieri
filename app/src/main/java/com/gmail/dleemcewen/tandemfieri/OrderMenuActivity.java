@@ -15,6 +15,7 @@ import com.gmail.dleemcewen.tandemfieri.Adapters.OrderItemAdapter;
 import com.gmail.dleemcewen.tandemfieri.Entities.Order;
 import com.gmail.dleemcewen.tandemfieri.Entities.OrderItem;
 import com.gmail.dleemcewen.tandemfieri.Entities.OrderItemOption;
+import com.gmail.dleemcewen.tandemfieri.Entities.OrderItemOptionGroup;
 import com.gmail.dleemcewen.tandemfieri.Entities.Restaurant;
 import com.gmail.dleemcewen.tandemfieri.menubuilder.ItemOption;
 import com.gmail.dleemcewen.tandemfieri.menubuilder.MenuCatagory;
@@ -23,6 +24,7 @@ import com.gmail.dleemcewen.tandemfieri.menubuilder.OptionSelection;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 
 public class OrderMenuActivity extends AppCompatActivity implements AdapterView.OnItemSelectedListener {
@@ -93,8 +95,34 @@ public class OrderMenuActivity extends AppCompatActivity implements AdapterView.
                 if (ExpandableListView.getPackedPositionType(id) == ExpandableListView.PACKED_POSITION_TYPE_GROUP) {
                     int groupPosition = ExpandableListView.getPackedPositionGroup(id);
                     OrderItem item = (OrderItem) orderItemAdapter.getGroup(groupPosition);
-                    order.addItem(item);
 
+                    for (OrderItemOptionGroup group : item.getOptionGroups()) {
+                        // if option group has no child selected and it is required, notify user.
+                        if (group.isRequired() && !group.isHasChildSelected()) {
+                            Toast.makeText(getApplicationContext(),
+                                    "Must select an item for option group " + group.getName(),
+                                    Toast.LENGTH_SHORT).show();
+                            return true;
+                        }
+                    }
+
+                    // ensure passed item only passes options that are selected.
+                    Iterator<OrderItemOptionGroup> groupIterator = item.getOptionGroups().iterator();
+                    while (groupIterator.hasNext()) {
+                        OrderItemOptionGroup group = groupIterator.next();
+
+                        // if option group has no child selected remove it.
+                        if (!group.isHasChildSelected()) {
+                            groupIterator.remove();
+                        } else {
+                            // group has options selected, if the options are false remove them.
+                            Iterator<OrderItemOption> optionIterator = group.getOptions().iterator();
+                            while (optionIterator.hasNext()) {
+                                if (!optionIterator.next().isSelected()) optionIterator.remove();
+                            }
+                        }
+                    }
+                    order.addItem(item);
                     return true;
                 }
 
@@ -140,7 +168,18 @@ public class OrderMenuActivity extends AppCompatActivity implements AdapterView.
     @Override
     protected void onResume() {
         super.onResume();
-        if (order.getItems().size() > 0) order = new Order();
+        resetSelections();
+    }
+
+    private void resetSelections() {
+        for (OrderItem item : order.getItems()) {
+            for (OrderItemOptionGroup group : item.getOptionGroups()) {
+                group.setHasChildSelected(false);
+                for (OrderItemOption option : group.getOptions()) {
+                    option.setSelected(false);
+                }
+            }
+        }
     }
 
     @Override

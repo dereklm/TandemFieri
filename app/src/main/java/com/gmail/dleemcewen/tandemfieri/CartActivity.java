@@ -113,8 +113,6 @@ public class CartActivity extends AppCompatActivity {
                 return false;
             }
         });
-
-        onSaveInstanceState(new Bundle());
     }
 
     private void updateTextViews() {
@@ -128,7 +126,6 @@ public class CartActivity extends AppCompatActivity {
     @Override
     public void onSaveInstanceState(Bundle savedInstanceState) {
         super.onSaveInstanceState(savedInstanceState);
-        savedInstanceState.putSerializable("previousItems", order);
     }
 
     @Override
