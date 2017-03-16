@@ -24,6 +24,7 @@ import com.gmail.dleemcewen.tandemfieri.Entities.Restaurant;
 import com.gmail.dleemcewen.tandemfieri.Entities.User;
 import com.gmail.dleemcewen.tandemfieri.ManageOrders;
 import com.gmail.dleemcewen.tandemfieri.ManageRestaurantDrivers;
+import com.gmail.dleemcewen.tandemfieri.ProductHistoryActivity;
 import com.gmail.dleemcewen.tandemfieri.R;
 import com.gmail.dleemcewen.tandemfieri.Repositories.Restaurants;
 import com.gmail.dleemcewen.tandemfieri.RestaurantMapActivity;
@@ -274,7 +275,7 @@ public class ManageRestaurantExpandableListAdapter extends BaseExpandableListAda
         Button rateDrivers = (Button)convertView.findViewById(R.id.rateDrivers);
         Button deliveryHours = (Button)convertView.findViewById(R.id.deliveryHours);
         Button manageOrders = (Button)convertView.findViewById(R.id.manageOrders);
-
+        Button productHistory = (Button)convertView.findViewById(R.id.productHistory);
 
         manageMenuItems.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -355,6 +356,16 @@ public class ManageRestaurantExpandableListAdapter extends BaseExpandableListAda
             @Override
             public void onClick(View view) {
                 Intent intent = new Intent(context, ManageOrders.class);
+                intent.putExtra("restId",selectedChild.getKey());
+                intent.putExtra("ID", user.getAuthUserID());
+                context.startActivity(intent);
+            }
+        });
+
+        productHistory.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent(context, ProductHistoryActivity.class);
                 intent.putExtra("restId",selectedChild.getKey());
                 intent.putExtra("ID", user.getAuthUserID());
                 context.startActivity(intent);
