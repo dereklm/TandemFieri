@@ -137,7 +137,7 @@ public class OrderMenuActivity extends AppCompatActivity implements AdapterView.
             public void onClick(View v) {
                 Intent intent = new Intent(OrderMenuActivity.this, CartActivity.class);
                 intent.putExtra("cart", order);
-                intent.putExtra("restaurantId", restaurant.getRestaurantKey());
+                intent.putExtra("restaurantId", restaurant.getId());
                 intent.putExtra("ownerId", restaurant.getOwnerId());
                 intent.putExtra("deliveryCharge", restaurant.getCharge());
                 intent.putExtra("restaurantName", restaurant.getName());

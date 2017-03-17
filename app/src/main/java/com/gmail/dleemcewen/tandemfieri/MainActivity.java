@@ -77,10 +77,10 @@ public class MainActivity extends AppCompatActivity {
         verifiedEmailNotRequiredForLogin = resources.getBoolean(R.bool.verified_email_not_required_for_login);
         //this if statement is used when the user clicks the sign out option from the drop down menu
         //it closed all open activities and then the main activity.
-        if( getIntent().getBooleanExtra("Exit me", false)){
-            finish();
-            return; // add this to prevent from doing unnecessary stuffs
-        }
+//        if( getIntent().getBooleanExtra("Exit me", false)){
+//            finish();
+//            return; // add this to prevent from doing unnecessary stuffs
+//        }
 
         createAccount = (TextView) findViewById(R.id.createAccount);
         signInButton = (Button) findViewById(R.id.signInButton);

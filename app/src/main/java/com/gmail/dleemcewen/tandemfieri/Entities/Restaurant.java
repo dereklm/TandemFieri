@@ -47,7 +47,14 @@ public class Restaurant extends Entity implements Serializable {
         return getKey();
     }
 
-    public String getRestaurantKey() { return id; }
+    /**
+     * set the restaurant id
+     * @param id uniquely identifies the restaurant
+     */
+    public void setId(String id) {
+        this.id = id;
+        setKey(id);
+    }
 
     /**
      * get the restaurant name

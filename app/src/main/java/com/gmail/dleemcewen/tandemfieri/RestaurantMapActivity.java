@@ -5,10 +5,10 @@ import android.graphics.Color;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
+import android.widget.Toast;
 
 import com.gmail.dleemcewen.tandemfieri.Entities.Restaurant;
 import com.gmail.dleemcewen.tandemfieri.Events.ActivityEvent;
-import com.gmail.dleemcewen.tandemfieri.Logging.LogWriter;
 import com.gmail.dleemcewen.tandemfieri.Utility.Conversions;
 import com.gmail.dleemcewen.tandemfieri.Utility.MapUtil;
 import com.google.android.gms.maps.GoogleMap;
@@ -24,8 +24,6 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.shawnlin.numberpicker.NumberPicker;
 
 import org.greenrobot.eventbus.EventBus;
-
-import java.util.logging.Level;
 
 public class RestaurantMapActivity extends Activity implements OnMapReadyCallback {
 
@@ -77,7 +75,7 @@ public class RestaurantMapActivity extends Activity implements OnMapReadyCallbac
             public void onClick(View view) {
                 mDatabase = FirebaseDatabase.getInstance().getReference()
                         .child("Restaurant")
-                        .child(restaurant.getRestaurantKey());
+                        .child(restaurant.getId());
 
                 mDatabase.child("deliveryRadius")
                         .setValue(restaurant.getDeliveryRadius()
@@ -85,9 +83,9 @@ public class RestaurantMapActivity extends Activity implements OnMapReadyCallbac
                                     @Override
                                     public void onComplete(DatabaseError error, DatabaseReference reference) {
                                        if (error != null) {
-                                           LogWriter.log(getApplicationContext(), Level.SEVERE, "Unable to save change, try again later!");
+                                           Toast.makeText(getApplicationContext(), "Unable to save change, try again later!", Toast.LENGTH_LONG);
                                        } else {
-                                           LogWriter.log(getApplicationContext(), Level.SEVERE, "Delivery area saved!");
+                                           Toast.makeText(getApplicationContext(), "Delivery area saved!", Toast.LENGTH_LONG);
                                            EventBus.getDefault()
                                                    .post(new ActivityEvent(ActivityEvent.Result.REFRESH_RESTAURANT_LIST));
                                        }
@@ -114,8 +112,6 @@ public class RestaurantMapActivity extends Activity implements OnMapReadyCallbac
     }
 
     private void initialize() {
-        String url;
-
         Bundle bundle = this.getIntent().getExtras();
         restaurant = (Restaurant) bundle.getSerializable("restaurant");
 

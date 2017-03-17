@@ -113,7 +113,7 @@ public class CreateRestaurant extends AppCompatActivity implements AdapterView.O
             public void onClick(View v) {
                 if (checkForValidData()) {
                     String url = MapUtil.addressToURL(getApplicationContext()
-                            ,address.getText().toString()
+                            ,street.getText().toString()
                             ,city.getText().toString()
                             ,state
                             ,zipCode.getText().toString());
