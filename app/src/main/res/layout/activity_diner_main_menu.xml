@@ -12,17 +12,16 @@
 
     <TextView
         android:id="@+id/dinerMainMenu"
-        android:layout_width="match_parent"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Diner Main Menu"
+        android:text="Main Menu"
+        android:layout_centerHorizontal="true"
         android:textSize="35sp"/>
 
-    <Button
-        android:id="@+id/rateRestaurant"
-        android:layout_marginTop="@dimen/activity_vertical_margin"
-        android:layout_width="match_parent"
-        android:layout_height="64dp"
-        android:layout_below="@id/dinerMainMenu"
-        android:text="@string/rateRestaurant"
-        android:drawableLeft="@drawable/ic_star_half_white" />
+    <ListView
+        android:id="@+id/diner_listview"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/dinerMainMenu"/>
+
 </RelativeLayout>

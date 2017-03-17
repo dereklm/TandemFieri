@@ -1,33 +1,38 @@
 package com.gmail.dleemcewen.tandemfieri;
 
+import android.content.Context;
+import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.location.Geocoder;
+import android.location.Location;
+import android.location.LocationManager;
 import android.os.Bundle;
-import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
-import android.content.Intent;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.Button;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
+import android.widget.ListView;
 import android.widget.Toast;
 
-import com.gmail.dleemcewen.tandemfieri.Abstracts.Entity;
-import com.gmail.dleemcewen.tandemfieri.Constants.NotificationConstants;
-import com.gmail.dleemcewen.tandemfieri.Entities.NotificationMessage;
 import com.gmail.dleemcewen.tandemfieri.Entities.Restaurant;
 import com.gmail.dleemcewen.tandemfieri.Entities.User;
 import com.gmail.dleemcewen.tandemfieri.Logging.LogWriter;
-import com.gmail.dleemcewen.tandemfieri.Repositories.NotificationMessages;
-import com.gmail.dleemcewen.tandemfieri.Repositories.Restaurants;
-import com.gmail.dleemcewen.tandemfieri.Repositories.Users;
-import com.gmail.dleemcewen.tandemfieri.Tasks.TaskResult;
-import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.Task;
+import com.google.android.gms.maps.model.LatLng;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.logging.Level;
 
 import static android.Manifest.permission.ACCESS_FINE_LOCATION;
@@ -36,30 +41,57 @@ import static com.gmail.dleemcewen.tandemfieri.DinerMapActivity.MY_PERMISSIONS_R
 
 public class DinerMainMenu extends AppCompatActivity {
     User user;
-    private Button rateRestaurant;
+    ListView listview;
+    List<Restaurant> restaurantsList;
+    DatabaseReference mDatabase;
+    static MenuItem deliveryOption;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_diner_main_menu);
 
-        Bundle bundle = new Bundle();
-        bundle = this.getIntent().getExtras();
-        user = (User) bundle.getSerializable("User");
+        getHandles();
+        initialize();
+        retrieveData();
 
         LogWriter.log(getApplicationContext(), Level.INFO, "The user is " + user.getEmail());
-
-        findControlReferences();
-        bindEventHandlers();
     }//end onCreate
+
+    private void getHandles(){
+        listview = (ListView) findViewById(R.id.diner_listview);
+    }
+
+    private void initialize(){
+        Bundle bundle = this.getIntent().getExtras();
+        user = (User) bundle.getSerializable("User");
+        restaurantsList = new ArrayList<>();
+        listview.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+                @Override
+            public void onItemClick(AdapterView<?> parent, final View view, int position, long id) {
+                openMenu((Restaurant) parent.getItemAtPosition(position));
+            }
+        });
+    }
+
+    private void openMenu(Restaurant r){
+        Bundle restaurantBundle = new Bundle();
+        Intent intent = new Intent(DinerMainMenu.this, LookAtMenuActivity.class);
+        restaurantBundle.putSerializable("Restaurant", r);
+        intent.putExtras(restaurantBundle);
+        startActivity(intent);
+    }
 
     //create menu
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         MenuInflater inflater = getMenuInflater();
         inflater.inflate(R.menu.diner_menu, menu);
+        deliveryOption = menu.findItem(R.id.delivery);
         return true;
     }
+
+    public static MenuItem getDeliveryMenuItem(){return deliveryOption;}
 
     //determine which menu option was selected and call that option's action method
     @Override
@@ -76,53 +108,36 @@ public class DinerMainMenu extends AppCompatActivity {
                 editPassword();
                 return true;
             case R.id.map:
-                if (android.os.Build.VERSION.SDK_INT >= M) {
-                    if(checkLocationPermission() == true){
-                        launchMap();
-                    }else{
-                    }
-                }
+                launchMap();
                 return true;
             case R.id.delivery:
                 launchDelivery();
                 return true;
-            case R.id.sendSimulatedNotification:
-                //TODO: remove this after ordering and payment processing are in place
-                //this is just for testing and demo purposes
-                simulateCompletedOrder();
+            case R.id.order_history:
+                displayOrderHistory();
                 return true;
             case R.id.payment:
                 Bundle bundle = new Bundle();
                 bundle.putSerializable("User", user);
-
                 Intent intent = new Intent(DinerMainMenu.this, FakePayment.class);
                 intent.putExtras(bundle);
                 startActivity(intent);
 
+                return true;
+            case R.id.rateRestaurant:
+                rateRestaurant();
                 return true;
             default:
                 return super.onOptionsItemSelected(item);
         }
     }
 
-    /**
-     * find all control references
-     */
-    private void findControlReferences() {
-        rateRestaurant = (Button)findViewById(R.id.rateRestaurant);
-    }
-
-    /**
-     * bind required event handlers
-     */
-    private void bindEventHandlers() {
-        rateRestaurant.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent intent = new Intent(getApplicationContext(), RestaurantRatings.class);
-                startActivity(intent);
-            }
-        });
+    private void displayOrderHistory(){
+        Bundle dinerBundle = new Bundle();
+        Intent intent = new Intent(DinerMainMenu.this, DinerOrderHistoryActivity.class);
+        dinerBundle.putSerializable("User", user);
+        intent.putExtras(dinerBundle);
+        startActivity(intent);
     }
 
     //called when user selects sign out from the drop down menu
@@ -159,45 +174,25 @@ public class DinerMainMenu extends AppCompatActivity {
 
     private void launchMap(){
         //need to send user type so that the user can be located in the database
-        //Bundle dinerBundle = new Bundle();
         Intent intent = new Intent(DinerMainMenu.this, DinerMapActivity.class);
-        //dinerBundle.putSerializable("User", user);
-        //intent.putExtras(dinerBundle);
-        //intent.putExtra("UserType", "Diner");
+        Bundle userBundle = new Bundle();
+        userBundle.putSerializable("User", user);
+        intent.putExtras(userBundle);
         startActivity(intent);
     }
 
     private void launchDelivery(){
         //need to send user type so that the user can be located in the database
-        //Bundle dinerBundle = new Bundle();
         Intent intent = new Intent(DinerMainMenu.this, DeliveryMapActivity.class);
-        //dinerBundle.putSerializable("User", user);
-        //intent.putExtras(dinerBundle);
-        //intent.putExtra("UserType", "Diner");
+        Bundle userBundle = new Bundle();
+        userBundle.putSerializable("User", user);
+        intent.putExtras(userBundle);
         startActivity(intent);
     }
 
-    /**
-     * simulate a completed order
-     */
-    private void simulateCompletedOrder() {
-        //After the order entity and repository are in place, this will be handled from there
-        //since they aren't available yet, instead produce a notification that will appear
-        //to go to a restaurant
-
-        Restaurants<Restaurant> restaurantsRepository = new Restaurants<>(DinerMainMenu.this);
-        final NotificationMessages<NotificationMessage> notificationsRepository = new NotificationMessages<>(DinerMainMenu.this);
-
-        restaurantsRepository
-            .find("id = '26804931-17e3-403a-ab75-a43e96e86814'")
-            .addOnCompleteListener(new OnCompleteListener<TaskResult<Restaurant>>() {
-                @Override
-                public void onComplete(@NonNull Task<TaskResult<Restaurant>> task) {
-                    Restaurant testRestaurant = task.getResult().getResults().get(0);
-
-                    notificationsRepository.sendNotification(NotificationConstants.Action.ADDED, testRestaurant);
-                }
-            });
+    private void rateRestaurant() {
+        Intent rateRestaurantIntent = new Intent(getApplicationContext(), RestaurantRatings.class);
+        startActivity(rateRestaurantIntent);
     }
 
     public boolean checkLocationPermission() {
@@ -257,5 +252,101 @@ public class DinerMainMenu extends AppCompatActivity {
             // other 'case' lines to check for other
             // permissions this app might request
         }
+    }
+
+    /*Retrieves restaurants within delivery range*/
+    private void retrieveData(){
+
+        mDatabase = FirebaseDatabase.getInstance().getReference().child("Restaurant");
+
+        mDatabase.addValueEventListener(new ValueEventListener() {
+                @Override
+                public void onDataChange(DataSnapshot dataSnapshot) {
+
+                    //everything to do with restaurant list code here
+                    for (DataSnapshot child : dataSnapshot.getChildren()) {
+                        Restaurant r = child.getValue(Restaurant.class);
+                        if(restaurantNearby(r)) {
+                            restaurantsList.add(r);
+                            //LogWriter.log(getApplicationContext(), Level.INFO, "The restaurant  is " + r.toString());
+                        }
+                    }
+
+                    ArrayAdapter<Restaurant> adapter = new ArrayAdapter<>(
+                            getApplicationContext(),
+                            R.layout.diner_mainmenu_item_view,
+                            restaurantsList);
+
+                    listview.setAdapter(adapter);
+
+                }//end on data change
+
+                @Override
+                public void onCancelled(DatabaseError databaseError) {}
+            });//end listener
+    }//end retrieve data
+
+    private boolean restaurantNearby(Restaurant r){
+        Geocoder coder = new Geocoder(getApplicationContext());
+        List<android.location.Address> address = null;
+        LatLng latlng;
+        Location tempLocation;
+        Location currentLocation = getUserLocation();
+
+        String streetAddress = r.getStreet() + "," + r.getCity() + "," + r.getState() + "," + r.getZipcode();
+        try {
+            address = coder.getFromLocationName(streetAddress, 1);
+            if (address.size() == 0) {
+
+            } else {
+
+                android.location.Address location = address.get(0);
+                tempLocation = new Location("");
+
+
+                tempLocation.set(currentLocation);
+                tempLocation.setLatitude(location.getLatitude());
+                tempLocation.setLongitude(location.getLongitude());
+                float tempDistance = (currentLocation.distanceTo(tempLocation));
+                tempDistance *= 0.000621371;
+                if (r.getDeliveryRadius() != null) {
+                    if ((int) tempDistance < r.getDeliveryRadius()) {
+                        double tempdouble = (double) tempDistance;
+                        tempdouble *= 100;
+                        tempdouble = Math.round(tempdouble);
+                        tempdouble /= 100;
+                        return true;
+                    }
+                }
+            }
+
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+       return false;
+    }//end restaurant nearby
+
+    private Location getUserLocation(){
+        Location result = new Location("");
+
+        LocationManager locManager = (LocationManager)getSystemService(Context.LOCATION_SERVICE);
+        if(locManager == null){
+            Intent intent = new Intent(this, DinerMainMenu.class);
+            intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+            startActivity(intent);
+            finish();
+        }
+        boolean network_enabled = locManager.isProviderEnabled(LocationManager.NETWORK_PROVIDER);
+
+       if(network_enabled){
+
+           result = locManager.getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
+
+        }
+
+        if (android.os.Build.VERSION.SDK_INT >= M) {
+            checkLocationPermission();
+        }
+        return result;
     }
 }//end Activity

@@ -1,13 +1,19 @@
 <?xml version="1.0" encoding="utf-8"?>
-<menu xmlns:android="http://schemas.android.com/apk/res/android">
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/diner_menu">
+    <item android:id="@+id/order_history"
+        android:title="Order History"/>
     <item android:id="@+id/map"
         android:title="Map"/>
     <item android:id="@+id/delivery"
-        android:title="Delivery"/>
+        android:title="Delivery"
+        android:visible="false"/>
     <item android:id="@+id/sign_out"
         android:title="Sign Out"/>
     <item android:id="@+id/payment"
         android:title="Payment"/>
+    <item android:id="@+id/rateRestaurant"
+        android:title="Rate a restaurant"/>
     <item android:id="@+id/account"
         android:title="Account" >
         <menu>
@@ -17,6 +23,4 @@
                 android:title="Edit Password" />
         </menu>
     </item>
-    <item android:id="@+id/sendSimulatedNotification"
-        android:title="Send simulated notification"/>
 </menu>

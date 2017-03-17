@@ -73,7 +73,6 @@ public class ManageRestaurantDrivers extends AppCompatActivity {
 
         Bundle bundle = this.getIntent().getExtras();
         restaurant = (Restaurant)bundle.getSerializable("Restaurant");
-        restaurant.setKey(bundle.getString("key"));
 
         users = new Users<>(context);
         unassignedDrivers = new ArrayList<>();

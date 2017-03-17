@@ -25,6 +25,23 @@ import cz.msebera.android.httpclient.Header;
 public class MapUtil {
     private static boolean statusREST;
 
+    public static String addressToURL(Context context, String street, String city, String state, String zip) {
+        String url;
+
+        url = context.getString(R.string.googleDecoderBaseURL)
+                + "address="
+                + street
+                + ","
+                + city
+                + ","
+                + state
+                + ","
+                + zip
+                + "&" + context.getString(R.string.google_api_key);
+
+        return url;
+    }
+
     public static LatLngBounds calculateBounds(LatLng center, double radius) {
         return new LatLngBounds.Builder().
             include(SphericalUtil.computeOffset(center, radius, 0)).

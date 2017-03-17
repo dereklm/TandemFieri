@@ -16,17 +16,17 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.gmail.dleemcewen.tandemfieri.Entities.Restaurant;
+import com.gmail.dleemcewen.tandemfieri.Interfaces.AsyncHttpResponse;
+import com.gmail.dleemcewen.tandemfieri.Json.AddressGeocode.AddressGeocode;
 import com.gmail.dleemcewen.tandemfieri.Repositories.Restaurants;
+import com.gmail.dleemcewen.tandemfieri.RestClient.AddressToLatLng;
 import com.gmail.dleemcewen.tandemfieri.Tasks.TaskResult;
+import com.gmail.dleemcewen.tandemfieri.Utility.MapUtil;
 import com.gmail.dleemcewen.tandemfieri.Validator.Validator;
-import com.google.android.gms.tasks.Continuation;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
-import com.google.android.gms.tasks.TaskCompletionSource;
-import com.google.firebase.database.DatabaseError;
 
 import java.util.ArrayList;
-import java.util.Map;
 
 public class CreateRestaurant extends AppCompatActivity implements AdapterView.OnItemSelectedListener {
     private Restaurants<Restaurant> restaurantsRepository;
@@ -112,36 +112,57 @@ public class CreateRestaurant extends AppCompatActivity implements AdapterView.O
             @Override
             public void onClick(View v) {
                 if (checkForValidData()) {
-                    //build a new restaurant
-                    final Restaurant restaurant = buildNewRestaurant();
+                    String url = MapUtil.addressToURL(getApplicationContext()
+                            ,address.getText().toString()
+                            ,city.getText().toString()
+                            ,state
+                            ,zipCode.getText().toString());
 
-                    //add the restaurant record
-                    //and then check the return value to ensure the restaurant was created successfully
-                    restaurantsRepository
-                        .add(restaurant)
-                        .addOnCompleteListener(CreateRestaurant.this, new OnCompleteListener<TaskResult<Restaurant>>() {
-                            @Override
-                            public void onComplete(@NonNull Task<TaskResult<Restaurant>> task) {
-                                StringBuilder toastMessage = new StringBuilder();
-                                if (task.isSuccessful()) {
-                                    toastMessage.append("Restaurant created successfully");
+                    AddressToLatLng client = AddressToLatLng.getInstance();
+                    client.verifyAddress(getApplicationContext(),url, new AsyncHttpResponse() {
+                        @Override
+                        public void requestComplete(boolean success, AddressGeocode addr) {
+                            if (success) {
+                                //build a new restaurant
+                                final Restaurant restaurant = buildNewRestaurant(addr);
 
-                                } else {
-                                    toastMessage.append("An error occurred while creating the restaurant.  Please check your network connection and try again.");
-                                }
+                                //add the restaurant record
+                                //and then check the return value to ensure the restaurant was created successfully
+                                restaurantsRepository
+                                    .add(restaurant)
+                                    .addOnCompleteListener(CreateRestaurant.this, new OnCompleteListener<TaskResult<Restaurant>>() {
+                                        @Override
+                                        public void onComplete(@NonNull Task<TaskResult<Restaurant>> task) {
+                                            StringBuilder toastMessage = new StringBuilder();
+                                            if (task.isSuccessful()) {
+                                                toastMessage.append("Restaurant created successfully");
 
-                                Toast
-                                    .makeText(CreateRestaurant.this, toastMessage.toString(), Toast.LENGTH_LONG)
-                                    .show();
+                                            } else {
+                                                toastMessage.append("An error occurred while creating the restaurant.  Please check your network connection and try again.");
+                                            }
 
-                                //Enable set delivery hours if the create restaurant task was successful...
-                                if (task.isSuccessful()) {
-                                    deliveryHours.setEnabled(true);
-                                    createRestaurant.setEnabled(false);
-                                    restaurantId = restaurant.getKey();
-                                }
+                                            Toast
+                                                .makeText(CreateRestaurant.this, toastMessage.toString(), Toast.LENGTH_LONG)
+                                                .show();
+
+                                            //Enable set delivery hours if the create restaurant task was successful...
+                                            if (task.isSuccessful()) {
+                                                deliveryHours.setEnabled(true);
+                                                createRestaurant.setEnabled(false);
+                                                restaurantId = restaurant.getKey();
+                                            }
+                                        }
+                                    });
+
+                            } else {
+                                address.setError(FormConstants.ERROR_TAG_ADDRESS);
+                                city.setError(FormConstants.ERROR_TAG_CITY);
+                                zipCode.setError(FormConstants.ERROR_TAG_ZIP);
+
+                                Toast.makeText(getApplicationContext(), "Not a valid address.", Toast.LENGTH_LONG).show();
                             }
-                        });
+                        }
+                    });
                 }
             }
         });
@@ -215,7 +236,7 @@ public class CreateRestaurant extends AppCompatActivity implements AdapterView.O
      * build a new restaurant entity
      * @return new restaurant entity
      */
-    private Restaurant buildNewRestaurant() {
+    private Restaurant buildNewRestaurant(AddressGeocode addr) {
         //Create new restaurant entity
         Restaurant restaurant = new Restaurant();
         restaurant.setName(restaurantName.getText().toString());
@@ -227,6 +248,8 @@ public class CreateRestaurant extends AppCompatActivity implements AdapterView.O
         restaurant.setOwnerId(restaurantOwnerId);
         restaurant.setDeliveryRadius(getBaseContext().getResources().getInteger(R.integer.defaultDeliveryRadius));
         restaurant.setRestaurantType(restaurantType);
+        restaurant.setLatitude(addr.results.get(0).geometry.location.lat);
+        restaurant.setLongitude(addr.results.get(0).geometry.location.lng);
 
         return restaurant;
     }

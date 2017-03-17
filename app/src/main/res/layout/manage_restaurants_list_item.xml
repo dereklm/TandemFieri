@@ -46,4 +46,18 @@
         android:layout_height="wrap_content"
         android:textSize="@dimen/button_text_size"
         android:text="@string/deliveryHours"/>
+    <Button
+        android:id="@+id/manageOrders"
+        android:focusable="false"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textSize="@dimen/button_text_size"
+        android:text="@string/manageOrders"/>
+    <Button
+        android:id="@+id/productHistory"
+        android:focusable="false"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textSize="@dimen/button_text_size"
+        android:text="@string/productHistory"/>
 </LinearLayout>

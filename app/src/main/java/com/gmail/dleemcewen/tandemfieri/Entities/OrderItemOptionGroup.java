@@ -18,6 +18,11 @@ public class OrderItemOptionGroup implements Serializable {
     private boolean exclusive;
     private boolean hasChildSelected;
 
+    /**
+     * Empty constructor required for firebase deserialization
+     */
+    public OrderItemOptionGroup() {}
+
     public OrderItemOptionGroup(ItemOption itemOption) {
         options = new ArrayList<>();
         this.name = itemOption.getOptionName();

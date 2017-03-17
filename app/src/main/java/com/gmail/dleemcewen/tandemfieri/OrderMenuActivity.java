@@ -17,6 +17,7 @@ import com.gmail.dleemcewen.tandemfieri.Entities.OrderItem;
 import com.gmail.dleemcewen.tandemfieri.Entities.OrderItemOption;
 import com.gmail.dleemcewen.tandemfieri.Entities.OrderItemOptionGroup;
 import com.gmail.dleemcewen.tandemfieri.Entities.Restaurant;
+import com.gmail.dleemcewen.tandemfieri.Entities.User;
 import com.gmail.dleemcewen.tandemfieri.menubuilder.ItemOption;
 import com.gmail.dleemcewen.tandemfieri.menubuilder.MenuCatagory;
 import com.gmail.dleemcewen.tandemfieri.menubuilder.MenuItem;
@@ -28,7 +29,7 @@ import java.util.Iterator;
 import java.util.List;
 
 public class OrderMenuActivity extends AppCompatActivity implements AdapterView.OnItemSelectedListener {
-
+    User user;
     private Order order;
     private OrderItemAdapter orderItemAdapter;
     private List<OrderItem> items;
@@ -49,6 +50,7 @@ public class OrderMenuActivity extends AppCompatActivity implements AdapterView.
         menuCategories = new HashMap<>();
         menuItems = new ArrayList<>();
         restaurant = (Restaurant) getIntent().getSerializableExtra("Restaurant");
+        user = (User) getIntent().getSerializableExtra("User");
         menuItems.addAll(restaurant.getMenu().getSubItems());
         items = new ArrayList<>();
         expandableListView = (ExpandableListView) findViewById(R.id.menu_items);
@@ -135,9 +137,10 @@ public class OrderMenuActivity extends AppCompatActivity implements AdapterView.
             public void onClick(View v) {
                 Intent intent = new Intent(OrderMenuActivity.this, CartActivity.class);
                 intent.putExtra("cart", order);
-                intent.putExtra("restaurantId", restaurant.getKey());
+                intent.putExtra("restaurantId", restaurant.getRestaurantKey());
                 intent.putExtra("ownerId", restaurant.getOwnerId());
                 intent.putExtra("deliveryCharge", restaurant.getCharge());
+                intent.putExtra("restaurantName", restaurant.getName());
                 startActivity(intent);
             }
         });
@@ -185,7 +188,6 @@ public class OrderMenuActivity extends AppCompatActivity implements AdapterView.
     @Override
     public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
         orderItemAdapter.setItems(menuCategories.get(categories.get(position)));
-        Toast.makeText(getApplicationContext(), "new item clicked " + categories.get(position), Toast.LENGTH_SHORT).show();
         orderItemAdapter.notifyDataSetChanged();
     }
 

@@ -21,15 +21,17 @@ import android.widget.Spinner;
 import android.widget.Toast;
 
 import com.gmail.dleemcewen.tandemfieri.Constants.AddressConstants;
+import com.gmail.dleemcewen.tandemfieri.Interfaces.AsyncHttpResponse;
+import com.gmail.dleemcewen.tandemfieri.Json.AddressGeocode.AddressGeocode;
+import com.gmail.dleemcewen.tandemfieri.RestClient.AddressToLatLng;
 import com.gmail.dleemcewen.tandemfieri.Utility.FetchAddressIntentService;
 import com.gmail.dleemcewen.tandemfieri.Utility.MapUtil;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.location.LocationServices;
-import com.google.android.gms.maps.model.LatLng;
 
-import static android.widget.Toast.makeText;
 import static com.gmail.dleemcewen.tandemfieri.R.id.phone;
+import static com.gmail.dleemcewen.tandemfieri.Validator.Validator.isValid;
 
 public class CreateAccountActivity extends AppCompatActivity implements AdapterView.OnItemSelectedListener,
         GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener,
@@ -41,7 +43,6 @@ public class CreateAccountActivity extends AppCompatActivity implements AdapterV
     protected Location location;
 
     private AddressResultReceiver mResultReceiver;
-    private LatLng latLng;
     private GoogleApiClient googleApiClient;
     private String state = "";
     private Spinner states;
@@ -110,31 +111,39 @@ public class CreateAccountActivity extends AppCompatActivity implements AdapterV
         nextButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                if (formValid()) {
+                    String url = MapUtil.addressToURL(getApplicationContext()
+                            ,address.getText().toString()
+                            ,city.getText().toString()
+                            ,state
+                            ,zip.getText().toString());
 
-                synchronized (this) {
-                    verifiedAddr = MapUtil.verifyAddress(getApplicationContext(), address, city, state, zip);
+                    AddressToLatLng client = AddressToLatLng.getInstance();
+                    client.verifyAddress(getApplicationContext(),url, new AsyncHttpResponse() {
+                        @Override
+                        public void requestComplete(boolean success, AddressGeocode addr) {
+                            if (success) {
+                                Intent intent = new Intent(CreateAccountActivity.this, AlmostDoneActivity.class);
 
-                    if (!verifiedAddr) {
-                        Intent intent = new Intent(CreateAccountActivity.this, AlmostDoneActivity.class);
-                        intent.putExtra("firstName", firstName.getText().toString());
-                        intent.putExtra("lastName", lastName.getText().toString());
-                        intent.putExtra("address", address.getText().toString());
-                        intent.putExtra("city", city.getText().toString());
-                        intent.putExtra("state", state);
-                        intent.putExtra("zip", zip.getText().toString());
-                        intent.putExtra("phoneNumber", phoneNumber.getText().toString());
-                        intent.putExtra("email", email.getText().toString());
-                        if (email.getText().toString().isEmpty()) {
-                            makeText(getApplicationContext(), "Do not leave email blank", Toast.LENGTH_LONG).show();
-                        } else if (!email.getText().toString().contains("@")) {
-                            makeText(getApplicationContext(), "Email must contain an @", Toast.LENGTH_LONG).show();
+                                intent.putExtra("firstName", firstName.getText().toString());
+                                intent.putExtra("lastName", lastName.getText().toString());
+                                intent.putExtra("address", address.getText().toString());
+                                intent.putExtra("city", city.getText().toString());
+                                intent.putExtra("state", state);
+                                intent.putExtra("zip", zip.getText().toString());
+                                intent.putExtra("phoneNumber", phoneNumber.getText().toString());
+                                intent.putExtra("email", email.getText().toString());
+
+                                startActivity(intent);
+                            } else {
+                                address.setError(FormConstants.ERROR_TAG_ADDRESS);
+                                city.setError(FormConstants.ERROR_TAG_CITY);
+                                zip.setError(FormConstants.ERROR_TAG_ZIP);
+
+                                Toast.makeText(getApplicationContext(), "Not a valid address!", Toast.LENGTH_LONG).show();
+                            }
                         }
-                        startActivity(intent);
-                    } else {
-                        address.setError(FormConstants.ERROR_TAG_ADDRESS);
-                        city.setError(FormConstants.ERROR_TAG_CITY);
-                        zip.setError(FormConstants.ERROR_TAG_ZIP);
-                    }
+                    });
                 }
             }
         });
@@ -261,5 +270,15 @@ public class CreateAccountActivity extends AppCompatActivity implements AdapterV
     @Override
     public void onConnectionFailed(@NonNull ConnectionResult connectionResult) {
 
+    }
+
+    public boolean formValid() {
+        return isValid(firstName, FormConstants.REG_EX_FIRSTNAME, FormConstants.ERROR_TAG_FIRSTNAME)
+            && isValid(lastName, FormConstants.REG_EX_LASTNAME, FormConstants.ERROR_TAG_LASTNAME)
+            && isValid(address, FormConstants.REG_EX_ADDRESS, FormConstants.ERROR_TAG_ADDRESS)
+            && isValid(city, FormConstants.REG_EX_CITY, FormConstants.ERROR_TAG_CITY)
+            && isValid(email, FormConstants.REG_EX_EMAIL, FormConstants.ERROR_TAG_EMAIL)
+            && isValid(phoneNumber, FormConstants.REG_EX_PHONE, FormConstants.ERROR_TAG_PHONE)
+            && isValid(zip, FormConstants.REG_EX_ZIP, FormConstants.ERROR_TAG_ZIP);
     }
 }

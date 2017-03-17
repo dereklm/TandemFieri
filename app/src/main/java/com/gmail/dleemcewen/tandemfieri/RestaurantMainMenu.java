@@ -2,42 +2,64 @@ package com.gmail.dleemcewen.tandemfieri;
 
 import android.app.Activity;
 import android.app.NotificationManager;
+import android.content.Context;
 import android.content.Intent;
+import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
-import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
+import android.widget.ExpandableListView;
+import android.widget.Toast;
 
-import com.gmail.dleemcewen.tandemfieri.Adapters.ManageRestaurantExpandableListAdapter;
+import com.gmail.dleemcewen.tandemfieri.Adapters.RestaurantMainMenuExpandableListAdapter;
 import com.gmail.dleemcewen.tandemfieri.Entities.NotificationMessage;
-import com.gmail.dleemcewen.tandemfieri.Entities.Restaurant;
+import com.gmail.dleemcewen.tandemfieri.Entities.Order;
 import com.gmail.dleemcewen.tandemfieri.Entities.User;
+import com.gmail.dleemcewen.tandemfieri.Enums.OrderEnum;
 import com.gmail.dleemcewen.tandemfieri.Logging.LogWriter;
 import com.gmail.dleemcewen.tandemfieri.Repositories.NotificationMessages;
 import com.gmail.dleemcewen.tandemfieri.Tasks.TaskResult;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 
+import org.greenrobot.eventbus.EventBus;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.logging.Level;
 
 public class RestaurantMainMenu extends AppCompatActivity {
 
     private User user;
     private NotificationMessages<NotificationMessage> notificationsRepository;
+    private ExpandableListView orderList;
+    private RestaurantMainMenuExpandableListAdapter listAdapter;
+    private DatabaseReference mDatabase;
+    private Context context;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_restaurant_main_menu);
 
+        context = this;
+
         notificationsRepository = new NotificationMessages<>(RestaurantMainMenu.this);
 
         Bundle bundle = this.getIntent().getExtras();
         user = (User) bundle.getSerializable("User");
+        orderList = (ExpandableListView)findViewById(R.id.order_list);
 
         int notificationId = bundle.getInt("notificationId");
         if (notificationId != 0) {
@@ -57,7 +79,9 @@ public class RestaurantMainMenu extends AppCompatActivity {
                         }
                     }
                 });
-        }
+        }//end notification block
+
+        retrieveData();
 
         LogWriter.log(getApplicationContext(), Level.INFO, "The user is " + user.getEmail());
     }//end onCreate
@@ -75,6 +99,12 @@ public class RestaurantMainMenu extends AppCompatActivity {
         super.onStop();
         notificationsRepository.finalize();
         notificationsRepository = null;
+    }
+
+    @Override
+    public void onDestroy() {
+        EventBus.getDefault().unregister(this);
+        super.onDestroy();
     }
 
     //create menu
@@ -149,4 +179,65 @@ public class RestaurantMainMenu extends AppCompatActivity {
         startActivity(intent);
     }
 
+    /***********************UPDATE LIST WITH ORDERS********************************/
+   /* @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if ((requestCode == CREATE_RESTAURANT || requestCode == UPDATE_RESTAURANT)
+                && resultCode == RESULT_OK) {
+            //A new restaurant was added or a restaurant was updated
+            retrieveData();
+        }
+    }*/
+/********** CALL DATABASE TO COLLECT ORDERS***************************/
+    private void retrieveData() {
+        //find all the orders where the restaurantid matches the current user id
+        //Order table: userID -> order# -> order entity
+
+        mDatabase = FirebaseDatabase.getInstance().getReference().child("Order").child(user.getAuthUserID());
+        mDatabase.addListenerForSingleValueEvent(
+                new ValueEventListener() {
+                    @Override
+                    public void onDataChange(DataSnapshot orderSnapshot) {
+                        List<Order> orderEntities = new ArrayList<Order>();
+                        //Toast.makeText(context, "this is the list the user id pulls up: ", Toast.LENGTH_LONG).show();
+                        for(DataSnapshot number: orderSnapshot.getChildren()){
+                            //Toast.makeText(context, "outer loop: " + number.getKey(), Toast.LENGTH_LONG).show();//this gives me the restaurant id
+                            for(DataSnapshot orders : number.getChildren()){
+                                Order order = orders.getValue(Order.class);
+                                //add the children to the adapter list
+                                if(!order.getStatus().equals(OrderEnum.COMPLETE)) {
+                                    orderEntities.add(order);
+                                    //Toast.makeText((Activity)context, "innner loop: " + order.getCustomerId(), Toast.LENGTH_SHORT).show();
+                                }
+                            }
+                            if(orderEntities.isEmpty()){
+                                Toast.makeText(getApplicationContext(), "There are no orders on file.", Toast.LENGTH_LONG).show();
+                            }else {
+                                listAdapter = new RestaurantMainMenuExpandableListAdapter(
+                                        (Activity) context, orderEntities, buildExpandableChildData(orderEntities));
+                                orderList.setAdapter(listAdapter);
+                            }
+                        }
+                    }//end on data change
+
+                    @Override
+                    public void onCancelled(DatabaseError databaseError) {}
+                }
+        );
+    }
+
+    /**
+     * buildExpandableChildData builds the data that is associated with the expandable child entries
+     * @param entities indicates a list of restaurants returned by the retrieveData method
+     * @return Map of the expandable child data
+     */
+    private Map<String, List<Order>> buildExpandableChildData(List<Order> entities) {
+        HashMap<String, List<Order>> childData = new HashMap<>();
+        for (Order entity : entities) {
+            childData.put(entity.getKey(), Arrays.asList(entity));
+        }
+
+        return childData;
+    }
+    
 }//end Activity

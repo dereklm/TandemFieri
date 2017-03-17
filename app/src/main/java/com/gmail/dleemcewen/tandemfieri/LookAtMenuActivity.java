@@ -9,9 +9,11 @@ import android.view.MenuInflater;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ListView;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.gmail.dleemcewen.tandemfieri.Entities.Restaurant;
+import com.gmail.dleemcewen.tandemfieri.Entities.User;
 import com.gmail.dleemcewen.tandemfieri.menubuilder.MenuCatagory;
 import com.gmail.dleemcewen.tandemfieri.menubuilder.MenuCompenet;
 import com.gmail.dleemcewen.tandemfieri.menubuilder.MenuItem;
@@ -21,6 +23,7 @@ import com.google.firebase.database.DatabaseReference;
 import java.util.ArrayList;
 
 public class LookAtMenuActivity extends AppCompatActivity {
+    User user;
     DatabaseReference mDatabase;
     private MenuItemAdapter adapter;
     private Context context;
@@ -28,14 +31,15 @@ public class LookAtMenuActivity extends AppCompatActivity {
     private MenuCatagory current;
     private ArrayList<MenuCompenet> allItems;
     private ListView listView;
+    private TextView restaurantName;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_look_at_menu);
-        Bundle bundle = new Bundle();
-        bundle = this.getIntent().getExtras();
+        Bundle bundle = this.getIntent().getExtras();
         restaurant = (Restaurant) bundle.getSerializable("Restaurant");
+        user = (User) bundle.getSerializable("User");
         int i = 0, j = 0;
 
         allItems = new ArrayList<>();
@@ -48,7 +52,8 @@ public class LookAtMenuActivity extends AppCompatActivity {
         listView.setAdapter(adapter);
         context= this;
 
-        //listview = (ListView) findViewById(R.id.menuItemsOrder);
+        restaurantName = (TextView)findViewById(R.id.restaurant_name);
+        restaurantName.setText(restaurant.getName());
 
         //Toast.makeText(getApplicationContext(),"The Restaurant is " + restaurant.getName(), Toast.LENGTH_LONG).show();
 

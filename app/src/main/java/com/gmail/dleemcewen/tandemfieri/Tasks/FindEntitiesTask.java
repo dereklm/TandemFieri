@@ -92,7 +92,7 @@ public class FindEntitiesTask<T extends Entity> implements Continuation<Map.Entr
 
             @Override
             public void onCancelled(DatabaseError databaseError) {
-                // Getting Restaurant failed, log a message
+                // Getting records failed, log a message
                 LogWriter.log(context, Level.FINE, "find:onCancelled " + databaseError.toException());
             }
         });

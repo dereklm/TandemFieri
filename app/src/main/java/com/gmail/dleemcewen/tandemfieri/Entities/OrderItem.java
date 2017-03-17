@@ -7,6 +7,7 @@ import com.gmail.dleemcewen.tandemfieri.menubuilder.OptionSelection;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 
 /**
  * Created by Derek on 3/5/2017.
@@ -17,6 +18,11 @@ public class OrderItem implements Serializable {
     private String name;
     private double basePrice;
     private List<OrderItemOptionGroup> optionGroups;
+
+    /**
+     * Empty constructor required for firebase deserialization
+     */
+    public OrderItem() {}
 
     public OrderItem(MenuItem menuItem) {
         basePrice = 0;
@@ -86,4 +92,6 @@ public class OrderItem implements Serializable {
     public void setOptionGroups(List<OrderItemOptionGroup> optionGroups) {
         this.optionGroups = optionGroups;
     }
+
+    public String toString(){return name + " $" + String.format(Locale.US, "%.2f", basePrice);}
 }

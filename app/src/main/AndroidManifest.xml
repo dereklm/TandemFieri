@@ -44,9 +44,10 @@
         <activity android:name=".EditRestaurantActivity" />
         <activity android:name=".menubuilder.OptionSelectionListActivity" />
         <activity android:name=".menubuilder.OptionSelectionEditActivity" />
-        <activity android:name=".LookAtMenuActivity"></activity>
+        <activity android:name=".LookAtMenuActivity" />
         <activity android:name=".OrderMenuActivity" />
         <activity android:name=".CartActivity" />
+        <activity android:name=".ManageOrders" />
         <activity
             android:name=".DinerMapActivity"
             android:label="@string/title_activity_diner_map" />
@@ -67,13 +68,15 @@
             android:name=".Services.NotificationService"
             android:exported="false" />
 
-        <activity android:name=".RestaurantRatings"></activity>
+        <activity android:name=".RestaurantRatings" />
         <activity android:name=".DeliveryMapActivity" />
         <activity
             android:name=".DriverDeliveryActivity"
             android:label="@string/title_activity_driver_delivery"
-            android:theme="@style/AppTheme.NoActionBar"></activity>
-      
+            android:theme="@style/AppTheme.NoActionBar" />
+        <activity android:name=".DinerOrderHistoryActivity" />
+        <activity android:name=".ViewOrderActivity" />
+        <activity android:name=".ProductHistoryActivity"></activity>
     </application>
 
 </manifest>

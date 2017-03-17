@@ -6,7 +6,10 @@ import com.gmail.dleemcewen.tandemfieri.Enums.OrderEnum;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
+import java.util.Locale;
+import java.text.SimpleDateFormat;
 
 /**
  * Created by Derek on 3/1/2017.
@@ -21,13 +24,17 @@ public class Order extends Entity implements Serializable {
     private double tax;
     private double total;
     private double deliveryCharge;
+    private double deliveryCharge;
+    private String restaurantName;
+    private Date orderDate;
 
-    public Order() {}
+    public Order() {orderDate = new Date();}
 
     public Order(String key) {
         setKey(key);
+        orderDate = new Date();
     }
-  
+
     public double calculateSubTotal() {
         double subTotal = 0;
         for (OrderItem item : items) {
@@ -38,6 +45,7 @@ public class Order extends Entity implements Serializable {
                 }
             }
         }
+        subTotal += deliveryCharge;
         return subTotal;
     }
   
@@ -131,5 +139,31 @@ public class Order extends Entity implements Serializable {
 
     public void setTotal(double total) {
         this.total = total;
+    }
+
+    public String getRestaurantName() {
+        return restaurantName;
+    }
+
+    public void setRestaurantName(String restaurantName) {
+        this.restaurantName = restaurantName;
+    }
+
+    public Date getOrderDate() {
+        return orderDate;
+    }
+
+    public void setOrderDate(Date orderDate) {
+        this.orderDate = orderDate;
+    }
+
+    public String toString(){
+
+        return dateToString() + " " + restaurantName + " $" + String.format(Locale.US, "%.2f", total);
+    }
+
+    public String dateToString(){
+        SimpleDateFormat formatDateJava = new SimpleDateFormat("MM/dd/yyyy", Locale.US);
+        return formatDateJava.format(orderDate);
     }
 }

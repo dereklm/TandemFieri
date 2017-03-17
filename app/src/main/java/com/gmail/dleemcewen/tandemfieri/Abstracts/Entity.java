@@ -2,12 +2,13 @@ package com.gmail.dleemcewen.tandemfieri.Abstracts;
 
 import com.google.firebase.database.Exclude;
 
+import java.io.Serializable;
 import java.util.UUID;
 
 /**
  * BaseEntity provides the application logic used by all entities for database access
  */
-public abstract class Entity {
+public abstract class Entity implements Serializable {
     private String key;
 
     /**

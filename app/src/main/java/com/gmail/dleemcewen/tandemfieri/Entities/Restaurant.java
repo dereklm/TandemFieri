@@ -19,6 +19,8 @@ public class Restaurant extends Entity implements Serializable {
     private Integer deliveryRadius;
     private String id;
     private String restaurantType;
+    private Double latitude;
+    private Double longitude;
 
     private MenuCatagory menu;
 
@@ -42,7 +44,16 @@ public class Restaurant extends Entity implements Serializable {
      * @return String uniquely identifying the restaurant
      */
     public String getId() {
-        return getKey();
+        return id;
+    }
+
+    /**
+     * set the restaurant id
+     * @param id uniquely identifies the restaurant
+     */
+    public void setId(String id) {
+        this.id = id;
+        setKey(id);
     }
 
     public String getRestaurantKey() { return id; }
@@ -195,4 +206,15 @@ public class Restaurant extends Entity implements Serializable {
      */
     public void setDeliveryRadius(Integer deliveryRadius) { this.deliveryRadius = deliveryRadius;}
 
+    public Double getLatitude() { return latitude; }
+
+    public void setLatitude(Double latitude) { this.latitude = latitude; }
+
+    public Double getLongitude() { return longitude; }
+
+    public void setLongitude(Double longitude) { this.longitude = longitude; }
+
+    public String toString(){
+        return name;
+    }
 }

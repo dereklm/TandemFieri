@@ -4,6 +4,8 @@
         android:title="Sign Out"/>
     <item android:id="@+id/delivery"
         android:title="Delivery"/>
+    <item android:id="@+id/myDeliveries"
+        android:title="@string/myDeliveries"/>
     <item android:id="@+id/account"
         android:title="Account" >
         <menu>
