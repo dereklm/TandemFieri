@@ -15,9 +15,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.gmail.dleemcewen.tandemfieri.Entities.Order;
-import com.gmail.dleemcewen.tandemfieri.Entities.Restaurant;
 import com.gmail.dleemcewen.tandemfieri.Entities.User;
-import com.gmail.dleemcewen.tandemfieri.ManageOrders;
 import com.gmail.dleemcewen.tandemfieri.R;
 import com.gmail.dleemcewen.tandemfieri.ViewOrderActivity;
 import com.google.firebase.database.DatabaseReference;
@@ -120,8 +118,8 @@ public class RestaurantMainMenuExpandableListAdapter extends BaseExpandableListA
             convertView = layoutInflater.inflate(R.layout.restaurant_main_menu_list_item, null);
         }
 
-        Button manage_button = (Button) convertView.findViewById(R.id.manage_button);
-        manage_button.setOnClickListener(new View.OnClickListener() {
+        //Button manage_button = (Button) convertView.findViewById(R.id.manage_button);
+       /* manage_button.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 Bundle bundle = new Bundle();
@@ -131,7 +129,7 @@ public class RestaurantMainMenuExpandableListAdapter extends BaseExpandableListA
                 intent.putExtras(bundle);
                 context.startActivity(intent);
             }
-        });
+        });*/
 
         Button status_button = (Button) convertView.findViewById(R.id.order_button);
         status_button.setText("Change Status");

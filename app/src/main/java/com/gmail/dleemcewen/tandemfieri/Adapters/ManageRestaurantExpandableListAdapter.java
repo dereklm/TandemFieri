@@ -22,7 +22,7 @@ import com.gmail.dleemcewen.tandemfieri.EditRestaurantActivity;
 import com.gmail.dleemcewen.tandemfieri.Entities.DeliveryHours;
 import com.gmail.dleemcewen.tandemfieri.Entities.Restaurant;
 import com.gmail.dleemcewen.tandemfieri.Entities.User;
-import com.gmail.dleemcewen.tandemfieri.ManageOrders;
+import com.gmail.dleemcewen.tandemfieri.Logging.LogWriter;
 import com.gmail.dleemcewen.tandemfieri.ManageRestaurantDrivers;
 import com.gmail.dleemcewen.tandemfieri.ProductHistoryActivity;
 import com.gmail.dleemcewen.tandemfieri.R;
@@ -40,6 +40,7 @@ import com.google.firebase.database.ValueEventListener;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
+import java.util.logging.Level;
 
 /**
  * ManageRestaurantExpandableListAdapter provides the required methods to render the expandable
@@ -275,7 +276,6 @@ public class ManageRestaurantExpandableListAdapter extends BaseExpandableListAda
         Button rateDrivers = (Button)convertView.findViewById(R.id.rateDrivers);
         Button deliveryHours = (Button)convertView.findViewById(R.id.deliveryHours);
         Button manageOrders = (Button)convertView.findViewById(R.id.manageOrders);
-        Button productHistory = (Button)convertView.findViewById(R.id.productHistory);
 
         manageMenuItems.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -305,9 +305,10 @@ public class ManageRestaurantExpandableListAdapter extends BaseExpandableListAda
         viewSales.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Toast
-                        .makeText(context, "Viewing sales for " + selectedChild.getName(), Toast.LENGTH_SHORT)
-                        .show();
+                Intent intent = new Intent(context, ProductHistoryActivity.class);
+                intent.putExtra("restId",selectedChild.getKey());
+                intent.putExtra("ID", user.getAuthUserID());
+                context.startActivity(intent);
             }
         });
         viewDeliveryArea.setOnClickListener(new View.OnClickListener() {
@@ -355,20 +356,11 @@ public class ManageRestaurantExpandableListAdapter extends BaseExpandableListAda
         manageOrders.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Intent intent = new Intent(context, ManageOrders.class);
+               /* Intent intent = new Intent(context, ManageOrders.class);
                 intent.putExtra("restId",selectedChild.getKey());
                 intent.putExtra("ID", user.getAuthUserID());
-                context.startActivity(intent);
-            }
-        });
-
-        productHistory.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Intent intent = new Intent(context, ProductHistoryActivity.class);
-                intent.putExtra("restId",selectedChild.getKey());
-                intent.putExtra("ID", user.getAuthUserID());
-                context.startActivity(intent);
+                context.startActivity(intent);*/
+                LogWriter.log(context, Level.INFO, "Should open manage orders");
             }
         });
 

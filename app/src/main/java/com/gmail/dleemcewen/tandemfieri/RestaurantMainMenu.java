@@ -17,7 +17,6 @@ import com.gmail.dleemcewen.tandemfieri.Adapters.RestaurantMainMenuExpandableLis
 import com.gmail.dleemcewen.tandemfieri.Entities.NotificationMessage;
 import com.gmail.dleemcewen.tandemfieri.Entities.Order;
 import com.gmail.dleemcewen.tandemfieri.Entities.User;
-import com.gmail.dleemcewen.tandemfieri.Enums.OrderEnum;
 import com.gmail.dleemcewen.tandemfieri.Logging.LogWriter;
 import com.gmail.dleemcewen.tandemfieri.Repositories.NotificationMessages;
 import com.gmail.dleemcewen.tandemfieri.Tasks.TaskResult;
@@ -43,8 +42,8 @@ public class RestaurantMainMenu extends AppCompatActivity {
 
     private User user;
     private NotificationMessages<NotificationMessage> notificationsRepository;
-    private ExpandableListView orderList, assignedOrderList;
-    private RestaurantMainMenuExpandableListAdapter listAdapter, listAdapterAssigned;
+    private ExpandableListView orderList;
+    private RestaurantMainMenuExpandableListAdapter listAdapter;
     private DatabaseReference mDatabase;
     private Context context;
 
@@ -60,7 +59,7 @@ public class RestaurantMainMenu extends AppCompatActivity {
         Bundle bundle = this.getIntent().getExtras();
         user = (User) bundle.getSerializable("User");
         orderList = (ExpandableListView)findViewById(R.id.order_list);
-        assignedOrderList = (ExpandableListView)findViewById(R.id.order_list_assigned);
+        //assignedOrderList = (ExpandableListView)findViewById(R.id.order_list_assigned);
         //header = (TextView) findViewById(R.id.header);
 
         int notificationId = bundle.getInt("notificationId");
@@ -181,6 +180,7 @@ public class RestaurantMainMenu extends AppCompatActivity {
         startActivity(intent);
     }
 
+
     /***********************UPDATE LIST WITH ORDERS********************************/
    /* @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
@@ -191,7 +191,7 @@ public class RestaurantMainMenu extends AppCompatActivity {
         }
     }*/
 /********** CALL DATABASE TO COLLECT ORDERS***************************/
-    private void retrieveData() {
+   private void retrieveData() {
         //find all the orders where the restaurantid matches the current user id
         //Order table: userID -> order# -> order entity
 
@@ -201,33 +201,34 @@ public class RestaurantMainMenu extends AppCompatActivity {
                     @Override
                     public void onDataChange(DataSnapshot orderSnapshot) {
                         List<Order> orderEntities = new ArrayList<Order>();
-                        List<Order> orderAssigned = new ArrayList<Order>();
-                        //Toast.makeText(context, "this is the list the user id pulls up: ", Toast.LENGTH_LONG).show();
-                        for(DataSnapshot number: orderSnapshot.getChildren()){
-                            //Toast.makeText(context, "outer loop: " + number.getKey(), Toast.LENGTH_LONG).show();//this gives me the restaurant id
-                            for(DataSnapshot orders : number.getChildren()){
-                                Order order = orders.getValue(Order.class);
+                        //List<Order> orderAssigned = new ArrayList<Order>();
+                        Toast.makeText(context, "this is the list the user id pulls up: " + orderSnapshot.getKey(), Toast.LENGTH_LONG).show();
+                        for(DataSnapshot orders: orderSnapshot.getChildren()){
+                            Toast.makeText(context, "outer loop: " + orders.getKey(), Toast.LENGTH_LONG).show();//this gives me the order id
+
+                            Order order = orders.getValue(Order.class);
+
+                            orderEntities.add(order);
                                 //add the children to the adapter list
-                                Toast.makeText(getApplicationContext(), ""+orders.child("customerId").getValue(), Toast.LENGTH_LONG).show();
-                                if(orders.child("Assigned").exists()){
+                              /*  if(orders.child("Assigned").exists()){
                                     orderAssigned.add(order);
                                 }else {
                                     orderEntities.add(order);
-                                }
+                                }*/
                                 //Toast.makeText((Activity)context, "innner loop: " + order.getCustomerId(), Toast.LENGTH_SHORT).show();
                             }
-                            if(orderEntities.isEmpty()&&orderAssigned.isEmpty()){
-                                Toast.makeText(getApplicationContext(), "There are no orders on file.", Toast.LENGTH_LONG).show();
+                            if(orderEntities.isEmpty()){
+                                //Toast.makeText(getApplicationContext(), "There are no orders on file.", Toast.LENGTH_LONG).show();
                             }else {
                                 listAdapter = new RestaurantMainMenuExpandableListAdapter(
                                         (Activity) context, orderEntities, buildExpandableChildData(orderEntities), user);
-                                listAdapterAssigned = new RestaurantMainMenuExpandableListAdapter(
-                                        (Activity) context, orderAssigned, buildExpandableChildData(orderAssigned), user);
+                               /* listAdapterAssigned = new RestaurantMainMenuExpandableListAdapter(
+                                        (Activity) context, orderAssigned, buildExpandableChildData(orderAssigned), user);*/
                                 orderList.setAdapter(listAdapter);
-                                assignedOrderList.setAdapter(listAdapterAssigned);
+                                //assignedOrderList.setAdapter(listAdapterAssigned);
                             }
-                        }
-                    }//end on data change
+                        //}
+                   }//end on data change
 
                     @Override
                     public void onCancelled(DatabaseError databaseError) {}
@@ -249,12 +250,12 @@ public class RestaurantMainMenu extends AppCompatActivity {
         return childData;
     }
 
-    @Override
-    public void onResume() {
+    //@Override
+   /* public void onResume() {
         super.onResume();  // Always call the superclass method first
 
-        retrieveData();
-    }
+        //retrieveData();
+    }*/
 
 
 }//end Activity

@@ -85,7 +85,7 @@ public class ProductHistoryActivity extends AppCompatActivity implements DatePic
         LogWriter.log(getApplicationContext(), Level.INFO, "show product history");
         //get all the orders for this restaurant
 
-        mDatabase = FirebaseDatabase.getInstance().getReference().child("Order").child(userId).child(restId);
+        mDatabase = FirebaseDatabase.getInstance().getReference().child("Order").child(userId);
         mDatabase.addListenerForSingleValueEvent(
                 new ValueEventListener() {
                     @Override

@@ -10,57 +10,24 @@
     android:paddingTop="@dimen/activity_vertical_margin"
     tools:context="com.gmail.dleemcewen.tandemfieri.RestaurantMainMenu">
 
-    <LinearLayout
-        android:id="@+id/restaurantMainMenuHeader"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_alignParentLeft="true"
-        android:layout_alignParentStart="true"
-        android:layout_alignParentTop="true"
-        android:orientation="horizontal">
-        <TextView
-            android:layout_weight="2"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:id="@+id/header"
-            android:text="Open Orders"
-            android:textSize="20sp"/>
-    </LinearLayout>
 
     <TextView
-        android:text="Unassigned"
-        android:layout_weight="2"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_below="@id/restaurantMainMenuHeader"
-        android:id="@+id/titleUnassigned" />
+        android:id="@+id/header"
+        android:text="Open Orders"
+        android:layout_alignParentTop="true"
+        android:textSize="20sp"/>
 
     <ExpandableListView
         android:id="@+id/order_list"
-        android:layout_width="wrap_content"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_below="@id/titleUnassigned"
+        android:paddingTop="10dp"
+        android:layout_below="@id/header"
         android:indicatorLeft="?android:attr/expandableListPreferredItemIndicatorLeft"
         android:divider="@android:color/darker_gray"
         android:dividerHeight="0.5dp" />
-
-    <TextView
-        android:text="Assigned"
-        android:layout_weight="2"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_below="@id/order_list"
-        android:id="@+id/titleAssigned" />
-
-    <ExpandableListView
-        android:id="@+id/order_list_assigned"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_below="@id/titleAssigned"
-        android:indicatorLeft="?android:attr/expandableListPreferredItemIndicatorLeft"
-        android:divider="@android:color/darker_gray"
-        android:dividerHeight="0.5dp" />
-
 
 
 </RelativeLayout>

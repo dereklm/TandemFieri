@@ -70,16 +70,19 @@ public class DinerOrderHistoryActivity extends AppCompatActivity {
             public void onDataChange(DataSnapshot dataSnapshot) {
 
                 //everything to do with order list code here
-                for (DataSnapshot child1 : dataSnapshot.getChildren()) {
-                    for(DataSnapshot child2 : child1.getChildren()){
-                        for(DataSnapshot child : child2.getChildren()){
-                            Order o = child.getValue(Order.class);
-                            if(o.getCustomerId().equals(user.getAuthUserID())) {
+                for(DataSnapshot owners: dataSnapshot.getChildren()){
+                    LogWriter.log(getApplicationContext(), Level.INFO, "owner #: " + owners.getKey());
+                    for(DataSnapshot orders : owners.getChildren()){
+                        LogWriter.log(getApplicationContext(), Level.INFO, "order #: " + orders.getKey());
+                        Order o = orders.getValue(Order.class);
+                       LogWriter.log(getApplicationContext(), Level.INFO, "customer #: " + o.getCustomerId());
+                        if(o.getCustomerId() != null){
+                            if(o.getCustomerId().equals(user.getAuthUserID())){
                                 ordersList.add(o);
                             }
                         }
-
                     }
+
                 }
                 if(ordersList.isEmpty()){
                     Toast.makeText(getApplicationContext(), "You have no orders to display.", Toast.LENGTH_LONG).show();
