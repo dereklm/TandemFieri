@@ -24,7 +24,6 @@ public class Order extends Entity implements Serializable {
     private double tax;
     private double total;
     private double deliveryCharge;
-    private double deliveryCharge;
     private String restaurantName;
     private Date orderDate;
 
