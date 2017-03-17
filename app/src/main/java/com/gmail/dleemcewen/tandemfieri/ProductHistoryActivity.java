@@ -46,15 +46,6 @@ public class ProductHistoryActivity extends AppCompatActivity implements DatePic
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_product_history);
 
-
-        /**
-         *Get products from orders (OrderItems) between given dates inclusive
-         * Same items are counted and total tabulated
-         *     use 3 parallel arrays: name, base price, total
-         *     or possibly 1 array with carefully formatted strings
-         * display product name, base price, and total in view
-         */
-
         getHandles();
         initialize();
         attachListeners();
@@ -192,8 +183,11 @@ public class ProductHistoryActivity extends AppCompatActivity implements DatePic
 
         @Override
         public void onClick(View view) {
-            //populate list view
-            retrieveData();
+            if(datesVerified()) {
+                retrieveData();
+            }else{
+                Toast.makeText(getApplicationContext(), "Please enter a valid date range.", Toast.LENGTH_LONG);
+            }
         }
     }
 
