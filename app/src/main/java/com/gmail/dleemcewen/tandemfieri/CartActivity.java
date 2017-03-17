@@ -29,6 +29,8 @@ import com.google.firebase.database.FirebaseDatabase;
 import java.text.NumberFormat;
 import java.util.List;
 
+import static com.paypal.android.sdk.onetouch.core.metadata.ah.o;
+
 public class CartActivity extends AppCompatActivity {
 
     private Order order;
@@ -38,9 +40,10 @@ public class CartActivity extends AppCompatActivity {
     private OrderItemAdapter orderItemAdapter;
     private TextView delivery, total, subtotal, tax;
     private DatabaseReference mDatabase;
-    private String uid = "", ownerId = "", restaurantId = "", restName = "";
+    private String uid = "", ownerId = "", restaurantId = "", restName = "", orderId;
     private FirebaseUser fireuser;
     private NotificationMessages<NotificationMessage> notificationsRepository;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -82,6 +85,7 @@ public class CartActivity extends AppCompatActivity {
         updateTextViews();
 
         order.getKey();
+        order.setOrderId(order.getKey());
         order.setCustomerId(uid);
         order.setRestaurantId(restaurantId);
         order.setRestaurantName(restName);
@@ -104,6 +108,8 @@ public class CartActivity extends AppCompatActivity {
                 }
 
                 mDatabase.child("Order").child(ownerId).child(order.getKey()).setValue(order);
+
+
 
                 //sent order notification to restaurant
                 notificationsRepository

@@ -15,6 +15,9 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.gmail.dleemcewen.tandemfieri.Entities.Order;
+import com.gmail.dleemcewen.tandemfieri.Entities.Restaurant;
+import com.gmail.dleemcewen.tandemfieri.Entities.User;
+import com.gmail.dleemcewen.tandemfieri.ManageOrders;
 import com.gmail.dleemcewen.tandemfieri.R;
 import com.gmail.dleemcewen.tandemfieri.ViewOrderActivity;
 import com.google.firebase.database.DatabaseReference;
@@ -35,12 +38,16 @@ public class RestaurantMainMenuExpandableListAdapter extends BaseExpandableListA
     private DatabaseReference mDatabase;
     private TextView orderName;
     private Order order;
+    private LayoutInflater inflater;
+    private Button manage_button;
+    private User user;
 
     public RestaurantMainMenuExpandableListAdapter(Activity context, List<Order> orderList,
-                                                   Map<String, List<Order>> childList) {
+                                                   Map<String, List<Order>> childList, User user) {
         this.context = context;
         this.orderList = orderList;
         this.childList = childList;
+        this.user = user;
 
     }//end constructor
 
@@ -112,6 +119,19 @@ public class RestaurantMainMenuExpandableListAdapter extends BaseExpandableListA
                     .getSystemService(Context.LAYOUT_INFLATER_SERVICE);
             convertView = layoutInflater.inflate(R.layout.restaurant_main_menu_list_item, null);
         }
+
+        Button manage_button = (Button) convertView.findViewById(R.id.manage_button);
+        manage_button.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Bundle bundle = new Bundle();
+                bundle.putSerializable("Order", selectedOrder);
+                bundle.putSerializable("Owner", user);
+                Intent intent = new Intent(context, ManageOrders.class);
+                intent.putExtras(bundle);
+                context.startActivity(intent);
+            }
+        });
 
         Button status_button = (Button) convertView.findViewById(R.id.order_button);
         status_button.setText("Change Status");

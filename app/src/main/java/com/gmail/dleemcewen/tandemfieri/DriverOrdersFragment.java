@@ -35,7 +35,7 @@ public class DriverOrdersFragment extends DialogFragment {
     private Button selectCurrentDelivery;
     private Deliveries<Delivery> deliveriesRepository;
     private List<Order> driverOrders;
-    private Order currentOrder;
+    private Order currentOrder, order;
 
     /**
      * Default constructor
@@ -47,6 +47,8 @@ public class DriverOrdersFragment extends DialogFragment {
         super.onCreate(savedInstanceState);
 
         deliveriesRepository = new Deliveries<>(getActivity());
+
+
     }
 
     @Override
@@ -79,7 +81,8 @@ public class DriverOrdersFragment extends DialogFragment {
     private void initialize(View view) {
         if (getArguments() != null) {
             driverId = getArguments().getString("driverId");
-            //restaurantId = getArguments().getString("restaurantId");
+            restaurantId = getArguments().getString("restaurantId");
+            order = (Order) getArguments().getSerializable("Order");
         }
 
         driverOrders = new ArrayList<>();

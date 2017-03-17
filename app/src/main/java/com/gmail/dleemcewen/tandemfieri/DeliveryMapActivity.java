@@ -71,6 +71,7 @@ public class DeliveryMapActivity extends FragmentActivity implements GoogleApiCl
     public Location tempLocation;
     public MarkerOptions driver;
     public User user;
+    public TextView notifyText;
 
 
     @Override
@@ -82,6 +83,9 @@ public class DeliveryMapActivity extends FragmentActivity implements GoogleApiCl
             finish();
             Toast.makeText(getApplicationContext(),"Location services must be turned on", Toast.LENGTH_LONG).show();
         }
+
+        notifyText = (TextView) findViewById(R.id.notifyText);
+
         restaurants = new ArrayList<Restaurant>();
         tempRestaurants = new ArrayList<Restaurant>();
         currentLocation = new Location("");
@@ -112,7 +116,7 @@ public class DeliveryMapActivity extends FragmentActivity implements GoogleApiCl
             checkLocationPermission();
         }
         // Obtain the SupportMapFragment and get notified when the map is ready to be used.
-        SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
+        final SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
                 .findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
         mDatabase = FirebaseDatabase.getInstance().getReference()
@@ -124,14 +128,22 @@ public class DeliveryMapActivity extends FragmentActivity implements GoogleApiCl
                     finish();
                     Toast.makeText(getApplicationContext(),"Location services must be turned on", Toast.LENGTH_LONG).show();
                 }
+                double lat, lon;
+                if (dataSnapshot.child("Latitude").exists() && dataSnapshot.child("Longitude").exists()) {
+                    lat = Double.parseDouble("" + dataSnapshot.child("Latitude").getValue());
+                    lon = Double.parseDouble("" + dataSnapshot.child("Longitude").getValue());
 
-                double lat = Double.parseDouble(""+dataSnapshot.child("Latitude").getValue());
-                double lon = Double.parseDouble(""+dataSnapshot.child("Longitude").getValue());
 
-                mMap.clear();
-                MarkerOptions driver = new MarkerOptions().position((new LatLng(lat,lon)));
-                mMap.addMarker(driver);
-                driver.position((new LatLng(lat,lon)));
+                    mMap.clear();
+                    MarkerOptions driver = new MarkerOptions().position((new LatLng(lat, lon)));
+                    mMap.addMarker(driver);
+                    driver.position((new LatLng(lat, lon)));
+                    mMap.getUiSettings().setAllGesturesEnabled(true);
+                    notifyText.setText("");
+                } else{
+                    mMap.getUiSettings().setAllGesturesEnabled(false);
+                    notifyText.setText("You do not have any current deliveries in progress");
+                }
 
 
             }
@@ -385,45 +397,6 @@ public class DeliveryMapActivity extends FragmentActivity implements GoogleApiCl
         }
     }
 
-    private void initialize(Restaurant restaurant) {
-        Geocoder coder = new Geocoder(getApplicationContext());
-        List<Address> address = null;
-        ArrayList<android.location.Address> addressList = new ArrayList<>();
-        LatLng latlng;
-
-        String streetAddress = restaurant.getStreet() + "," + restaurant.getCity() + "," + restaurant.getState() + "," + restaurant.getZipcode();
-        try {
-            address = coder.getFromLocationName(streetAddress, 1);
-            if (address.size() == 0) {
-
-            } else {
-                android.location.Address location = address.get(0);
-                tempLocation = new Location("");
-
-
-                tempLocation.set(currentLocation);
-                tempLocation.setLatitude(location.getLatitude());
-                tempLocation.setLongitude(location.getLongitude());
-                float tempDistance = (currentLocation.distanceTo(tempLocation));
-                tempDistance *= 0.000621371;
-                if(restaurant.getDeliveryRadius() != null) {
-                    if ((int) tempDistance < restaurant.getDeliveryRadius()) {
-                        double tempdouble = (double) tempDistance;
-                        tempdouble *= 100;
-                        tempdouble = Math.round(tempdouble);
-                        tempdouble /= 100;
-                        markers[j] = (mMap.addMarker(new MarkerOptions().position(new LatLng(location.getLatitude(), location.getLongitude())).title(restaurant.getName())));
-                        markers[j].setSnippet("Restaurant Type: " + restaurant.getRestaurantType() + "\n" + "Delivery Charge: $" + restaurant.getCharge() + "\n" + " Distance Away: " + tempdouble);
-                        markers[j].setTag(restaurant.getId());
-
-                    }
-                }
-            }
-
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
 
 
     @Override

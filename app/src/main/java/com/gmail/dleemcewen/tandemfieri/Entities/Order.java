@@ -24,8 +24,9 @@ public class Order extends Entity implements Serializable {
     private double tax;
     private double total;
     private double deliveryCharge;
-    private String restaurantName;
+    private String restaurantName, OrderId;
     private Date orderDate;
+
 
     public Order() {orderDate = new Date();}
 
@@ -34,6 +35,15 @@ public class Order extends Entity implements Serializable {
         orderDate = new Date();
     }
 
+    public void setOrderId(String orderId) {
+        OrderId = orderId;
+    }
+
+    public String getOrderId() {
+
+        return OrderId;
+    }
+  
     public double calculateSubTotal() {
         double subTotal = 0;
         for (OrderItem item : items) {

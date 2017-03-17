@@ -9,6 +9,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
+
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ListView;
@@ -36,6 +37,7 @@ public class DriverMainMenu extends AppCompatActivity {
     private User user;
     private String customerId;
     private DatabaseReference mDatabaseDelivery;
+    private Order order;
     private Context context;
     private ListView ordersListView;
     private List<Order> entities;
@@ -63,6 +65,13 @@ public class DriverMainMenu extends AppCompatActivity {
             public void onDataChange(DataSnapshot dataSnapshot) {
                 //Toast.makeText(getApplicationContext(), ""+dataSnapshot.child("Order").getValue(Order.class), Toast.LENGTH_LONG).show();
                 //order = dataSnapshot.child("Order").getValue(Order.class);
+
+                for (DataSnapshot child : dataSnapshot.getChildren()) {
+                    order = child.getValue(Order.class);
+                    //Toast.makeText(getApplicationContext(), ""+child.child("Order").getValue(), Toast.LENGTH_LONG).show();
+                    //order = child.child("Order").getValue(Order.class);
+                }
+              
                 entities = new ArrayList<Order>();
 
                 for (DataSnapshot child : dataSnapshot.getChildren()) {
@@ -164,6 +173,7 @@ public class DriverMainMenu extends AppCompatActivity {
         Bundle args = new Bundle();
         args.putString("driverId", user.getAuthUserID());
         args.putString("restaurantId", user.getRestaurantId());
+        args.putSerializable("Order", order);
         driverOrders.setArguments(args);
 
         fragmentTransaction.add(R.id.activity_driver_main_menu, driverOrders);
