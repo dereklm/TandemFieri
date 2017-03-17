@@ -12,6 +12,7 @@ public class OrderItemOption implements Serializable {
     private String name;
     private double addedPrice;
     private String description;
+    private boolean selected;
 
     /**
      * Empty constructor required for firebase deserialization
@@ -22,6 +23,15 @@ public class OrderItemOption implements Serializable {
         this.name = optionSelection.getSelectionName();
         this.addedPrice = optionSelection.getAddedPrice();
         this.description = optionSelection.getDescription();
+        this.selected = false;
+    }
+
+    public boolean isSelected() {
+        return selected;
+    }
+
+    public void setSelected(boolean selected) {
+        this.selected = selected;
     }
 
     public String getName() {

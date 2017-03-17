@@ -10,6 +10,7 @@ import android.widget.ExpandableListView;
 import android.widget.TextView;
 
 import com.gmail.dleemcewen.tandemfieri.Entities.OrderItem;
+import com.gmail.dleemcewen.tandemfieri.Entities.OrderItemOption;
 import com.gmail.dleemcewen.tandemfieri.Entities.OrderItemOptionGroup;
 import com.gmail.dleemcewen.tandemfieri.R;
 
@@ -32,6 +33,10 @@ public class OrderItemAdapter extends BaseExpandableListAdapter {
         this.context = context;
         this.items = items;
         inflater = (LayoutInflater) context.getSystemService(context.LAYOUT_INFLATER_SERVICE);
+    }
+
+    public void setItems(List<OrderItem> itemList) {
+        this.items = itemList;
     }
 
     @Override
@@ -90,7 +95,7 @@ public class OrderItemAdapter extends BaseExpandableListAdapter {
     public View getChildView(int groupPosition, int childPosition, boolean isLastChild, View convertView, ViewGroup parent) {
         //List<OrderItemOptionGroup> groups = items.get(groupPosition).getOptionGroups();
         //LogWriter.log(context, Level.WARNING, "size of groups " + groups.size() + " for item " + ((OrderItem) getGroup(groupPosition)).getName());
-        OrderItemOptionGroup group = (OrderItemOptionGroup) getChild(groupPosition, childPosition);
+        final OrderItemOptionGroup group = (OrderItemOptionGroup) getChild(groupPosition, childPosition);
         final ExpandableListView groupsListView;
 
         if (convertView == null) {
@@ -100,6 +105,11 @@ public class OrderItemAdapter extends BaseExpandableListAdapter {
         groupsListView = (ExpandableListView) convertView.findViewById(R.id.item_groups);
         OrderGroupAdapter orderGroupAdapter = new OrderGroupAdapter(activity, context, group);
         groupsListView.setAdapter(orderGroupAdapter);
+
+        if (group.isExclusive()) groupsListView.setChoiceMode(ExpandableListView.CHOICE_MODE_SINGLE);
+        else groupsListView.setChoiceMode(ExpandableListView.CHOICE_MODE_MULTIPLE);
+
+        // group expand click
         groupsListView.setOnGroupExpandListener(new ExpandableListView.OnGroupExpandListener() {
             @Override
             public void onGroupExpand(int groupPosition) {
@@ -108,7 +118,7 @@ public class OrderItemAdapter extends BaseExpandableListAdapter {
                     height += groupsListView.getChildAt(i).getMeasuredHeight();
                     height += groupsListView.getDividerHeight();
                 }
-                groupsListView.getLayoutParams().height = (height+6)*(groupsListView.getChildCount()*2);
+                groupsListView.getLayoutParams().height = (height+6)*(3);
             }
         });
 
@@ -118,6 +128,59 @@ public class OrderItemAdapter extends BaseExpandableListAdapter {
             @Override
             public void onGroupCollapse(int groupPosition) {
                 groupsListView.getLayoutParams().height = 100;
+            }
+        });
+
+        // set option click listener.
+        groupsListView.setOnChildClickListener(new ExpandableListView.OnChildClickListener() {
+            @Override
+            public boolean onChildClick(ExpandableListView parent, View v, int groupPosition, int childPosition, long id) {
+                if (ExpandableListView.getPackedPositionType(id) == ExpandableListView.PACKED_POSITION_TYPE_GROUP) {
+                    OrderItemOption option = group.getOptions().get(childPosition);
+                    if (option.isSelected()) {
+                        option.setSelected(false);
+                        parent.setItemChecked(childPosition, false);
+                        v.setActivated(false);
+
+                        // if option group was exclusive set hasChildSelected to false and deselect all children.
+                        if (group.isExclusive()) {
+                            group.setHasChildSelected(false);
+                            for (OrderItemOption opt : group.getOptions()) {
+                                opt.setSelected(false);
+                            }
+                        } else {
+                            // option group may be required but not exclusive, find if there are any selected.
+                            //  set hasChildSelected based on results.
+                            int numSelected = 0;
+                            for (OrderItemOption opt : group.getOptions()) {
+                                if (opt.isSelected()) numSelected++;
+                            }
+                            if (numSelected == 0) {
+                                group.setHasChildSelected(false);
+                            }
+                        }
+                    }
+                    else {
+                        option.setSelected(true);
+                        parent.setItemChecked(childPosition, true);
+
+                        // if option group was exclusive, deselect all other children.
+                        if (group.isExclusive()) {
+                            List<OrderItemOption> options = group.getOptions();
+                            for (int i = 0; i < options.size(); i++) {
+                                if (i != childPosition && options.get(i).isSelected()) {
+                                    // found the option that isn't the one we clicked that is selected.
+                                    options.get(i).setSelected(false);
+                                    break;
+                                }
+                            }
+                        }
+
+                        group.setHasChildSelected(true);
+                    }
+                    return true;
+                }
+                return false;
             }
         });
         return convertView;
