@@ -42,8 +42,8 @@ public class RestaurantMainMenu extends AppCompatActivity {
 
     private User user;
     private NotificationMessages<NotificationMessage> notificationsRepository;
-    private ExpandableListView orderList;
-    private RestaurantMainMenuExpandableListAdapter listAdapter;
+    private ExpandableListView orderList, assignedOrderList;
+    private RestaurantMainMenuExpandableListAdapter listAdapter, listAdapterAssigned;
     private DatabaseReference mDatabase;
     private Context context;
 
@@ -59,7 +59,7 @@ public class RestaurantMainMenu extends AppCompatActivity {
         Bundle bundle = this.getIntent().getExtras();
         user = (User) bundle.getSerializable("User");
         orderList = (ExpandableListView)findViewById(R.id.order_list);
-        //assignedOrderList = (ExpandableListView)findViewById(R.id.order_list_assigned);
+        assignedOrderList = (ExpandableListView)findViewById(R.id.order_list_assigned);
         //header = (TextView) findViewById(R.id.header);
 
         int notificationId = bundle.getInt("notificationId");
@@ -201,31 +201,30 @@ public class RestaurantMainMenu extends AppCompatActivity {
                     @Override
                     public void onDataChange(DataSnapshot orderSnapshot) {
                         List<Order> orderEntities = new ArrayList<Order>();
-                        //List<Order> orderAssigned = new ArrayList<Order>();
+                        List<Order> orderAssigned = new ArrayList<Order>();
                         Toast.makeText(context, "this is the list the user id pulls up: " + orderSnapshot.getKey(), Toast.LENGTH_LONG).show();
                         for(DataSnapshot orders: orderSnapshot.getChildren()){
                             Toast.makeText(context, "outer loop: " + orders.getKey(), Toast.LENGTH_LONG).show();//this gives me the order id
 
                             Order order = orders.getValue(Order.class);
 
-                            orderEntities.add(order);
                                 //add the children to the adapter list
-                              /*  if(orders.child("Assigned").exists()){
+                                if(orders.child("Assigned").exists()){
                                     orderAssigned.add(order);
                                 }else {
                                     orderEntities.add(order);
-                                }*/
+                                }
                                 //Toast.makeText((Activity)context, "innner loop: " + order.getCustomerId(), Toast.LENGTH_SHORT).show();
                             }
-                            if(orderEntities.isEmpty()){
+                            if(orderEntities.isEmpty()&&orderAssigned.isEmpty()){
                                 //Toast.makeText(getApplicationContext(), "There are no orders on file.", Toast.LENGTH_LONG).show();
                             }else {
                                 listAdapter = new RestaurantMainMenuExpandableListAdapter(
                                         (Activity) context, orderEntities, buildExpandableChildData(orderEntities), user);
-                               /* listAdapterAssigned = new RestaurantMainMenuExpandableListAdapter(
-                                        (Activity) context, orderAssigned, buildExpandableChildData(orderAssigned), user);*/
+                                listAdapterAssigned = new RestaurantMainMenuExpandableListAdapter(
+                                        (Activity) context, orderAssigned, buildExpandableChildData(orderAssigned), user);
                                 orderList.setAdapter(listAdapter);
-                                //assignedOrderList.setAdapter(listAdapterAssigned);
+                                assignedOrderList.setAdapter(listAdapterAssigned);
                             }
                         //}
                    }//end on data change
