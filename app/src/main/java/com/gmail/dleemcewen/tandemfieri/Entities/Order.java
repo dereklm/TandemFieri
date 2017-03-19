@@ -26,7 +26,7 @@ public class Order extends Entity implements Serializable {
     private double deliveryCharge;
     private String restaurantName, OrderId;
     private Date orderDate;
-
+    private Boolean assigned;
 
     public Order() {orderDate = new Date();}
 
@@ -164,6 +164,14 @@ public class Order extends Entity implements Serializable {
 
     public void setOrderDate(Date orderDate) {
         this.orderDate = orderDate;
+    }
+
+    public Boolean getAssigned() {
+        return assigned;
+    }
+
+    public void setAssigned(Boolean assigned) {
+        this.assigned = assigned;
     }
 
     public String toString(){

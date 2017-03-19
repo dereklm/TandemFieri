@@ -88,12 +88,12 @@ public class ManageOrders extends AppCompatActivity {
                 if(controlBool == false) {
                     if (temp.contains(" | Assigned To")) {
                         mDatabase.child("Delivery").child(user.getAuthUserID()).child("Order").child(order.getCustomerId()).removeValue();
-                        mDatabase.child("Order").child(owner.getAuthUserID()).child(order.getRestaurantId()).child(order.getOrderId()).child("Assigned").removeValue();
+                        mDatabase.child("Order").child(owner.getAuthUserID()).child(order.getOrderId()).child("assigned").removeValue();
                     } else {
 
                         Toast.makeText(getApplicationContext(), "Sent the order to " + user.getFirstName(), Toast.LENGTH_LONG).show();
                         mDatabase.child("Delivery").child(user.getAuthUserID()).child("Order").child(order.getCustomerId()).setValue(order);
-                        mDatabase.child("Order").child(owner.getAuthUserID()).child(order.getRestaurantId()).child(order.getOrderId()).child("Assigned").setValue("True");
+                        mDatabase.child("Order").child(owner.getAuthUserID()).child(order.getOrderId()).child("assigned").setValue("True");
                     }
                 }
                 controlBool = false;
