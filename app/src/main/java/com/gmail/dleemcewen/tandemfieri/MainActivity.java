@@ -14,6 +14,8 @@ import android.widget.Toast;
 
 import com.gmail.dleemcewen.tandemfieri.Entities.Restaurant;
 import com.gmail.dleemcewen.tandemfieri.Entities.User;
+import com.gmail.dleemcewen.tandemfieri.Enums.OrderEnum;
+import com.gmail.dleemcewen.tandemfieri.Filters.SubscriberFilter;
 import com.gmail.dleemcewen.tandemfieri.Interfaces.ISubscriber;
 import com.gmail.dleemcewen.tandemfieri.Json.Braintree.ClientToken;
 import com.gmail.dleemcewen.tandemfieri.Json.Braintree.CreateCustomer;
@@ -21,6 +23,7 @@ import com.gmail.dleemcewen.tandemfieri.Logging.LogWriter;
 import com.gmail.dleemcewen.tandemfieri.Logging.ToastLogger;
 import com.gmail.dleemcewen.tandemfieri.Publishers.NotificationPublisher;
 import com.gmail.dleemcewen.tandemfieri.Repositories.Restaurants;
+import com.gmail.dleemcewen.tandemfieri.Subscribers.DinerSubscriber;
 import com.gmail.dleemcewen.tandemfieri.Subscribers.RestaurantSubscriber;
 import com.gmail.dleemcewen.tandemfieri.Tasks.TaskResult;
 import com.gmail.dleemcewen.tandemfieri.Utility.BraintreeUtil;
@@ -252,6 +255,22 @@ public class MainActivity extends AppCompatActivity {
         Intent intent = null;
 
         if(diner != null){
+            List<Object> customerIds = new ArrayList<>();
+            customerIds.add(diner.getAuthUserID());
+
+            List<Object> orderStatuses = new ArrayList<>();
+            orderStatuses.add(OrderEnum.COMPLETE.toString());
+
+            List<SubscriberFilter> subscriberFilters = new ArrayList<>();
+            subscriberFilters.add(new SubscriberFilter("customerId", customerIds));
+            subscriberFilters.add(new SubscriberFilter("status", orderStatuses));
+
+            //register new diner subscriber
+            registerNewSubscriber(new DinerSubscriber(
+                    MainActivity.this,
+                    diner,
+                    subscriberFilters));
+
             intent = new Intent(MainActivity.this, DinerMainMenu.class);
             bundle.putSerializable("User", diner);
 
@@ -284,11 +303,14 @@ public class MainActivity extends AppCompatActivity {
                             restaurantIds.add(ownerRestaurant.getKey());
                         }
 
+                        List<SubscriberFilter> subscriberFilters = new ArrayList<>();
+                        subscriberFilters.add(new SubscriberFilter("restaurantId", restaurantIds));
+
                         //register new restaurant subscriber
                         registerNewSubscriber(new RestaurantSubscriber(
                                 MainActivity.this,
                                 restaurantOwner,
-                                new AbstractMap.SimpleEntry<>("restaurantId", restaurantIds)));
+                                subscriberFilters));
 
                         Intent restaurantIntent = new Intent(MainActivity.this, RestaurantMainMenu.class);
                         Bundle restaurantBundle = new Bundle();

@@ -190,9 +190,9 @@ public class RestaurantMainMenu extends AppCompatActivity {
                     public void onDataChange(DataSnapshot orderSnapshot) {
                         List<Order> orderEntities = new ArrayList<Order>();
                         List<Order> orderAssigned = new ArrayList<Order>();
-                        //Toast.makeText(context, "this is the list the user id pulls up: " + orderSnapshot.getKey(), Toast.LENGTH_LONG).show();
+                        LogWriter.log(context, Level.FINE, "this is the list the user id pulls up: " + orderSnapshot.getKey());
                         for(DataSnapshot orders: orderSnapshot.getChildren()){
-                            //Toast.makeText(context, "outer loop: " + orders.getKey(), Toast.LENGTH_LONG).show();//this gives me the order id
+                            LogWriter.log(context, Level.FINE, "outer loop: " + orders.getKey());//this gives me the order id
 
                             Order order = orders.getValue(Order.class);
 
@@ -202,7 +202,6 @@ public class RestaurantMainMenu extends AppCompatActivity {
                                 }else {
                                     orderEntities.add(order);
                                 }
-                                //Toast.makeText((Activity)context, "innner loop: " + order.getCustomerId(), Toast.LENGTH_SHORT).show();
                             }
                             if(orderEntities.isEmpty()&&orderAssigned.isEmpty()){
                                 //Toast.makeText(getApplicationContext(), "There are no orders on file.", Toast.LENGTH_LONG).show();

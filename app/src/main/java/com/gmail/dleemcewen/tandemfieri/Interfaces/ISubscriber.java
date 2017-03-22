@@ -2,6 +2,8 @@ package com.gmail.dleemcewen.tandemfieri.Interfaces;
 
 import android.os.Bundle;
 
+import com.gmail.dleemcewen.tandemfieri.Filters.SubscriberFilter;
+
 import java.util.List;
 import java.util.Map;
 
@@ -17,10 +19,10 @@ public interface ISubscriber {
     String getNotificationType();
 
     /**
-     * getFilter returns the record filter supplied by the subscriber
-     * @return record filter
+     * getFilters returns the record filters supplied by the subscriber
+     * @return record filters
      */
-    Map.Entry<String, List<Object>> getFilter();
+    List<SubscriberFilter> getFilters();
 
     /**
      * update provides the subscriber with updated information

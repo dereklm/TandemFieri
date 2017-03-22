@@ -6,10 +6,8 @@
     <item android:id="@+id/map"
         android:title="Map"/>
     <item android:id="@+id/delivery"
-        android:title="Delivery"
+        android:title="Track my delivery"
         android:visible="true"/>
-    <item android:id="@+id/sign_out"
-        android:title="Sign Out"/>
     <item android:id="@+id/payment"
         android:title="Payment"/>
     <item android:id="@+id/rateRestaurant"
@@ -23,4 +21,6 @@
                 android:title="Edit Password" />
         </menu>
     </item>
+    <item android:id="@+id/sign_out"
+        android:title="Sign Out"/>
 </menu>

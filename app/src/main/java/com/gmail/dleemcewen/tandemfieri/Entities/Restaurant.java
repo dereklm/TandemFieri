@@ -56,8 +56,6 @@ public class Restaurant extends Entity implements Serializable {
         setKey(id);
     }
 
-   // public String getRestaurantKey() { return getKey(); }
-
     /**
      * get the restaurant name
      * @return name of the restaurant

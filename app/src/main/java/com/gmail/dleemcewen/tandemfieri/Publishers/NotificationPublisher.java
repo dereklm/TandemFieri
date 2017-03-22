@@ -2,6 +2,7 @@ package com.gmail.dleemcewen.tandemfieri.Publishers;
 
 import android.os.Bundle;
 
+import com.gmail.dleemcewen.tandemfieri.Filters.SubscriberFilter;
 import com.gmail.dleemcewen.tandemfieri.Interfaces.IPublish;
 import com.gmail.dleemcewen.tandemfieri.Interfaces.ISubscriber;
 
@@ -56,17 +57,24 @@ public class NotificationPublisher implements IPublish {
     @Override
     public void notifySubscribers(Bundle notification) {
         for (ISubscriber subscriber : subscribers) {
-            Map.Entry<String, List<Object>> filter = subscriber.getFilter();
+            List<SubscriberFilter> filters = subscriber.getFilters();
 
             if (notification.getString("notificationType").equals(subscriber.getNotificationType())) {
-                if (filter != null) {
+                if (!filters.isEmpty()) {
+                    List<Boolean> filterResults = new ArrayList<>();
+
                     Object entity = notification.getSerializable("entity");
                     HashMap entityHashMap = (HashMap)entity;
 
-                    Object entityValue = entityHashMap.get(filter.getKey());
+                    for (int index = 0; index < filters.size(); index++) {
+                        Object entityValue = entityHashMap.get(filters.get(index).getField());
 
-                    if (entityValue != null &&
-                        filter.getValue().contains(entityValue)) {
+                        if (entityValue != null) {
+                            filterResults.add(filters.get(index).getValues().contains(entityValue));
+                        }
+                    }
+
+                    if (!filterResults.contains(false)) {
                         entityHashMap.put("notificationId", notification.getString("notificationId"));
                         subscriber.update(notification);
                     }

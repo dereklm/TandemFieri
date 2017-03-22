@@ -54,13 +54,7 @@ public class NotificationMessages<T extends Entity> extends Repository<Notificat
                     NotificationMessage childNotificationMessageRecord = dataSnapshot.getValue(NotificationMessage.class);
                     childNotificationMessageRecord.setKey(dataSnapshot.getKey());
 
-                    Intent intent = new Intent(context, NotificationService.class);
-                    intent.setAction( childNotificationMessageRecord.getAction());
-                    intent.putExtra("notificationId", childNotificationMessageRecord.getNotificationId());
-                    intent.putExtra("notificationType", childNotificationMessageRecord.getNotificationType());
-                    intent.putExtra("entity", (Serializable) childNotificationMessageRecord.getData());
-                    intent.putExtra("key", childNotificationMessageRecord.getKey());
-                    context.startService(intent);
+                    sendNotificationMessage(childNotificationMessageRecord);
                 }
             }
 
@@ -137,6 +131,31 @@ public class NotificationMessages<T extends Entity> extends Repository<Notificat
                         return taskCompletionSource.getTask().getResult();
                     }
                 });
+    }
+
+    /**
+     * resendNotification re-sends a previously sent notification
+     * @param notificationMessageRecord indicates the notificationmessage record which contains
+ *                                       the data to send as a notification
+     */
+    public void resendNotification(NotificationMessage notificationMessageRecord) {
+        sendNotificationMessage(notificationMessageRecord);
+    }
+
+    /**
+     * sendNotificationMessage sends a notification message to the notification service that
+     * contains the information in the provided NotificationMessage record
+     * @param childNotificationMessageRecord indicates the notificationmessage record which contains
+     *                                       the data to send to the notification service
+     */
+    private void sendNotificationMessage(NotificationMessage childNotificationMessageRecord) {
+        Intent intent = new Intent(context, NotificationService.class);
+        intent.setAction(childNotificationMessageRecord.getAction());
+        intent.putExtra("notificationId", childNotificationMessageRecord.getNotificationId());
+        intent.putExtra("notificationType", childNotificationMessageRecord.getNotificationType());
+        intent.putExtra("entity", (Serializable) childNotificationMessageRecord.getData());
+        intent.putExtra("key", childNotificationMessageRecord.getKey());
+        context.startService(intent);
     }
 
     /**

@@ -8,10 +8,12 @@ import android.os.Bundle;
 import android.support.v7.app.NotificationCompat;
 
 import com.gmail.dleemcewen.tandemfieri.Entities.User;
+import com.gmail.dleemcewen.tandemfieri.Filters.SubscriberFilter;
 import com.gmail.dleemcewen.tandemfieri.Interfaces.ISubscriber;
 import com.gmail.dleemcewen.tandemfieri.R;
 import com.gmail.dleemcewen.tandemfieri.RestaurantMainMenu;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -19,12 +21,12 @@ import java.util.Map;
 import static android.content.Context.NOTIFICATION_SERVICE;
 
 /**
- * RestaurantSubscriber identifies a restaurant subscriber
+ * RestaurantSubscriber identifies a restaurant that has subscribed to notification messages
  */
 
 public class RestaurantSubscriber implements ISubscriber {
     private Context context;
-    private Map.Entry<String, List<Object>> filter;
+    private List<SubscriberFilter> filters;
     private User restaurantUser;
     private static final String notificationType = "Order";
 
@@ -32,12 +34,12 @@ public class RestaurantSubscriber implements ISubscriber {
      * Default constructor
      * @param context indicates the current application context
      * @param restaurantUser identifies the restaurant user
-     * @param filter indicates the record filter supplied by the subscriber
+     * @param filters indicates the record filters supplied by the subscriber
      */
-    public RestaurantSubscriber(Context context, User restaurantUser, Map.Entry<String, List<Object>> filter) {
+    public RestaurantSubscriber(Context context, User restaurantUser, List<SubscriberFilter> filters) {
         this.context = context;
         this.restaurantUser = restaurantUser;
-        this.filter = filter;
+        this.filters = filters;
     }
 
     /**
@@ -46,7 +48,7 @@ public class RestaurantSubscriber implements ISubscriber {
      */
     public RestaurantSubscriber(Context context) {
         this.context = context;
-        this.filter = null;
+        this.filters = new ArrayList<>();
     }
 
     @Override
@@ -55,15 +57,13 @@ public class RestaurantSubscriber implements ISubscriber {
     }
 
     @Override
-    public Map.Entry<String, List<Object>> getFilter() {
-        return filter;
+    public List<SubscriberFilter> getFilters() {
+        return filters;
     }
 
     @Override
     public void update(Bundle notification) {
         if (context.getResources().getBoolean(R.bool.send_notifications)) {
-            //TODO: update this to use orders instead of restaurants
-            //Since the orders are not yet available, this simply simulates receiving a notification
             HashMap notificationData = ((HashMap)notification.getSerializable("entity"));
 
             StringBuilder contentTextBuilder = new StringBuilder();
