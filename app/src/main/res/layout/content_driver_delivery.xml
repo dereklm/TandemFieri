@@ -13,4 +13,23 @@
     tools:context="com.gmail.dleemcewen.tandemfieri.DriverDeliveryActivity"
     tools:showIn="@layout/activity_driver_delivery">
 
+    <Button
+        android:text="Navigate"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/navigateButton"
+        app:layout_anchorGravity="center_vertical|center_horizontal"
+        android:layout_gravity="center_vertical|center_horizontal"
+        android:layout_alignParentTop="true"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true" />
+
+    <Button
+        android:text="Complete"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentTop="true"
+        android:layout_centerHorizontal="true"
+        android:id="@+id/completeButton" />
+
 </RelativeLayout>

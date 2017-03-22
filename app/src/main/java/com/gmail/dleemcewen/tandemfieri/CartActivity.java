@@ -27,9 +27,6 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 
 import java.text.NumberFormat;
-import java.util.List;
-
-import static com.paypal.android.sdk.onetouch.core.metadata.ah.o;
 
 public class CartActivity extends AppCompatActivity {
 
@@ -43,6 +40,7 @@ public class CartActivity extends AppCompatActivity {
     private String uid = "", ownerId = "", restaurantId = "", restName = "", orderId;
     private FirebaseUser fireuser;
     private NotificationMessages<NotificationMessage> notificationsRepository;
+    private String latitude, longitude;
 
 
     @Override
@@ -54,6 +52,9 @@ public class CartActivity extends AppCompatActivity {
         ownerId = (String) getIntent().getSerializableExtra("ownerId");
         deliveryCharge = (double) getIntent().getSerializableExtra("deliveryCharge");
         restName = (String) getIntent().getSerializableExtra("restaurantName");
+        latitude = getIntent().getStringExtra("Latitude");
+        Toast.makeText(getApplicationContext(), ""+latitude, Toast.LENGTH_LONG).show();
+        longitude = getIntent().getStringExtra("Longitude");
         notificationsRepository = new NotificationMessages<>(CartActivity.this);
 
         mDatabase = FirebaseDatabase.getInstance().getReference();
@@ -85,6 +86,8 @@ public class CartActivity extends AppCompatActivity {
         updateTextViews();
 
         order.getKey();
+        order.setLatitude(latitude);
+        order.setLongitude(longitude);
         order.setOrderId(order.getKey());
         order.setCustomerId(uid);
         order.setRestaurantId(restaurantId);

@@ -45,6 +45,7 @@ import java.util.ArrayList;
 
 import static android.os.Build.VERSION_CODES.M;
 import static com.google.android.gms.location.LocationServices.FusedLocationApi;
+import static com.paypal.android.sdk.onetouch.core.metadata.ah.g;
 
 public class DinerMapActivity extends FragmentActivity implements GoogleApiClient.ConnectionCallbacks,
         GoogleApiClient.OnConnectionFailedListener,
@@ -187,9 +188,12 @@ public class DinerMapActivity extends FragmentActivity implements GoogleApiClien
 
                             Intent intent = new Intent(DinerMapActivity.this, LookAtMenuActivity.class);
                             Bundle bundle = new Bundle();
+                            bundle.putString("Latitude", ""+currentLocation.getLatitude());
+                            bundle.putString("Longitude", ""+currentLocation.getLongitude());
                             bundle.putSerializable("Restaurant",  restaurants.get(k));
                             bundle.putSerializable("User", user);
                             intent.putExtras(bundle);
+
                             startActivity(intent);
                         }
                     }

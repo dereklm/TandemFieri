@@ -7,8 +7,6 @@
         android:theme="@style/RatingBar"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:paddingLeft="@dimen/activity_horizontal_margin"
-        android:paddingRight="@dimen/activity_horizontal_margin"
         android:stepSize="0.5"
         android:numStars="5"/>
     <TextView

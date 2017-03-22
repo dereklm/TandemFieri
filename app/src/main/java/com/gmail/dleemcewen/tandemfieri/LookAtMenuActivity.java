@@ -22,6 +22,8 @@ import com.google.firebase.database.DatabaseReference;
 
 import java.util.ArrayList;
 
+import static com.paypal.android.sdk.onetouch.core.metadata.ah.S;
+
 public class LookAtMenuActivity extends AppCompatActivity {
     User user;
     DatabaseReference mDatabase;
@@ -32,6 +34,7 @@ public class LookAtMenuActivity extends AppCompatActivity {
     private ArrayList<MenuCompenet> allItems;
     private ListView listView;
     private TextView restaurantName;
+    private String latitude, longitude;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -39,6 +42,8 @@ public class LookAtMenuActivity extends AppCompatActivity {
         setContentView(R.layout.activity_look_at_menu);
         Bundle bundle = this.getIntent().getExtras();
         restaurant = (Restaurant) bundle.getSerializable("Restaurant");
+        latitude = bundle.getString("Latitude");
+        longitude = bundle.getString("Longitude");
         user = (User) bundle.getSerializable("User");
         int i = 0, j = 0;
 
@@ -99,7 +104,11 @@ public class LookAtMenuActivity extends AppCompatActivity {
         switch (item.getItemId()) {
             case R.id.orderLaunch:
                 Intent orderLaunch = new Intent(LookAtMenuActivity.this, OrderMenuActivity.class);
+                Bundle bundle = new Bundle();
+                bundle.putString("Latitude", latitude);
+                bundle.putString("Longitude", longitude);
                 orderLaunch.putExtras(this.getIntent().getExtras());
+                orderLaunch.putExtras(bundle);
                 startActivity(orderLaunch);
                 return true;
 

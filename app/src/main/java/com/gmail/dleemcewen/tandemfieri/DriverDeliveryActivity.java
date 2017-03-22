@@ -3,8 +3,10 @@ package com.gmail.dleemcewen.tandemfieri;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.graphics.Color;
 import android.location.Location;
 import android.location.LocationManager;
+import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.provider.Settings;
@@ -12,8 +14,11 @@ import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.text.TextUtils;
+import android.view.View;
+import android.widget.Button;
 import android.widget.Toast;
 
+import com.gmail.dleemcewen.tandemfieri.Entities.Order;
 import com.gmail.dleemcewen.tandemfieri.Entities.Restaurant;
 import com.gmail.dleemcewen.tandemfieri.Json.AddressGeocode.AddressGeocode;
 import com.google.android.gms.common.ConnectionResult;
@@ -32,16 +37,17 @@ import com.loopj.android.http.AsyncHttpClient;
 
 import java.util.ArrayList;
 
-import static android.os.Build.ID;
 import static android.os.Build.VERSION_CODES.M;
 import static com.google.android.gms.location.LocationServices.FusedLocationApi;
+import static com.paypal.android.sdk.onetouch.core.metadata.ah.n;
+import static com.paypal.android.sdk.onetouch.core.metadata.ah.q;
 
 public class DriverDeliveryActivity extends AppCompatActivity implements GoogleApiClient.ConnectionCallbacks,
         GoogleApiClient.OnConnectionFailedListener,
         LocationListener {
 
     GoogleApiClient mGoogleApiClient;
-    Location mLastLocation, currentLocation;
+    Location mLastLocation, currentLocation, customerLocation;
     LocationRequest mLocationRequest;
     DatabaseReference mDatabase;
     private AsyncHttpClient client;
@@ -52,13 +58,43 @@ public class DriverDeliveryActivity extends AppCompatActivity implements GoogleA
     public Marker[] markers;
     public Location tempLocation;
     public String customerID;
+    public Button navigateButton, completeButton;
+    private Order order;
+    private Double lat, lon;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_driver_delivery);
 
+        navigateButton = (Button) findViewById(R.id.navigateButton);
+        completeButton = (Button) findViewById(R.id.completeButton);
+
+        completeButton.setTextColor(Color.parseColor("Red"));
         customerID = getIntent().getStringExtra("Customer ID");
+        order = (Order) getIntent().getSerializableExtra("Order");
+
+        lat = Double.parseDouble(order.getLatitude());
+        lon = Double.parseDouble(order.getLongitude());
+
+        customerLocation = new Location("");
+        customerLocation.setLongitude(lon);
+        customerLocation.setLatitude(lat);
+
+
+
+        navigateButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent(android.content.Intent.ACTION_VIEW,
+                        Uri.parse("google.navigation:q="+order.getLatitude() +"," +order.getLongitude()));
+                startActivity(intent);
+            }
+        });
+
+
+
+
 
         if (isLocationEnabled(getApplicationContext()) == false){
             finish();
@@ -110,6 +146,20 @@ public class DriverDeliveryActivity extends AppCompatActivity implements GoogleA
             }
         });
 
+        Toast.makeText(getApplicationContext(), ""+(currentLocation.distanceTo(customerLocation) * 0.000621371), Toast.LENGTH_LONG).show();
+        if((currentLocation.distanceTo(customerLocation) * 0.000621371) < 0.1){
+            Toast.makeText(getApplicationContext(), "You are here", Toast.LENGTH_LONG).show();
+            completeButton.setClickable(true);
+            completeButton.setTextColor(Color.parseColor("Black"));
+        }
+
+
+        completeButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Toast.makeText(getApplicationContext(), "Finish the delivery yah dingus", Toast.LENGTH_LONG).show();
+            }
+        });
 
     }
 
