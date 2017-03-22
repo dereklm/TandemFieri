@@ -35,5 +35,8 @@ public class MenuItem extends MenuCompenet implements Serializable {
         this.options = options;
     }
 
-
+    public String toString(){
+        return super.getName();
+    }
 }
+

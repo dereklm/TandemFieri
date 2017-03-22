@@ -13,6 +13,7 @@ import com.gmail.dleemcewen.tandemfieri.R;
 import java.util.ArrayList;
 import java.util.Locale;
 
+import static com.gmail.dleemcewen.tandemfieri.R.id.product_history_quantity;
 import static com.gmail.dleemcewen.tandemfieri.R.id.total;
 
 /**
@@ -39,15 +40,19 @@ public class ProductHistoryArrayAdapter extends ArrayAdapter<DisplayItem> {
         TextView tvName = (TextView) rowView.findViewById(R.id.product_name);
         TextView tvBase = (TextView) rowView.findViewById(R.id.base_price);
         TextView tvTotal = (TextView) rowView.findViewById(total);
+        TextView tvQuantity = (TextView) rowView.findViewById(product_history_quantity);
 
         tvName.setText(values.get(position).getName());
+        tvQuantity.setText(formatQuantity(values.get(position).getQuantity()));
         tvBase.setText(formatAmount(values.get(position).getBasePrice()));
         tvTotal.setText(formatAmount(values.get(position).getTotal()));
+
         return rowView;
     }
 
     private String formatAmount(double d){
         return "$" + String.format(Locale.US, "%.2f", d);
     }
+    private String formatQuantity(int i) { return String.valueOf(i); }
 
 }//end class

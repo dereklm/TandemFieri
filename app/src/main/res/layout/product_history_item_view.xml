@@ -16,6 +16,15 @@
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:id="@+id/product_history_quantity"
+        android:layout_gravity="center"
+        android:textAlignment="center"
+        android:layout_weight="1"
+        android:text="quantity"/>
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
         android:id="@+id/base_price"
         android:layout_gravity="center"
         android:layout_weight="1"

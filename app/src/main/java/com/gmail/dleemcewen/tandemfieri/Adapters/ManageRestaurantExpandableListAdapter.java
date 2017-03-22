@@ -306,7 +306,7 @@ public class ManageRestaurantExpandableListAdapter extends BaseExpandableListAda
             @Override
             public void onClick(View v) {
                 Intent intent = new Intent(context, ProductHistoryActivity.class);
-                intent.putExtra("restId",selectedChild.getKey());
+                intent.putExtra("restaurant", selectedChild);
                 intent.putExtra("ID", user.getAuthUserID());
                 context.startActivity(intent);
             }

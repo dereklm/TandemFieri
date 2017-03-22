@@ -1,9 +1,15 @@
 package com.gmail.dleemcewen.tandemfieri;
 
+import android.app.AlertDialog;
 import android.app.DialogFragment;
+import android.content.DialogInterface;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.ListView;
 import android.widget.TextView;
@@ -12,6 +18,11 @@ import android.widget.Toast;
 import com.gmail.dleemcewen.tandemfieri.Adapters.ProductHistoryArrayAdapter;
 import com.gmail.dleemcewen.tandemfieri.Entities.Order;
 import com.gmail.dleemcewen.tandemfieri.Entities.OrderItem;
+import com.gmail.dleemcewen.tandemfieri.Entities.Restaurant;
+import com.gmail.dleemcewen.tandemfieri.Filters.AndCriteria;
+import com.gmail.dleemcewen.tandemfieri.Filters.CriteriaAfterStartDate;
+import com.gmail.dleemcewen.tandemfieri.Filters.CriteriaBeforeEndDate;
+import com.gmail.dleemcewen.tandemfieri.Filters.CriteriaSelectedItem;
 import com.gmail.dleemcewen.tandemfieri.Interfaces.Criteria;
 import com.gmail.dleemcewen.tandemfieri.Logging.LogWriter;
 import com.google.firebase.database.DataSnapshot;
@@ -26,6 +37,8 @@ import java.util.Date;
 import java.util.Locale;
 import java.util.logging.Level;
 
+import static com.gmail.dleemcewen.tandemfieri.R.id.select_item;
+
 public class ProductHistoryActivity extends AppCompatActivity implements DatePickerFragment.DateListener{
     int viewId;
     private TextView fromDate;
@@ -36,9 +49,13 @@ public class ProductHistoryActivity extends AppCompatActivity implements DatePic
     private DateListener dateListener;
     private Button showButton;
     private ShowButtonListener showButtonListener;
-    private String restId;
     private String userId;
+    private Restaurant restaurant;
     private DatabaseReference mDatabase;
+    private String selectedMenuItem = "";
+    private boolean itemSelected = false;
+    private ArrayList<DisplayItem> displayItems;
+    private ProductHistoryArrayAdapter adapter;
 
 
     @Override
@@ -53,10 +70,11 @@ public class ProductHistoryActivity extends AppCompatActivity implements DatePic
     }//end on create
 
     private void initialize(){
-        restId = getIntent().getStringExtra("restId");
+        restaurant = (Restaurant) getIntent().getSerializableExtra("restaurant");
         userId = getIntent().getStringExtra("ID");
         dateListener = new DateListener();
         showButtonListener = new ShowButtonListener();
+        displayItems = new ArrayList<>();
     }
 
     private void getHandles(){
@@ -72,10 +90,49 @@ public class ProductHistoryActivity extends AppCompatActivity implements DatePic
         showButton.setOnClickListener(showButtonListener);
     }
 
-    private void retrieveData(){
-        LogWriter.log(getApplicationContext(), Level.INFO, "show product history");
-        //get all the orders for this restaurant
+    //create menu
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        MenuInflater inflater = getMenuInflater();
+        inflater.inflate(R.menu.product_history_menu, menu);
+        return true;
+    }
 
+    //determine which menu option was selected and call that option's action method
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        // Handle item selection
+        switch (item.getItemId()) {
+            case select_item:
+                optionsDialog().show();
+                return true;
+            default:
+                return super.onOptionsItemSelected(item);
+        }
+    }
+
+    public AlertDialog optionsDialog() {
+
+        ArrayAdapter<com.gmail.dleemcewen.tandemfieri.menubuilder.MenuItem> adapter = new ArrayAdapter<>(
+                getApplicationContext(), R.layout.view_order_items, restaurant.getMenu().getSubItems());
+
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setTitle("Select an Item: ");
+        builder.setAdapter(adapter, new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialogInterface, int i) {
+                selectedMenuItem = restaurant.getMenu().getSubItems().get(i).getName();
+                itemSelected = true;
+                LogWriter.log(getApplicationContext(), Level.INFO, "The selected item is: " + selectedMenuItem);
+            }
+        });
+        return builder.create();
+
+    }
+
+    private void retrieveData(){
+
+        //get all the orders for this restaurant
         mDatabase = FirebaseDatabase.getInstance().getReference().child("Order").child(userId);
         mDatabase.addListenerForSingleValueEvent(
                 new ValueEventListener() {
@@ -91,14 +148,13 @@ public class ProductHistoryActivity extends AppCompatActivity implements DatePic
                         ArrayList<Order> selectedOrders = selectOrders(orders);
 
                         //create a list of all the items
-                        ArrayList<DisplayItem> displayItems = populateDisplayItems(selectedOrders);
+                        displayItems = populateDisplayItems(selectedOrders);
 
                         //array adapter added here
                         if(selectedOrders.isEmpty()){
                             Toast.makeText(getApplicationContext(), "There are no orders for this time period.", Toast.LENGTH_LONG).show();
                         }else {
-                            ProductHistoryArrayAdapter adapter = new ProductHistoryArrayAdapter(
-                                    getApplicationContext(), displayItems);
+                            adapter = new ProductHistoryArrayAdapter(getApplicationContext(), displayItems);
 
                             listView.setAdapter(adapter);
                         }
@@ -114,17 +170,37 @@ public class ProductHistoryActivity extends AppCompatActivity implements DatePic
     private ArrayList<DisplayItem> populateDisplayItems(ArrayList<Order> orders){
         ArrayList<String> orderItems =new ArrayList<>();
         ArrayList<DisplayItem> displayItems = new ArrayList<>();
-
-        for(Order order : orders){
-            for(OrderItem item : order.getItems()){
-                if(!orderItems.contains(item.getName())){
-                    orderItems.add(item.getName());
-                    displayItems.add(new DisplayItem(item.getName(), item.getBasePrice()));
-                }else{
-                    int index = orderItems.indexOf(item.getName());
-                    DisplayItem changeItem = displayItems.remove(index);
-                    changeItem.addOne();
-                    displayItems.add(changeItem);
+        if(itemSelected){
+            DisplayItem displayItem = new DisplayItem(selectedMenuItem);
+            //get base price:
+            for(OrderItem item : orders.get(0).getItems()){
+                if(item.getName().equals(selectedMenuItem)){
+                    displayItem.setBasePrice(item.getBasePrice());
+                    break;
+                }
+            }
+            //count the number of times it is ordered
+            for(Order order : orders){
+                for(OrderItem item : order.getItems()){
+                    if(item.getName().equals(selectedMenuItem)){
+                        displayItem.addOne();
+                    }
+                }
+            }
+            displayItems.add(displayItem);
+        }else {
+            //display all order items in the orders list
+            for (Order order : orders) {
+                for (OrderItem item : order.getItems()) {
+                    if (!orderItems.contains(item.getName())) {
+                        orderItems.add(item.getName());
+                        DisplayItem newItem = new DisplayItem(item.getName(), item.getBasePrice());
+                        newItem.setQuantity(1);
+                        displayItems.add(newItem);
+                    } else {
+                        int index = orderItems.indexOf(item.getName());
+                        displayItems.get(index).addOne();
+                    }
                 }
             }
         }
@@ -132,20 +208,33 @@ public class ProductHistoryActivity extends AppCompatActivity implements DatePic
     }
 
     private ArrayList<Order> selectOrders(ArrayList<Order> orders){
+        //this criteria selects the orders between the chosen dates
         Criteria after = new CriteriaAfterStartDate(date_from);
         Criteria before = new CriteriaBeforeEndDate(date_to);
         Criteria between = new AndCriteria(after, before);
-        return (ArrayList<Order>) between.meetCriteria(orders);
-    }
-
-    private double calculateItemSales(double basePrice, double currentAmount){
-        return currentAmount + basePrice;
+        if(itemSelected){
+            //an item has been selected
+            Criteria itemSelection = new CriteriaSelectedItem(selectedMenuItem);
+            Criteria dateAndItem = new AndCriteria(between, itemSelection);
+            return (ArrayList<Order>) dateAndItem.meetCriteria(orders);
+        }else {
+            return (ArrayList<Order>) between.meetCriteria(orders);
+        }
     }
 
     private boolean datesVerified(){
         //verify the start date is not after the end date
+        Date current = new Date();
+        if (date_from == null || date_to == null){
+            Toast.makeText(getApplicationContext(), "Please enter valid dates.", Toast.LENGTH_LONG).show();
+            return false;
+        }
         if(date_from.after(date_to)){
-            Toast.makeText(getApplicationContext(), "Please enter correct dates.", Toast.LENGTH_SHORT).show();
+            Toast.makeText(getApplicationContext(), "From date cannot be after To date.", Toast.LENGTH_SHORT).show();
+            return false;
+        }
+        if(date_from.after(current)){
+            Toast.makeText(getApplicationContext(), "From date cannot be after today's date.", Toast.LENGTH_LONG).show();
             return false;
         }
         return true;
@@ -183,6 +272,10 @@ public class ProductHistoryActivity extends AppCompatActivity implements DatePic
 
         @Override
         public void onClick(View view) {
+            if(!displayItems.isEmpty()){
+                displayItems.clear();
+                adapter.clear();
+            }
             if(datesVerified()) {
                 retrieveData();
             }else{

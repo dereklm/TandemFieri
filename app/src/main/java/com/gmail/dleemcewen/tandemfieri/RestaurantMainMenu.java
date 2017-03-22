@@ -11,7 +11,6 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.widget.ExpandableListView;
-import android.widget.Toast;
 
 import com.gmail.dleemcewen.tandemfieri.Adapters.RestaurantMainMenuExpandableListAdapter;
 import com.gmail.dleemcewen.tandemfieri.Entities.NotificationMessage;
@@ -180,17 +179,6 @@ public class RestaurantMainMenu extends AppCompatActivity {
         startActivity(intent);
     }
 
-
-    /***********************UPDATE LIST WITH ORDERS********************************/
-   /* @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        if ((requestCode == CREATE_RESTAURANT || requestCode == UPDATE_RESTAURANT)
-                && resultCode == RESULT_OK) {
-            //A new restaurant was added or a restaurant was updated
-            retrieveData();
-        }
-    }*/
-/********** CALL DATABASE TO COLLECT ORDERS***************************/
    private void retrieveData() {
         //find all the orders where the restaurantid matches the current user id
         //Order table: userID -> order# -> order entity
@@ -249,12 +237,11 @@ public class RestaurantMainMenu extends AppCompatActivity {
         return childData;
     }
 
-    @Override
+    //@Override
     public void onResume() {
         super.onResume();  // Always call the superclass method first
 
         retrieveData();
     }
-
 
 }//end Activity

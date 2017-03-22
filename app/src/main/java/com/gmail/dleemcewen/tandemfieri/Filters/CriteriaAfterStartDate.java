@@ -1,4 +1,4 @@
-package com.gmail.dleemcewen.tandemfieri;
+package com.gmail.dleemcewen.tandemfieri.Filters;
 
 import com.gmail.dleemcewen.tandemfieri.Entities.Order;
 import com.gmail.dleemcewen.tandemfieri.Interfaces.Criteria;
