@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+
+    android:id="@+id/activity_restaurant_map"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    tools:context="com.gmail.dleemcewen.tandemfieri.RestaurantMapActivity">
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <TextView
+            android:id="@+id/tv_area"
+            android:layout_width="125dp"
+
+            android:layout_height="wrap_content"
+            android:textSize="@dimen/title_text_size"
+            android:text="@string/deliveryRadius"
+
+            android:layout_centerVertical="true" />
+
+        <com.shawnlin.numberpicker.NumberPicker
+            android:id="@+id/radius"
+
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_toRightOf="@id/tv_area"
+            app:np_orientation="horizontal"
+            app:np_dividerColor="@color/colorPrimary"
+            app:np_max="@integer/deliveryRadiusMax"
+            app:np_min="@integer/deliveryRadiusMin"
+            app:np_textColor="@color/colorPrimary"
+            app:np_textSize="20dp" />
+
+        <Button
+            android:id="@+id/update"
+            android:layout_marginLeft="5dp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/updateButton"
+            android:textSize="@dimen/button_text_size"
+            android:layout_toRightOf="@id/radius"
+            android:layout_centerVertical="true" />
+    </RelativeLayout>
+
+    <fragment
+        android:id="@+id/map"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        class="com.google.android.gms.maps.MapFragment" />
+</LinearLayout>

@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:padding="10dp" >
+
+    <TextView
+        android:id="@+id/order_name"
+        android:layout_weight="1"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_gravity="center_vertical"
+        android:gravity="center_vertical"
+        android:layout_marginLeft="?android:attr/expandableListPreferredItemPaddingLeft"
+        android:paddingLeft="16dp"
+        android:layout_marginRight="?android:attr/expandableListPreferredItemPaddingLeft"
+        android:paddingRight="16dp"
+        android:textSize="@dimen/regular_text_size" />
+</LinearLayout>

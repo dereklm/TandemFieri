@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="horizontal" android:layout_width="match_parent"
+    android:layout_height="match_parent">
+    <TextView
+        android:id="@+id/restaurantToRate"
+        android:layout_weight="1"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textSize="@dimen/title_text_size" />
+    <Button
+        android:id="@+id/selectRestaurantToRate"
+        android:background="@android:color/transparent"
+        android:focusable="false"
+        android:layout_width="64dp"
+        android:layout_height="wrap_content"
+        android:paddingRight="@dimen/activity_horizontal_margin"
+        android:drawableRight="@drawable/ic_forward_arrow"
+        android:drawablePadding="@dimen/activity_horizontal_margin"/>
+</LinearLayout>

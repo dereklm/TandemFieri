@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    package="com.gmail.dleemcewen.tandemfieri">
+
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+    <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="com.google.android.providers.gsf.permission.READ_GSERVICES" />
+    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
+
+    <application
+        android:allowBackup="true"
+        android:icon="@mipmap/ic_launcher"
+        android:label="@string/app_name"
+        android:supportsRtl="true"
+        android:theme="@style/AppTheme">
+        <meta-data
+            android:name="android.support.multidex.MultiDexApplication"
+            android:value="@string/multiDex" />
+
+        <activity android:name=".MainActivity">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+        <activity android:name=".CreateAccountActivity" />
+        <activity android:name=".AlmostDoneActivity" />
+        <activity android:name=".DinerMainMenu" />
+        <activity android:name=".RestaurantMainMenu" />
+        <activity android:name=".DriverMainMenu" />
+        <activity android:name=".CreateRestaurant" />
+        <activity android:name=".CreateDeliveryHoursActivity" />
+        <activity android:name=".menubuilder.MenuBuilderActivity" />
+        <activity android:name=".menubuilder.MenuItemEditActivity" />
+        <activity android:name=".menubuilder.MenuOptionsActivity" />
+        <activity android:name=".menubuilder.OptionAddActivity" />
+        <activity android:name=".ManageRestaurants" />
+        <activity android:name=".DriverRatings" />
+        <activity android:name=".RestaurantMapActivity" />
+        <activity android:name=".EditAccountActivity" />
+        <activity android:name=".EditPasswordActivity" />
+        <activity android:name=".EditRestaurantActivity" />
+        <activity android:name=".menubuilder.OptionSelectionListActivity" />
+        <activity android:name=".menubuilder.OptionSelectionEditActivity" />
+        <activity android:name=".LookAtMenuActivity" />
+        <activity android:name=".OrderMenuActivity" />
+        <activity android:name=".CartActivity" />
+        <activity android:name=".ManageOrders" />
+        <activity
+            android:name=".DinerMapActivity"
+            android:label="@string/title_activity_diner_map" />
+        <activity android:name=".ManageRestaurantDrivers" />
+        <activity android:name=".FakePayment" />
+
+        <meta-data
+            android:name="com.google.android.geo.API_KEY"
+            android:value="@string/google_maps_key" />
+        <meta-data
+            android:name="com.google.android.gms.version"
+            android:value="@integer/google_play_services_version" />
+
+        <service
+            android:name=".Utility.FetchAddressIntentService"
+            android:exported="false" />
+        <service
+            android:name=".Services.NotificationService"
+            android:exported="false" />
+
+        <activity android:name=".RestaurantRatings" />
+        <activity android:name=".DeliveryMapActivity" />
+        <activity
+            android:name=".DriverDeliveryActivity"
+            android:label="@string/title_activity_driver_delivery"
+            android:theme="@style/AppTheme.NoActionBar" />
+        <activity android:name=".DinerOrderHistoryActivity" />
+        <activity android:name=".ViewOrderActivity" />
+        <activity android:name=".ProductHistoryActivity"></activity>
+    </application>
+
+</manifest>

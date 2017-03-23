@@ -1,0 +1,55 @@
+{
+  "project_info": {
+    "project_number": "606338129585",
+    "firebase_url": "https://tandemfieri-ebef4.firebaseio.com",
+    "project_id": "tandemfieri-ebef4",
+    "storage_bucket": "tandemfieri-ebef4.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:606338129585:android:c54360a64c6ce0ad",
+        "android_client_info": {
+          "package_name": "com.gmail.dleemcewen.tandemfieri"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "606338129585-vkech8o78m75ou85nu5r57i4mhouivnf.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.gmail.dleemcewen.tandemfieri",
+            "certificate_hash": "47C23124731EE67B5713B0DAEC007EFA14DC56FC"
+          }
+        },
+        {
+          "client_id": "606338129585-fculg62ord1jq1jvipjrr8avtmn2bo8r.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyASgpwoxp3TtG-8qNEm1VNcRrkbP87bQkA"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 2,
+          "other_platform_oauth_client": [
+            {
+              "client_id": "606338129585-fculg62ord1jq1jvipjrr8avtmn2bo8r.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

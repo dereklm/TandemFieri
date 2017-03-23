@@ -69,15 +69,19 @@ public class DriverMainMenu extends AppCompatActivity {
                 //order = dataSnapshot.child("Order").getValue(Order.class);
 
                 for (DataSnapshot child : dataSnapshot.getChildren()) {
-                    order = child.getValue(Order.class);
+                    for(DataSnapshot child2: child.getChildren()) {
+                        order = child2.getValue(Order.class);
+                    }
                     //Toast.makeText(getApplicationContext(), ""+child.child("Order").getValue(), Toast.LENGTH_LONG).show();
                     //order = child.child("Order").getValue(Order.class);
                 }
-              
+
                 entities = new ArrayList<Order>();
 
                 for (DataSnapshot child : dataSnapshot.getChildren()) {
-                    entities.add(child.getValue(Order.class));
+                    for(DataSnapshot child2: child.getChildren()) {
+                        entities.add(child2.getValue(Order.class));
+                    }
                     //Toast.makeText(getApplicationContext(), ""+child.child("Order").getValue(), Toast.LENGTH_LONG).show();
                     //order = child.child("Order").getValue(Order.class);
                 }

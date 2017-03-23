@@ -1,0 +1,167 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/activity_create_account"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:paddingBottom="@dimen/activity_vertical_margin"
+    android:paddingLeft="@dimen/activity_horizontal_margin"
+    android:paddingRight="@dimen/activity_horizontal_margin"
+    android:paddingTop="@dimen/activity_vertical_margin"
+    tools:context="com.gmail.dleemcewen.tandemfieri.CreateAccountActivity">
+
+    <TextView
+        android:text="@string/signupTitle"
+        android:textSize="20sp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentTop="true"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="15dp"
+        android:id="@+id/signupTitle" />
+
+    <EditText
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:inputType="textPersonName"
+        android:hint="@string/hintFirstName"
+        android:textSize="14sp"
+        android:ems="10"
+        android:id="@+id/firstName"
+        android:layout_marginTop="20dp"
+        android:layout_below="@+id/signupTitle"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true" />
+
+    <EditText
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:inputType="textPersonName"
+        android:hint="@string/hintLastName"
+        android:textSize="14sp"
+        android:ems="10"
+        android:id="@+id/lastName"
+        android:layout_alignBaseline="@+id/firstName"
+        android:layout_alignBottom="@+id/firstName"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentEnd="true" />
+
+    <LinearLayout
+        android:layout_below="@id/firstName"
+        android:layout_width="match_parent"
+        android:id="@+id/address_container"
+        android:orientation="horizontal"
+        android:layout_height="wrap_content">
+
+        <EditText
+            android:hint="@string/hintAddress"
+            android:textSize="14sp"
+            android:inputType="textPostalAddress"
+            android:layout_width="0dp"
+            android:layout_weight="4"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/firstName"
+            android:layout_marginTop="20dp"
+            android:id="@+id/address"
+            android:layout_alignParentRight="true"
+            android:layout_alignParentEnd="true"
+            android:layout_alignParentLeft="true"
+            android:layout_alignParentStart="true" />
+
+        <Button
+            android:layout_width="45dp"
+            android:layout_height="wrap_content"
+            android:id="@+id/location_button"
+            android:layout_marginTop="10dp"
+            android:drawableLeft="@drawable/ic_room_black_24dp"
+            />
+
+    </LinearLayout>
+
+    <EditText
+        android:hint="@string/hintCity"
+        android:textSize="14sp"
+        android:inputType="textPersonName"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/address_container"
+        android:layout_marginTop="20dp"
+        android:id="@+id/city"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentEnd="true"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true" />
+
+    <LinearLayout
+        android:id="@+id/stateZipContainer"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:layout_marginTop="20dp"
+        android:layout_alignParentStart="true"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentEnd="true"
+        android:layout_below="@id/city">
+        <Spinner
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:hint="@string/hintState"
+            android:textSize="14sp"
+            android:ems="10"
+            android:id="@+id/state"
+            android:paddingRight="20dp"
+            android:paddingEnd="20dp"
+            android:layout_weight="1"
+            style="@style/Base.Widget.AppCompat.Spinner.Underlined"/>
+        <EditText
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:inputType="text|number"
+            android:hint="@string/hintZip"
+            android:textSize="14sp"
+            android:ems="10"
+            android:layout_weight="1"
+            android:id="@+id/zip"
+            android:layout_alignBaseline="@+id/state"
+            android:layout_alignBottom="@+id/state" />
+    </LinearLayout>
+    <EditText
+        android:hint="@string/hintPhone"
+        android:textSize="14sp"
+        android:inputType="text|number"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/stateZipContainer"
+        android:layout_marginTop="20dp"
+        android:id="@+id/phone"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentEnd="true"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true" />
+
+    <EditText
+        android:hint="@string/hintEmail"
+        android:textSize="14sp"
+        android:inputType="textEmailAddress"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/phone"
+        android:layout_marginTop="20dp"
+        android:id="@+id/email"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentEnd="true"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true" />
+
+    <Button
+        android:text="@string/nextButton"
+        android:textSize="10sp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_centerHorizontal="true"
+        android:id="@+id/nextButton" />
+
+
+</RelativeLayout>

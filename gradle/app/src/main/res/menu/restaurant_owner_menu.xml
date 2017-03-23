@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <item android:id="@+id/sign_out"
+        android:title="Sign Out"/>
+    <item android:id="@+id/account"
+        android:title="Account" >
+        <menu>
+            <item android:id="@+id/edit_personal_info"
+                android:title="Edit Information" />
+            <item android:id="@+id/edit_password"
+                android:title="Edit Password" />
+        </menu>
+    </item>
+    <item android:id="@+id/manage_restaurants"
+        android:title="Manage Restaurants"/>
+</menu>
