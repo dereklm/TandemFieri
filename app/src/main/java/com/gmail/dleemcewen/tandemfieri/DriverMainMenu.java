@@ -14,6 +14,7 @@ import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ListView;
 import android.widget.Spinner;
+import android.widget.Toast;
 
 import com.gmail.dleemcewen.tandemfieri.Adapters.OrdersListAdapterAddress;
 import com.gmail.dleemcewen.tandemfieri.Entities.Order;
@@ -161,19 +162,23 @@ public class DriverMainMenu extends AppCompatActivity {
     }
 
     private void startDelivery(){
-        for(Order order: entities){
-            if(order.getCustomerId().equals(currentOrderId)){
-                currentOrder = order;
+        if(currentOrderId.equals(null)){
+            Toast.makeText(getApplicationContext(), "Make sure you set a delivery as your current one", Toast.LENGTH_LONG).show();
+        }else {
+            for (Order order : entities) {
+                if (order.getCustomerId().equals(currentOrderId)) {
+                    currentOrder = order;
+                }
             }
-        }
-        Bundle driverBundle = new Bundle();
-        Intent intent = new Intent(DriverMainMenu.this, DriverDeliveryActivity.class);
-        driverBundle.putString("customerId", customerId);
+            Bundle driverBundle = new Bundle();
+            Intent intent = new Intent(DriverMainMenu.this, DriverDeliveryActivity.class);
+            driverBundle.putString("customerId", currentOrder.getCustomerId());
 
-        driverBundle.putSerializable("Order", currentOrder);
-        driverBundle.putSerializable("User", user);
-        intent.putExtras(driverBundle);
-        startActivity(intent);
+            driverBundle.putSerializable("Order", currentOrder);
+            driverBundle.putSerializable("User", user);
+            intent.putExtras(driverBundle);
+            startActivity(intent);
+        }
     }
 
     private void connect(){

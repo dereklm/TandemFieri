@@ -4,6 +4,8 @@ import com.gmail.dleemcewen.tandemfieri.Abstracts.Entity;
 
 import java.io.Serializable;
 
+import static com.paypal.android.sdk.onetouch.core.metadata.ah.S;
+
 /**
  * Created by Nexusrex on 2/5/2017.
  */
@@ -21,9 +23,20 @@ public class User extends Entity implements Serializable {
     private String authUserID;
     private String restaurantId;
     private String braintreeId;
+    private String bossId;
+
+
 
     public User(){
 
+    }
+
+    public String getBossId() {
+        return bossId;
+    }
+
+    public void setBossId(String bossId) {
+        this.bossId = bossId;
     }
 
     public void setAuthUserID(String authUserID) {

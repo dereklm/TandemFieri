@@ -20,6 +20,7 @@ import android.widget.Toast;
 
 import com.gmail.dleemcewen.tandemfieri.Entities.Order;
 import com.gmail.dleemcewen.tandemfieri.Entities.Restaurant;
+import com.gmail.dleemcewen.tandemfieri.Entities.User;
 import com.gmail.dleemcewen.tandemfieri.Json.AddressGeocode.AddressGeocode;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
@@ -49,7 +50,7 @@ public class DriverDeliveryActivity extends AppCompatActivity implements GoogleA
     GoogleApiClient mGoogleApiClient;
     Location mLastLocation, currentLocation, customerLocation;
     LocationRequest mLocationRequest;
-    DatabaseReference mDatabase;
+    DatabaseReference mDatabase, mDatabaseRemoval, mDatabaseOwner;
     private AsyncHttpClient client;
     public int i, j;
     public ArrayList<Restaurant> restaurants, tempRestaurants;
@@ -57,10 +58,11 @@ public class DriverDeliveryActivity extends AppCompatActivity implements GoogleA
     public boolean wait = false;
     public Marker[] markers;
     public Location tempLocation;
-    public String customerID;
+    public String customerID, ownerId;
     public Button navigateButton, completeButton;
     private Order order;
     private Double lat, lon;
+    private User user;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -71,8 +73,10 @@ public class DriverDeliveryActivity extends AppCompatActivity implements GoogleA
         completeButton = (Button) findViewById(R.id.completeButton);
 
         completeButton.setTextColor(Color.parseColor("Red"));
-        customerID = getIntent().getStringExtra("Customer ID");
+
+        customerID = getIntent().getStringExtra("customerId");
         order = (Order) getIntent().getSerializableExtra("Order");
+        user = (User) getIntent().getSerializableExtra("User");
 
         lat = Double.parseDouble(order.getLatitude());
         lon = Double.parseDouble(order.getLongitude());
@@ -127,9 +131,24 @@ public class DriverDeliveryActivity extends AppCompatActivity implements GoogleA
         // Obtain the SupportMapFragment and get notified when the map is ready to be used.
         mDatabase = FirebaseDatabase.getInstance().getReference()
                 .child("Delivery Location");
+        mDatabaseRemoval = FirebaseDatabase.getInstance().getReference();
 
-        mDatabase.child("Latitude").setValue(currentLocation.getLatitude()).equals("Latitude");
-        mDatabase.child("Longitude").setValue(currentLocation.getLongitude()).equals("Longitude");
+        mDatabaseOwner = FirebaseDatabase.getInstance().getReference().child("Delivery").child(user.getAuthUserID()).child("Order").child(order.getCustomerId());
+
+        mDatabaseOwner.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                ownerId = (String) dataSnapshot.child("OwnerId").getValue();
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        });
+
+        mDatabase.child(customerID).child("Latitude").setValue(currentLocation.getLatitude()).equals("Latitude");
+        mDatabase.child(customerID).child("Longitude").setValue(currentLocation.getLongitude()).equals("Longitude");
         mDatabase.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
@@ -157,6 +176,13 @@ public class DriverDeliveryActivity extends AppCompatActivity implements GoogleA
         completeButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+
+                mDatabaseRemoval.child("Delivery").child(user.getAuthUserID()).child("Order").child(order.getCustomerId()).removeValue();
+                mDatabaseRemoval.child("Delivery").child(user.getAuthUserID()).child("currentOrderId").removeValue();
+                mDatabaseRemoval.child("Delivery Location").child(order.getCustomerId()).child("Latitude").removeValue();
+                mDatabaseRemoval.child("Delivery Location").child(order.getCustomerId()).child("Longitude").removeValue();
+                finish();
+              
                 Toast.makeText(getApplicationContext(), "Finish the delivery yah dingus", Toast.LENGTH_LONG).show();
             }
         });
@@ -333,5 +359,7 @@ public class DriverDeliveryActivity extends AppCompatActivity implements GoogleA
             Toast.makeText(getApplicationContext(),"Location services must be turned on", Toast.LENGTH_LONG).show();
         }
     }
+
+
 
 }

@@ -79,7 +79,9 @@ public class ManageOrders extends AppCompatActivity {
                         controlBool = true;
                         User user2 = (User) logicList.get(i);
                         mDatabase.child("Delivery").child(user2.getAuthUserID()).child("Order").child(order.getCustomerId()).removeValue();
+                        mDatabase.child("Delivery").child(user2.getAuthUserID()).child("Order").child(order.getCustomerId()).child("OwnerId").removeValue();
                         mDatabase.child("Delivery").child(user.getAuthUserID()).child("Order").child(order.getCustomerId()).setValue(order);
+                        mDatabase.child("Delivery").child(user.getAuthUserID()).child("Order").child(order.getCustomerId()).child("OwnerId").setValue(user.getAuthUserID());
 
                     }
                 }
@@ -89,10 +91,12 @@ public class ManageOrders extends AppCompatActivity {
                     if (temp.contains(" | Assigned To")) {
                         mDatabase.child("Delivery").child(user.getAuthUserID()).child("Order").child(order.getCustomerId()).removeValue();
                         mDatabase.child("Order").child(owner.getAuthUserID()).child(order.getOrderId()).child("Assigned").removeValue();
+                        mDatabase.child("Delivery").child(user.getAuthUserID()).child("Order").child(order.getCustomerId()).child("OwnerId").removeValue();
                     } else {
 
                         Toast.makeText(getApplicationContext(), "Sent the order to " + user.getFirstName(), Toast.LENGTH_LONG).show();
                         mDatabase.child("Delivery").child(user.getAuthUserID()).child("Order").child(order.getCustomerId()).setValue(order);
+                        mDatabase.child("Delivery").child(user.getAuthUserID()).child("Order").child(order.getCustomerId()).child("OwnerId").setValue(user.getAuthUserID());
                         mDatabase.child("Order").child(owner.getAuthUserID()).child(order.getOrderId()).child("Assigned").setValue("True");
                     }
                 }

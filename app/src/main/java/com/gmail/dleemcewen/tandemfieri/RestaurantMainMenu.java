@@ -190,9 +190,9 @@ public class RestaurantMainMenu extends AppCompatActivity {
                     public void onDataChange(DataSnapshot orderSnapshot) {
                         List<Order> orderEntities = new ArrayList<Order>();
                         List<Order> orderAssigned = new ArrayList<Order>();
-                        LogWriter.log(context, Level.FINE, "this is the list the user id pulls up: " + orderSnapshot.getKey());
+                        //Toast.makeText(context, "this is the list the user id pulls up: " + orderSnapshot.getKey(), Toast.LENGTH_LONG).show();
                         for(DataSnapshot orders: orderSnapshot.getChildren()){
-                            LogWriter.log(context, Level.FINE, "outer loop: " + orders.getKey());//this gives me the order id
+                            //Toast.makeText(context, "outer loop: " + orders.getKey(), Toast.LENGTH_LONG).show();//this gives me the order id
 
                             Order order = orders.getValue(Order.class);
 
@@ -236,7 +236,7 @@ public class RestaurantMainMenu extends AppCompatActivity {
         return childData;
     }
 
-    //@Override
+    @Override
     public void onResume() {
         super.onResume();  // Always call the superclass method first
 
