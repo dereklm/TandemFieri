@@ -81,7 +81,7 @@ public class ManageOrders extends AppCompatActivity {
                         mDatabase.child("Delivery").child(user2.getAuthUserID()).child("Order").child(order.getCustomerId()).child(order.getOrderId()).removeValue();
                         mDatabase.child("Delivery").child(user2.getAuthUserID()).child("Order").child(order.getCustomerId()).child(order.getOrderId()).child("OwnerId").removeValue();
                         mDatabase.child("Delivery").child(user.getAuthUserID()).child("Order").child(order.getCustomerId()).child(order.getOrderId()).setValue(order);
-                        mDatabase.child("Delivery").child(user.getAuthUserID()).child("Order").child(order.getCustomerId()).child(order.getOrderId()).child("OwnerId").setValue(user.getAuthUserID());
+                        mDatabase.child("Delivery").child(user.getAuthUserID()).child("Order").child(order.getCustomerId()).child(order.getOrderId()).child("OwnerId").setValue(owner.getAuthUserID());
 
                     }
                 }
@@ -96,7 +96,7 @@ public class ManageOrders extends AppCompatActivity {
 
                         Toast.makeText(getApplicationContext(), "Sent the order to " + user.getFirstName(), Toast.LENGTH_LONG).show();
                         mDatabase.child("Delivery").child(user.getAuthUserID()).child("Order").child(order.getCustomerId()).child(order.getOrderId()).setValue(order);
-                        mDatabase.child("Delivery").child(user.getAuthUserID()).child("Order").child(order.getCustomerId()).child(order.getOrderId()).child("OwnerId").setValue(user.getAuthUserID());
+                        mDatabase.child("Delivery").child(user.getAuthUserID()).child("Order").child(order.getCustomerId()).child(order.getOrderId()).child("OwnerId").setValue(owner.getAuthUserID());
                         mDatabase.child("Order").child(owner.getAuthUserID()).child(order.getOrderId()).child("Assigned").setValue("True");
                     }
                 }
