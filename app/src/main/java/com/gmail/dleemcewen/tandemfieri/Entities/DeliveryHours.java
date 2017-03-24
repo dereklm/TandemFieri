@@ -3,6 +3,7 @@ package com.gmail.dleemcewen.tandemfieri.Entities;
 import com.gmail.dleemcewen.tandemfieri.Abstracts.Entity;
 import com.google.firebase.database.Exclude;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 
 import static java.lang.String.valueOf;
@@ -11,7 +12,7 @@ import static java.lang.String.valueOf;
  * Created by Ruth on 2/24/2017.
  */
 
-public class DeliveryHours extends Entity{
+public class DeliveryHours extends Entity implements Serializable {
     ArrayList<Day> days;
     String restaurantId;
 
