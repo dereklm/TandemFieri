@@ -131,6 +131,11 @@ public class OrderMenuActivity extends AppCompatActivity implements AdapterView.
                         }
                     }
                     order.addItem(item);
+
+                    Toast.makeText(getApplicationContext(),
+                            "Item added to cart.",
+                            Toast.LENGTH_SHORT).show();
+
                     return true;
                 }
 
@@ -149,6 +154,7 @@ public class OrderMenuActivity extends AppCompatActivity implements AdapterView.
                 intent.putExtra("restaurantName", restaurant.getName());
                 intent.putExtra("Latitude", latitude);
                 intent.putExtra("Longitude", longitude);
+                intent.putExtra("braintreeID", user.getBraintreeId());
                 startActivity(intent);
             }
         });

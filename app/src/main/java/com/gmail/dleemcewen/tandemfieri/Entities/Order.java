@@ -20,7 +20,7 @@ public class Order extends Entity implements Serializable {
     private OrderEnum status;
     private String restaurantId;
     private String customerId;
-
+    private String braintreeTransactionId;
 
     private String latitude;
     private String longitude;
@@ -185,6 +185,14 @@ public class Order extends Entity implements Serializable {
 
     public void setOrderDate(Date orderDate) {
         this.orderDate = orderDate;
+    }
+
+    public String getBraintreeTransactionId() {
+        return braintreeTransactionId;
+    }
+
+    public void setBraintreeTransactionId(String braintreeTransactionId) {
+        this.braintreeTransactionId = braintreeTransactionId;
     }
 
     public String toString(){
