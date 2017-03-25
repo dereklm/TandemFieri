@@ -188,6 +188,13 @@ public class OrderMenuActivity extends AppCompatActivity implements AdapterView.
         resetSelections();
     }
 
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if (requestCode == 1) {
+            order = (Order) data.getSerializableExtra("order");
+        }
+    }
+
     private void resetSelections() {
         for (OrderItem item : order.getItems()) {
             for (OrderItemOptionGroup group : item.getOptionGroups()) {
