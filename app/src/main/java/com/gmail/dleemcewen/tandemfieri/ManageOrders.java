@@ -12,6 +12,7 @@ import android.widget.Toast;
 
 import com.gmail.dleemcewen.tandemfieri.Entities.Order;
 import com.gmail.dleemcewen.tandemfieri.Entities.User;
+import com.gmail.dleemcewen.tandemfieri.Enums.OrderEnum;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -89,15 +90,18 @@ public class ManageOrders extends AppCompatActivity {
 
                 if(controlBool == false) {
                     if (temp.contains(" | Assigned To")) {
+                        // Unassigning order (?). Set status back to CREATING.
                         mDatabase.child("Delivery").child(user.getAuthUserID()).child("Order").child(order.getCustomerId()).child(order.getOrderId()).removeValue();
                         mDatabase.child("Order").child(owner.getAuthUserID()).child(order.getOrderId()).child("Assigned").removeValue();
                         mDatabase.child("Delivery").child(user.getAuthUserID()).child("Order").child(order.getCustomerId()).child(order.getOrderId()).child("OwnerId").removeValue();
+                        mDatabase.child("Order").child(owner.getAuthUserID()).child(order.getOrderId()).child("status").setValue(OrderEnum.CREATING);
                     } else {
-
+                        // This is the case that the order has no assigned driver. Change Status of order to EN_ROUTE.
                         Toast.makeText(getApplicationContext(), "Sent the order to " + user.getFirstName(), Toast.LENGTH_LONG).show();
                         mDatabase.child("Delivery").child(user.getAuthUserID()).child("Order").child(order.getCustomerId()).child(order.getOrderId()).setValue(order);
                         mDatabase.child("Delivery").child(user.getAuthUserID()).child("Order").child(order.getCustomerId()).child(order.getOrderId()).child("OwnerId").setValue(owner.getAuthUserID());
                         mDatabase.child("Order").child(owner.getAuthUserID()).child(order.getOrderId()).child("Assigned").setValue("True");
+                        mDatabase.child("Order").child(owner.getAuthUserID()).child(order.getOrderId()).child("status").setValue(OrderEnum.EN_ROUTE);
                     }
                 }
                 controlBool = false;
@@ -139,7 +143,7 @@ public class ManageOrders extends AppCompatActivity {
 
                     ArrayAdapter<String> adapter = new ArrayAdapter<>(
                             getApplicationContext(),
-                            R.layout.diner_mainmenu_item_view,
+                            R.layout.view_order_items,
                             driverList);
 
                     driverListView.setAdapter(adapter);

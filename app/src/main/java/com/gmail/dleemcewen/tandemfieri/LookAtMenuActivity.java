@@ -49,7 +49,7 @@ public class LookAtMenuActivity extends AppCompatActivity {
         int i = 0, j = 0;
 
         allItems = new ArrayList<>();
-        allItems.addAll(restaurant.getMenu().getSubCategories());
+        if (restaurant.getMenu().getSubCategories() != null) allItems.addAll(restaurant.getMenu().getSubCategories());
         allItems.addAll(restaurant.getMenu().getSubItems());
 
 

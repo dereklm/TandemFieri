@@ -9,7 +9,6 @@ import java.io.Serializable;
 public enum OrderEnum implements Serializable {
     CREATING,
     PAYMENT_PENDING,
-    RECEIVED,
     EN_ROUTE,
     COMPLETE;
 }

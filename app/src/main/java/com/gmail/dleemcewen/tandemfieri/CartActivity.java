@@ -222,7 +222,7 @@ public class CartActivity extends AppCompatActivity {
 
                         if (checkout.success.equals("true")) {
                             order.setBraintreeTransactionId(checkout.transactionID);
-                            order.setStatus(OrderEnum.RECEIVED);
+                            order.setStatus(OrderEnum.CREATING);
                             mDatabase.child("Order").child(ownerId).child(order.getKey()).setValue(order);
 
                             Toast.makeText(getApplicationContext(),

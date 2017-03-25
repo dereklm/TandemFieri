@@ -133,6 +133,7 @@ public class DinerMainMenu extends AppCompatActivity {
         Intent intent = new Intent(DinerMainMenu.this, LookAtMenuActivity.class);
         restaurantBundle.putSerializable("Restaurant", r);
         restaurantBundle.putString("OpenClosed", controlString);
+        restaurantBundle.putSerializable("User", user);
         intent.putExtras(restaurantBundle);
         startActivity(intent);
     }
