@@ -27,7 +27,13 @@
         </activity>
         <activity android:name=".CreateAccountActivity" />
         <activity android:name=".AlmostDoneActivity" />
-        <activity android:name=".DinerMainMenu" />
+        <activity android:name=".DinerMainMenu"
+            android:parentActivityName="com.gmail.dleemcewen.tandemfieri.MainActivity">
+            <!-- Parent activity meta-data to support 4.0 and lower -->
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="com.gmail.dleemcewen.tandemfieri.MainActivity" />
+        </activity>
         <activity android:name=".RestaurantMainMenu" />
         <activity android:name=".DriverMainMenu" />
         <activity android:name=".CreateRestaurant" />
@@ -76,7 +82,7 @@
             android:theme="@style/AppTheme.NoActionBar" />
         <activity android:name=".DinerOrderHistoryActivity" />
         <activity android:name=".ViewOrderActivity" />
-        <activity android:name=".ProductHistoryActivity"></activity>
+        <activity android:name=".ProductHistoryActivity" />
     </application>
 
 </manifest>

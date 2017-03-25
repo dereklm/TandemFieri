@@ -1,0 +1,96 @@
+<resources>
+    <string name="productHistory">Product History</string>
+    <string name="minimum_logging_level">FINE</string>
+    <string name="purchase">Purchase</string>
+    <string name="app_name">Tandem Fieri</string>
+    <string name="multiDex">multidex</string>
+    <string name="signInTitle">Tandem Fieri</string>
+    <string name="hintEmail">Email</string>
+    <string name="hintPassword">Password</string>
+    <string name="signInButton">Sign In</string>
+    <string name="go_to_cart">Go To Cart</string>
+    <string name="checkout">Checkout</string>
+    <string name="addToOrder">To add an item to your order, long press on the item.</string>
+    <string name="createAccount">Create Account</string>
+    <string name="signupTitle">Sign Up</string>
+    <string name="hintFirstName">First Name</string>
+    <string name="hintLastName">Last Name</string>
+    <string name="hintAddress">Address</string>
+    <string name="hintCity">City</string>
+    <string name="hintState">State</string>
+    <string name="hintCategories">Categories</string>
+    <string name="removeItem">To remove an item from your order, long press on the item.</string>
+    <string name="hintZip">Zip</string>
+    <string name="hintPhone">Phone Number</string>
+    <string name="nextButton">Next</string>
+    <string name="almostDoneTitle">Almost Done!</string>
+    <string name="hintUsername">User name</string>
+    <string name="hintPasswordConfirm">Confirm Password</string>
+    <string name="userFilter">What will you use this app for?</string>
+    <string name="dining">Dining</string>
+    <string name="restaurant">Restaurant Owner</string>
+    <string name="driver">Driver</string>
+    <string name="createButton">Create</string>
+    <string name="createRestaurant">Create Restaurant</string>
+    <string name="hintRestaurantName">Name</string>
+    <string name="restaurantAddress">Address</string>
+    <string name="hintStreet">Street</string>
+    <string name="hintZipcode">Zipcode</string>
+    <string name="restaurantDelivery">Delivery</string>
+    <string name="hintDeliveryCharge">Charge</string>
+    <string name="deliveryHours">Delivery Hours</string>
+    <string name="deliveryArea">Delivery Area</string>
+    <string name="nameRequired">Name is required!</string>
+    <string name="streetRequired">Street address is required!</string>
+    <string name="restaurant_main_menu">Restaurant Owner Main Menu</string>
+    <string name="cityRequired">City is required!</string>
+    <string name="stateRequired">State is required!</string>
+    <string name="zipRequired">Zipcode is required!</string>
+    <string name="deliveryChargeRequired">A delivery charge amount is required!</string>
+    <string name="deliveryChargeGreaterThanZero">Delivery charge amount must be greater than zero!</string>
+    <string name="addButton">Add</string>
+    <string name="manageMenuItemsButton">Manage menu items</string>
+    <string name="viewSalesButton">View sales/products</string>
+    <string name="rateDriversButton">View driver ratings</string>
+    <string name="viewDeliveryAreaButton">Set Delivery Area</string>
+    <string name="manageDriversButton">Manage drivers</string>
+    <string name="manageRestaurantsActivityTitle">Managing restaurants</string>
+    <string name="removeConfirmationQuestion">Are you sure you want to remove</string>
+    <string name="yes">Yes</string>
+    <string name="no">No</string>
+    <string name="ok">Ok</string>
+    <string name="save">Save</string>
+    <string name="cancel">Cancel</string>
+    <string name="close">Close</string>
+    <string name="startDate">Start date</string>
+    <string name="endDate">End date</string>
+    <string name="hintStartDate">Select start date</string>
+    <string name="hintEndDate">Select end date</string>
+    <string name="averageRating">Average rating</string>
+    <string name="invalidEndDate">The selected end date cannot occur before the selected start date.</string>
+    <string name="driverRatingsActivityTitle">Driver ratings</string>
+    <string name="updateButton">Update</string>
+    <string name="deliveryRadius">Delivery Radius (mi)</string>
+    <string name="googleDecoderBaseURL">https://maps.googleapis.com/maps/api/geocode/json?</string>
+    <string name="braintreeBaseURL">https://tandemfieri-bkpratt84.c9users.io/</string>
+    <string name="title_activity_diner_map">Map</string>
+    <string name="driversCurrentlyAssigned">Currently assigned drivers</string>
+    <string name="availableDrivers">Drivers available to be assigned to </string>
+    <string name="manageRestaurantDriversActivityTitle">Managing restaurant drivers</string>
+    <string name="updateRestaurant">Update Restaurant</string>
+    <string name="restaurantType">Type of restaurant</string>
+    <string name="rateRestaurant">Rate restaurant</string>
+    <string name="rateableRestaurantsTitle">Which restaurant would you like to rate?</string>
+    <string name="title_activity_driver_delivery">DriverDeliveryActivity</string>
+    <string name="myDeliveries">My deliveries</string>
+    <string name="selectCurrentDelivery">Select current delivery</string>
+    <string name="manageOrders">Manage Orders</string>
+
+    <string-array name="order_statuses">
+        <item>All</item>
+        <item>CREATING</item>
+        <item>PAYMENT PENDING</item>
+        <item>EN ROUTE</item>
+        <item>COMPLETE</item>
+    </string-array>
+</resources>

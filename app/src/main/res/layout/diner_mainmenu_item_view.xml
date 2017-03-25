@@ -1,7 +1,20 @@
 <?xml version="1.0" encoding="utf-8"?>
-<TextView xmlns:android="http://schemas.android.com/apk/res/android"
-    android:id="@+id/item_view"
-    android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    android:textColor="@android:color/black"
-    android:textSize="28sp" />
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical" android:layout_width="match_parent"
+    android:layout_height="match_parent">
+    <TextView xmlns:android="http://schemas.android.com/apk/res/android"
+        android:id="@+id/item_view"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textColor="@android:color/black"
+        android:textSize="@dimen/title_text_size"
+        android:drawablePadding="@dimen/activity_horizontal_margin"/>
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/restaurant_openclosed"
+        android:layout_marginLeft="48dp"
+        android:textSize="@dimen/regular_text_size"
+        android:textStyle="italic"/>
+
+</LinearLayout>

@@ -41,16 +41,22 @@ public class OrderMenuActivity extends AppCompatActivity implements AdapterView.
     private Button goToCart;
     private Spinner categorySpinner;
     private ArrayAdapter<String> spinnerAdapter;
+    private String latitude, longitude;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_order_menu);
 
+        Bundle bundle = this.getIntent().getExtras();
+
         menuCategories = new HashMap<>();
         menuItems = new ArrayList<>();
         restaurant = (Restaurant) getIntent().getSerializableExtra("Restaurant");
         user = (User) getIntent().getSerializableExtra("User");
+        latitude = bundle.getString("Latitude");
+        longitude = bundle.getString("Longitude");
+
         menuItems.addAll(restaurant.getMenu().getSubItems());
         items = new ArrayList<>();
         expandableListView = (ExpandableListView) findViewById(R.id.menu_items);
@@ -125,6 +131,11 @@ public class OrderMenuActivity extends AppCompatActivity implements AdapterView.
                         }
                     }
                     order.addItem(item);
+
+                    Toast.makeText(getApplicationContext(),
+                            "Item added to cart.",
+                            Toast.LENGTH_SHORT).show();
+
                     return true;
                 }
 
@@ -137,10 +148,13 @@ public class OrderMenuActivity extends AppCompatActivity implements AdapterView.
             public void onClick(View v) {
                 Intent intent = new Intent(OrderMenuActivity.this, CartActivity.class);
                 intent.putExtra("cart", order);
-                intent.putExtra("restaurantId", restaurant.getRestaurantKey());
+                intent.putExtra("restaurantId", restaurant.getId());
                 intent.putExtra("ownerId", restaurant.getOwnerId());
                 intent.putExtra("deliveryCharge", restaurant.getCharge());
                 intent.putExtra("restaurantName", restaurant.getName());
+                intent.putExtra("Latitude", latitude);
+                intent.putExtra("Longitude", longitude);
+                intent.putExtra("braintreeID", user.getBraintreeId());
                 startActivity(intent);
             }
         });

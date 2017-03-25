@@ -4,6 +4,7 @@ import java.sql.Timestamp;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.Locale;
 
@@ -46,5 +47,37 @@ public class DateFormatter {
         }
 
         return new Timestamp(formattedDate.getTime());
+    }
+
+    /**
+     * convertStandardTimeToMilitaryTime converts standard time to military time
+     * @param dateValue date containing the time to convert
+     * @return converted time in military format
+     */
+    public static int convertStandardTimeToMilitaryTime(Date dateValue) {
+        Calendar calendar = Calendar.getInstance();
+        calendar.setTime(dateValue);
+
+        String militaryTime = String.valueOf(calendar.get(Calendar.HOUR_OF_DAY)) + String.valueOf(calendar.get(Calendar.MINUTE));
+        return Integer.valueOf(militaryTime);
+    }
+
+    /**
+     * convertMilitaryTimeToStandard converts an integer representing military time
+     * to standard time
+     * @param militaryTime integer representing military time
+     * @return standard time
+     */
+    public static String convertMilitaryTimeToStandard(int militaryTime) {
+        int hours = militaryTime / 100;
+        int minutes = militaryTime - (hours * 100);
+
+        Calendar calendar = Calendar.getInstance();
+        calendar.setTime(new Date());
+        calendar.set(Calendar.HOUR_OF_DAY, hours);
+        calendar.set(Calendar.MINUTE, minutes);
+
+        DateFormat dateFormatter = new SimpleDateFormat("hh:mm a", Locale.US);
+        return dateFormatter.format(calendar.getTime());
     }
 }

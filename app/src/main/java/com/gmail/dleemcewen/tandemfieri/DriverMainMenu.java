@@ -9,10 +9,12 @@ import android.support.v7.app.AppCompatActivity;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
+
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ListView;
 import android.widget.Spinner;
+import android.widget.Toast;
 
 import com.gmail.dleemcewen.tandemfieri.Adapters.OrdersListAdapterAddress;
 import com.gmail.dleemcewen.tandemfieri.Entities.Order;
@@ -34,8 +36,9 @@ import java.util.logging.Level;
 
 public class DriverMainMenu extends AppCompatActivity {
     private User user;
-    private String customerId;
-    private DatabaseReference mDatabaseDelivery;
+    private String customerId, currentOrderId;
+    private DatabaseReference mDatabaseDelivery, mDatabaseCurrentDelivery;
+    private Order order, currentOrder;
     private Context context;
     private ListView ordersListView;
     private List<Order> entities;
@@ -57,16 +60,28 @@ public class DriverMainMenu extends AppCompatActivity {
 
         LogWriter.log(getApplicationContext(), Level.INFO, "The user is " + user.getAuthUserID());
         mDatabaseDelivery = FirebaseDatabase.getInstance().getReference().child("Delivery").child(user.getAuthUserID()).child("Order");
+        mDatabaseCurrentDelivery = FirebaseDatabase.getInstance().getReference().child("Delivery").child(user.getAuthUserID());
 
         mDatabaseDelivery.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 //Toast.makeText(getApplicationContext(), ""+dataSnapshot.child("Order").getValue(Order.class), Toast.LENGTH_LONG).show();
                 //order = dataSnapshot.child("Order").getValue(Order.class);
+
+                for (DataSnapshot child : dataSnapshot.getChildren()) {
+                    for(DataSnapshot child2: child.getChildren()) {
+                        order = child2.getValue(Order.class);
+                    }
+                    //Toast.makeText(getApplicationContext(), ""+child.child("Order").getValue(), Toast.LENGTH_LONG).show();
+                    //order = child.child("Order").getValue(Order.class);
+                }
+
                 entities = new ArrayList<Order>();
 
                 for (DataSnapshot child : dataSnapshot.getChildren()) {
-                    entities.add(child.getValue(Order.class));
+                    for(DataSnapshot child2: child.getChildren()) {
+                        entities.add(child2.getValue(Order.class));
+                    }
                     //Toast.makeText(getApplicationContext(), ""+child.child("Order").getValue(), Toast.LENGTH_LONG).show();
                     //order = child.child("Order").getValue(Order.class);
                 }
@@ -76,6 +91,18 @@ public class DriverMainMenu extends AppCompatActivity {
 
             @Override
             public void onCancelled(DatabaseError databaseError) {
+            }
+        });
+
+        mDatabaseCurrentDelivery.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                currentOrderId = (String) dataSnapshot.child("currentOrderId").getValue();
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
             }
         });
 
@@ -139,12 +166,23 @@ public class DriverMainMenu extends AppCompatActivity {
     }
 
     private void startDelivery(){
-        Bundle driverBundle = new Bundle();
-        Intent intent = new Intent(DriverMainMenu.this, DriverDeliveryActivity.class);
-        driverBundle.putString("customerId", customerId);
-        driverBundle.putSerializable("User", user);
-        intent.putExtras(driverBundle);
-        startActivity(intent);
+        if(currentOrderId.equals(null)){
+            Toast.makeText(getApplicationContext(), "Make sure you set a delivery as your current one", Toast.LENGTH_LONG).show();
+        }else {
+            for (Order order : entities) {
+                if (order.getCustomerId().equals(currentOrderId)) {
+                    currentOrder = order;
+                }
+            }
+            Bundle driverBundle = new Bundle();
+            Intent intent = new Intent(DriverMainMenu.this, DriverDeliveryActivity.class);
+            driverBundle.putString("customerId", currentOrder.getCustomerId());
+
+            driverBundle.putSerializable("Order", currentOrder);
+            driverBundle.putSerializable("User", user);
+            intent.putExtras(driverBundle);
+            startActivity(intent);
+        }
     }
 
     private void connect(){
@@ -164,6 +202,7 @@ public class DriverMainMenu extends AppCompatActivity {
         Bundle args = new Bundle();
         args.putString("driverId", user.getAuthUserID());
         args.putString("restaurantId", user.getRestaurantId());
+        args.putSerializable("Order", order);
         driverOrders.setArguments(args);
 
         fragmentTransaction.add(R.id.activity_driver_main_menu, driverOrders);

@@ -55,7 +55,7 @@ public class AddNotificationMessageTask<T extends Entity> implements Continuatio
             notificationMessageEntity.setAction(NotificationConstants.Action.ADDED.toString());
             notificationMessageEntity.setNotificationType(entity.getClass().getSimpleName());
             notificationMessageEntity.setData(entity, entity.getClass());
-            notificationMessageEntity.setNotificationId(formattedDate);
+            notificationMessageEntity.setNotificationId("1" + formattedDate);
 
             dataContext.child(notificationMessageEntity.getKey().toString()).setValue(notificationMessageEntity);
             dataContext.addListenerForSingleValueEvent(new ValueEventListener() {

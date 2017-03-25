@@ -8,11 +8,9 @@ import android.widget.TextView;
 
 import com.gmail.dleemcewen.tandemfieri.Entities.Order;
 import com.gmail.dleemcewen.tandemfieri.Entities.OrderItem;
-import com.gmail.dleemcewen.tandemfieri.Logging.LogWriter;
 import com.google.firebase.database.DatabaseReference;
 
 import java.util.Locale;
-import java.util.logging.Level;
 
 public class ViewOrderActivity extends AppCompatActivity {
     Order order;
@@ -45,7 +43,7 @@ public class ViewOrderActivity extends AppCompatActivity {
         if(order != null) {
             finishLayout();
         }
-        LogWriter.log(getApplicationContext(), Level.INFO, order.getItems().get(0).toString());
+       // LogWriter.log(getApplicationContext(), Level.INFO, order.getItems().get(0).toString());
         ArrayAdapter<OrderItem> adapter = new ArrayAdapter<OrderItem>(
                 getApplicationContext(),
                 R.layout.view_order_items,

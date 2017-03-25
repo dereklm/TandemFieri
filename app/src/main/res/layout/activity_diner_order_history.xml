@@ -12,17 +12,126 @@
 
     <TextView
         android:id="@+id/title_order_history"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textAlignment="center"
+        android:textSize="30sp"
+        android:text="Order History"/>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:id="@+id/heading_layout"
+        android:layout_below="@id/title_order_history">
+
+        <Button
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/sort_by_button"
+            android:text="Sort By"
+            android:layout_gravity="start"
+            android:background="@android:color/transparent"/>
+
+        <Button
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:id="@+id/execute_button"
+            android:text="Show Order History"
+            android:textAlignment="textEnd"
+            android:layout_gravity="end"
+            android:background="@android:color/transparent"/>
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:layout_below="@id/heading_layout"
+        android:id="@+id/sort_checkbox_layout"
+        android:visibility="invisible">
+
+        <CheckBox
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:id="@+id/sort_by_date"
+            android:text="Sort by Date" />
+
+        <CheckBox
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:id="@+id/sort_by_restaurant"
+            android:text="Sort by Restaurant"/>
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:id="@+id/date_options_layout"
+        android:layout_below="@id/sort_checkbox_layout"
+        android:visibility="invisible">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/from_label"
+            android:text="From:"
+            android:gravity="start"
+            android:layout_weight="1"/>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/from_date"
+            android:layout_weight="1"
+            android:text="tap here"/>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/to_label"
+            android:text="To:"
+            android:layout_weight="1"/>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/to_date"
+            android:layout_weight="1"
+            android:text="tap here" />
+
+    </LinearLayout>
+
+    <LinearLayout
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:textSize="30sp"
-        android:layout_alignParentTop="true"
-        android:layout_centerHorizontal="true"
-        android:text="Order History"/>
+        android:orientation="horizontal"
+        android:id="@+id/restaurant_spinner_layout"
+        android:layout_below="@id/date_options_layout"
+        android:visibility="invisible">
+
+        <Spinner
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:textSize="14sp"
+            android:ems="10"
+            android:id="@+id/restaurant_name_spinner"
+            style="@style/Base.Widget.AppCompat.Spinner.Underlined"/>
+    </LinearLayout>
+
 
     <ListView
         android:id="@+id/diner_order_history_listview"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_below="@id/title_order_history"/>
+        android:divider="@android:color/darker_gray"
+        android:dividerHeight="0.5dp"
+        android:layout_below="@id/heading_layout"
+        android:visibility="invisible"/>
 
 </RelativeLayout>

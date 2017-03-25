@@ -1,28 +1,45 @@
 package com.gmail.dleemcewen.tandemfieri;
 
+import android.app.AlertDialog;
+import android.app.NotificationManager;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.content.res.Resources;
 import android.location.Geocoder;
 import android.location.Location;
 import android.location.LocationManager;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
+import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
 import android.widget.ListView;
+import android.widget.RatingBar;
+import android.widget.TextView;
 import android.widget.Toast;
 
+import com.gmail.dleemcewen.tandemfieri.Adapters.DinerRestaurantsListAdapter;
+import com.gmail.dleemcewen.tandemfieri.Entities.NotificationMessage;
+import com.gmail.dleemcewen.tandemfieri.Entities.Rating;
 import com.gmail.dleemcewen.tandemfieri.Entities.Restaurant;
 import com.gmail.dleemcewen.tandemfieri.Entities.User;
+import com.gmail.dleemcewen.tandemfieri.Enums.OrderEnum;
+import com.gmail.dleemcewen.tandemfieri.Formatters.DateFormatter;
 import com.gmail.dleemcewen.tandemfieri.Logging.LogWriter;
+import com.gmail.dleemcewen.tandemfieri.Repositories.NotificationMessages;
+import com.gmail.dleemcewen.tandemfieri.Repositories.Ratings;
+import com.gmail.dleemcewen.tandemfieri.Tasks.TaskResult;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -32,19 +49,27 @@ import com.google.firebase.database.ValueEventListener;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 import java.util.logging.Level;
 
 import static android.Manifest.permission.ACCESS_FINE_LOCATION;
 import static android.os.Build.VERSION_CODES.M;
 import static com.gmail.dleemcewen.tandemfieri.DinerMapActivity.MY_PERMISSIONS_REQUEST_LOCATION;
+import static com.paypal.android.sdk.onetouch.core.metadata.ah.t;
 
 public class DinerMainMenu extends AppCompatActivity {
+    private NotificationMessages<NotificationMessage> notificationsRepository;
+    private Ratings<Rating> ratingsRepository;
+    private int notificationId;
+    public boolean skipRating;
     User user;
     ListView listview;
     List<Restaurant> restaurantsList;
     DatabaseReference mDatabase;
     static MenuItem deliveryOption;
+    private String controlString;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -53,31 +78,61 @@ public class DinerMainMenu extends AppCompatActivity {
 
         getHandles();
         initialize();
+        getNotificationOrderDataToDisplayForDriverRating(notificationId, skipRating);
         retrieveData();
+        resendExistingDinerNotifications();
 
         LogWriter.log(getApplicationContext(), Level.INFO, "The user is " + user.getEmail());
     }//end onCreate
+
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+        if (notificationsRepository == null) {
+            notificationsRepository = new NotificationMessages<>(DinerMainMenu.this);
+        }
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+        notificationsRepository.finalize();
+        notificationsRepository = null;
+    }
 
     private void getHandles(){
         listview = (ListView) findViewById(R.id.diner_listview);
     }
 
     private void initialize(){
+        notificationId = 0;
+        notificationsRepository = new NotificationMessages<>(DinerMainMenu.this);
+        ratingsRepository = new Ratings<>(DinerMainMenu.this);
+
         Bundle bundle = this.getIntent().getExtras();
         user = (User) bundle.getSerializable("User");
+        notificationId = bundle.getInt("notificationId");
+        skipRating = bundle.getBoolean("skipRating", false);
+
         restaurantsList = new ArrayList<>();
         listview.setOnItemClickListener(new AdapterView.OnItemClickListener() {
                 @Override
             public void onItemClick(AdapterView<?> parent, final View view, int position, long id) {
-                openMenu((Restaurant) parent.getItemAtPosition(position));
+                    TextView textView = (TextView) view.findViewById(R.id.restaurant_openclosed);
+                    controlString = textView.getText().toString();
+
+                    openMenu((Restaurant) parent.getItemAtPosition(position), controlString);
             }
         });
     }
 
-    private void openMenu(Restaurant r){
+    private void openMenu(Restaurant r, String controlString){
+
         Bundle restaurantBundle = new Bundle();
         Intent intent = new Intent(DinerMainMenu.this, LookAtMenuActivity.class);
         restaurantBundle.putSerializable("Restaurant", r);
+        restaurantBundle.putString("OpenClosed", controlString);
         intent.putExtras(restaurantBundle);
         startActivity(intent);
     }
@@ -177,6 +232,7 @@ public class DinerMainMenu extends AppCompatActivity {
         Intent intent = new Intent(DinerMainMenu.this, DinerMapActivity.class);
         Bundle userBundle = new Bundle();
         userBundle.putSerializable("User", user);
+        userBundle.putString("OpenClosed", controlString);
         intent.putExtras(userBundle);
         startActivity(intent);
     }
@@ -193,6 +249,139 @@ public class DinerMainMenu extends AppCompatActivity {
     private void rateRestaurant() {
         Intent rateRestaurantIntent = new Intent(getApplicationContext(), RestaurantRatings.class);
         startActivity(rateRestaurantIntent);
+    }
+
+    /**
+     * getNotificationOrderDataToDisplayForDriverRating gets the order data from the notification to use
+     * to be able to display and collect a driver rating
+     */
+    private void getNotificationOrderDataToDisplayForDriverRating(final int notificationId, final boolean skipRating) {
+        if (notificationId != 0) {
+            NotificationManager notificationManager =
+                    (NotificationManager) this.getSystemService(NOTIFICATION_SERVICE);
+
+            notificationManager.cancel(notificationId);
+
+            //run notification query
+            new Thread(new Runnable() {
+                @Override
+                public void run() {
+                    notificationsRepository
+                            .find("notificationId = '" + notificationId + "'")
+                            .addOnCompleteListener(DinerMainMenu.this, new OnCompleteListener<TaskResult<NotificationMessage>>() {
+                                @Override
+                                public void onComplete(@NonNull Task<TaskResult<NotificationMessage>> task) {
+                                    List<NotificationMessage> messages = task.getResult().getResults();
+                                    if (!messages.isEmpty()) {
+                                        notificationsRepository.remove(messages.get(0));
+
+                                        if (!skipRating) {
+                                            HashMap orderData = (HashMap) messages.get(0).getData();
+                                            showDriverRatingDialog(orderData);
+                                        }
+                                    }
+                                }
+                            });
+
+                }
+            }).start();
+        }
+    }
+
+    /**
+     * showDriverRatingDialog shows the driver rating dialog
+     */
+    private void showDriverRatingDialog(final HashMap orderData) {
+        Resources resources = DinerMainMenu.this.getResources();
+
+        StringBuilder dialogTitleBuilder = new StringBuilder();
+        dialogTitleBuilder.append("Rate your driver");
+
+        LayoutInflater layoutInflater = (LayoutInflater) DinerMainMenu.this
+                .getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+
+        //Inflate custom view
+        View dialogLayout = layoutInflater.inflate(R.layout.assign_driver_rating, null);
+
+        //Find ratingsbar in dialoglayout
+        final RatingBar driverRatingBar = (RatingBar)dialogLayout.findViewById(R.id.driverRatingBar);
+        final TextView driverRatingText = (TextView)dialogLayout.findViewById(R.id.driverRatingText);
+
+        driverRatingBar.setOnRatingBarChangeListener(new RatingBar.OnRatingBarChangeListener() {
+            @Override
+            public void onRatingChanged(RatingBar ratingBar, float rating, boolean fromUser) {
+                driverRatingText.setText(String.valueOf(rating));
+            }
+        });
+
+        //Build alert dialog with custom view
+        AlertDialog.Builder rateDriverDialog  = new AlertDialog.Builder(DinerMainMenu.this);
+        rateDriverDialog.setView(dialogLayout);
+        rateDriverDialog
+                .setTitle(dialogTitleBuilder.toString());
+        rateDriverDialog.setCancelable(false);
+        rateDriverDialog.setPositiveButton(
+                resources.getString(R.string.save),
+                new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int id) {
+                        Rating newDriverRating = new Rating();
+                        newDriverRating.setDate(DateFormatter.toTimeStamp(new Date()).toString());
+                        newDriverRating.setRating(driverRatingBar.getRating());
+                        newDriverRating.setRestaurantId(orderData.get("restaurantId").toString());
+                        newDriverRating.setOrderId(orderData.get("orderId").toString());
+                        newDriverRating.setDriverId(user.getAuthUserID());
+
+                        ratingsRepository.add(newDriverRating);
+
+                        dialog.cancel();
+                    }
+                });
+
+        rateDriverDialog.setNegativeButton(
+                resources.getString(R.string.cancel),
+                new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int id) {
+                        dialog.cancel();
+                    }
+                });
+
+        rateDriverDialog
+                .show();
+
+    }
+
+    /**
+     * resendExistingDinerNotifications re-sends existing diner notifications that are notifications
+     * for the current diner
+     */
+    private void resendExistingDinerNotifications() {
+        //no need to sent notifications if we are actually arriving at the dinermainmenu
+        //from a notification
+        if (notificationId == 0) {
+            new Thread(new Runnable() {
+                @Override
+                public void run() {
+                    notificationsRepository
+                        .find("notificationType = 'Order'")
+                        .addOnCompleteListener(DinerMainMenu.this, new OnCompleteListener<TaskResult<NotificationMessage>>() {
+                            @Override
+                            public void onComplete(@NonNull Task<TaskResult<NotificationMessage>> task) {
+                                List<NotificationMessage> messages = task.getResult().getResults();
+                                if (!messages.isEmpty()) {
+                                    for (NotificationMessage message : messages) {
+                                        HashMap data = (HashMap)message.getData();
+
+                                        if (data.get("customerId").equals(user.getAuthUserID())
+                                                && data.get("status").equals(OrderEnum.COMPLETE.toString())) {
+                                            notificationsRepository.resendNotification(message);
+                                        }
+                                    }
+                                }
+                            }
+                        });
+                }
+            }).start();
+        }
     }
 
     public boolean checkLocationPermission() {
@@ -272,10 +461,13 @@ public class DinerMainMenu extends AppCompatActivity {
                         }
                     }
 
-                    ArrayAdapter<Restaurant> adapter = new ArrayAdapter<>(
+                    DinerRestaurantsListAdapter adapter =
+                        new DinerRestaurantsListAdapter(DinerMainMenu.this, restaurantsList);
+
+                    /*ArrayAdapter<Restaurant> adapter = new ArrayAdapter<>(
                             getApplicationContext(),
                             R.layout.diner_mainmenu_item_view,
-                            restaurantsList);
+                            restaurantsList);*/
 
                     listview.setAdapter(adapter);
 
@@ -348,5 +540,14 @@ public class DinerMainMenu extends AppCompatActivity {
             checkLocationPermission();
         }
         return result;
+    }
+
+    @Override
+    public void onResume(){
+        super.onResume();
+        if(!restaurantsList.isEmpty()){
+            restaurantsList.clear();
+            retrieveData();
+        }
     }
 }//end Activity

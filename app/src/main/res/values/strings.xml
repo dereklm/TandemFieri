@@ -85,6 +85,7 @@
     <string name="myDeliveries">My deliveries</string>
     <string name="selectCurrentDelivery">Select current delivery</string>
     <string name="manageOrders">Manage Orders</string>
+    <string name="payment_method">Payment Method</string>
 
     <string-array name="order_statuses">
         <item>All</item>

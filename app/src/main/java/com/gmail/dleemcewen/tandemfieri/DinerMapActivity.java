@@ -5,11 +5,11 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Color;
 import android.graphics.Typeface;
-import android.location.Geocoder;
 import android.location.Location;
 import android.location.LocationManager;
 import android.os.Bundle;
 import android.provider.Settings;
+import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.content.ContextCompat;
@@ -20,9 +20,14 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.gmail.dleemcewen.tandemfieri.Entities.Day;
+import com.gmail.dleemcewen.tandemfieri.Entities.DeliveryHours;
 import com.gmail.dleemcewen.tandemfieri.Entities.Restaurant;
 import com.gmail.dleemcewen.tandemfieri.Entities.User;
+import com.gmail.dleemcewen.tandemfieri.Formatters.DateFormatter;
 import com.gmail.dleemcewen.tandemfieri.Json.AddressGeocode.AddressGeocode;
+import com.gmail.dleemcewen.tandemfieri.Repositories.RestaurantHours;
+import com.gmail.dleemcewen.tandemfieri.Tasks.TaskResult;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.location.LocationListener;
@@ -36,19 +41,23 @@ import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
-import com.loopj.android.http.AsyncHttpClient;
 
-import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
 
 import static android.os.Build.VERSION_CODES.M;
 import static com.google.android.gms.location.LocationServices.FusedLocationApi;
+import static com.paypal.android.sdk.onetouch.core.metadata.ah.d;
+import static com.paypal.android.sdk.onetouch.core.metadata.ah.r;
 
 public class DinerMapActivity extends FragmentActivity implements GoogleApiClient.ConnectionCallbacks,
         GoogleApiClient.OnConnectionFailedListener,
@@ -61,19 +70,26 @@ public class DinerMapActivity extends FragmentActivity implements GoogleApiClien
     Marker mCurrLocationMarker;
     LocationRequest mLocationRequest;
     DatabaseReference mDatabase;
-    private AsyncHttpClient client;
-    public int i, j;
+
+    public int i, j, k;
     public ArrayList<Restaurant> restaurants, tempRestaurants;
     public AddressGeocode address;
     public boolean wait = false;
     public Marker[] markers;
     public Location tempLocation;
-
+    private String controlString;
+    private Date currentDate;
+    private RestaurantHours<DeliveryHours> restaurantHours;
+    private boolean bool;
+    private Restaurant theRestaurant;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_diner_map);
+
+        currentDate = new Date();
+        restaurantHours =  new RestaurantHours<>(DinerMapActivity.this);
 
         if (isLocationEnabled(getApplicationContext()) == false){
             finish();
@@ -84,6 +100,7 @@ public class DinerMapActivity extends FragmentActivity implements GoogleApiClien
         currentLocation = new Location("");
         Bundle bundle = this.getIntent().getExtras();
         user = (User) bundle.getSerializable("User");
+        controlString = bundle.getString("OpenClosed");
 
         LocationManager locManager = (LocationManager)getSystemService(Context.LOCATION_SERVICE);
         if(locManager == null){
@@ -143,7 +160,6 @@ public class DinerMapActivity extends FragmentActivity implements GoogleApiClien
         mMap = googleMap;
         mMap.setMapType(GoogleMap.MAP_TYPE_NORMAL);
 
-
         try {
             if (android.os.Build.VERSION.SDK_INT >= M) {
                 if (ContextCompat.checkSelfPermission(this,
@@ -186,18 +202,101 @@ public class DinerMapActivity extends FragmentActivity implements GoogleApiClien
             @Override
             public void onInfoWindowClick(Marker marker) {
                 try {
-                    for (int k = 0; k < restaurants.size(); k++) {
+                    for (k = 0; k < restaurants.size(); k++) {
                         if (marker.getTag().equals(restaurants.get(k).getId())) {
                             Toast.makeText(getApplicationContext(), "" + restaurants.get(k).getName(), Toast.LENGTH_SHORT).show();
-
-                            Intent intent = new Intent(DinerMapActivity.this, LookAtMenuActivity.class);
-                            Bundle bundle = new Bundle();
-                            bundle.putSerializable("Restaurant",  restaurants.get(k));
-                            bundle.putSerializable("User", user);
-                            intent.putExtras(bundle);
-                            startActivity(intent);
+                            theRestaurant = restaurants.get(k);
                         }
                     }
+                            final int dayOfWeek = getDayOfWeekFromCurrentDate();
+
+
+                            restaurantHours
+                                    .find("restaurantId = '" + theRestaurant.getId() + "'")
+                                    .addOnCompleteListener(DinerMapActivity.this, new OnCompleteListener<TaskResult<DeliveryHours>>() {
+                                        @Override
+                                        public void onComplete(@NonNull Task<TaskResult<DeliveryHours>> task) {
+                                            List<DeliveryHours> deliveryHours = task.getResult().getResults();
+                                            if (!deliveryHours.isEmpty() && !deliveryHours.get(0).getDays().isEmpty()) {
+                                                StringBuilder hoursTextBuilder = new StringBuilder();
+
+                                                Day dayHours = deliveryHours.get(0).getDays().get(dayOfWeek);
+                                                if (dayHours.isOpen()) {
+                                                    if (compareOpenTimeWithCurrentTime(dayHours.getHourOpen())) {
+                                                        if (compareClosedTimeWithCurrentTime(dayHours.getHourClosed())) {
+                                                            controlString = "OPEN";
+                                                            Intent intent = new Intent(DinerMapActivity.this, LookAtMenuActivity.class);
+                                                            Bundle bundle = new Bundle();
+                                                            bundle.putString("Latitude", ""+currentLocation.getLatitude());
+                                                            bundle.putString("Longitude", ""+currentLocation.getLongitude());
+                                                            bundle.putSerializable("Restaurant",  theRestaurant);
+                                                            bundle.putSerializable("User", user);
+                                                            bundle.putString("OpenClosed", controlString);
+                                                            intent.putExtras(bundle);
+
+                                                            startActivity(intent);
+                                                        } else {
+                                                            controlString = "CLOSED";
+                                                            Intent intent = new Intent(DinerMapActivity.this, LookAtMenuActivity.class);
+                                                            Bundle bundle = new Bundle();
+                                                            bundle.putString("Latitude", ""+currentLocation.getLatitude());
+                                                            bundle.putString("Longitude", ""+currentLocation.getLongitude());
+                                                            bundle.putSerializable("Restaurant",  theRestaurant);
+                                                            bundle.putSerializable("User", user);
+                                                            bundle.putString("OpenClosed", controlString);
+                                                            intent.putExtras(bundle);
+
+                                                            startActivity(intent);
+                                                            //setRestaurantHoursText(hoursTextBuilder.toString(), restaurantOpenClosed, Color.argb(255, 128, 128, 128));
+                                                        }
+                                                    } else {
+                                                        controlString = "CLOSED";
+                                                        Intent intent = new Intent(DinerMapActivity.this, LookAtMenuActivity.class);
+                                                        Bundle bundle = new Bundle();
+                                                        bundle.putString("Latitude", ""+currentLocation.getLatitude());
+                                                        bundle.putString("Longitude", ""+currentLocation.getLongitude());
+                                                        bundle.putSerializable("Restaurant", theRestaurant);
+                                                        bundle.putSerializable("User", user);
+                                                        bundle.putString("OpenClosed", controlString);
+                                                        intent.putExtras(bundle);
+
+                                                        startActivity(intent);
+                                                        //setRestaurantHoursText(hoursTextBuilder.toString(), restaurantOpenClosed, Color.argb(255, 128, 128, 128));
+                                                    }
+                                                } else {
+                                                    controlString = "CLOSED";
+                                                    Intent intent = new Intent(DinerMapActivity.this, LookAtMenuActivity.class);
+                                                    Bundle bundle = new Bundle();
+                                                    bundle.putString("Latitude", ""+currentLocation.getLatitude());
+                                                    bundle.putString("Longitude", ""+currentLocation.getLongitude());
+                                                    bundle.putSerializable("Restaurant",  theRestaurant);
+                                                    bundle.putSerializable("User", user);
+                                                    bundle.putString("OpenClosed", controlString);
+                                                    intent.putExtras(bundle);
+
+                                                    startActivity(intent);
+                                                    //setRestaurantHoursText(hoursTextBuilder.toString(), restaurantOpenClosed, Color.argb(255, 128, 128, 128));
+                                                }
+                                            } else {
+                                                controlString = "CLOSED";
+                                                Intent intent = new Intent(DinerMapActivity.this, LookAtMenuActivity.class);
+                                                Bundle bundle = new Bundle();
+                                                bundle.putString("Latitude", ""+currentLocation.getLatitude());
+                                                bundle.putString("Longitude", ""+currentLocation.getLongitude());
+                                                bundle.putSerializable("Restaurant", theRestaurant);
+                                                bundle.putSerializable("User", user);
+                                                bundle.putString("OpenClosed", controlString);
+                                                intent.putExtras(bundle);
+
+                                                startActivity(intent);
+                                                //setRestaurantHoursText(hoursTextBuilder.toString(), restaurantOpenClosed, Color.argb(255, 128, 128, 128));
+                                            }
+
+                                        }
+
+                                    });
+
+
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
@@ -247,7 +346,6 @@ public class DinerMapActivity extends FragmentActivity implements GoogleApiClien
 
     @Override
     public void onConnected(Bundle bundle) {
-
         mLocationRequest = new LocationRequest();
         mLocationRequest.setInterval(1000);
         mLocationRequest.setFastestInterval(1000);
@@ -268,7 +366,6 @@ public class DinerMapActivity extends FragmentActivity implements GoogleApiClien
 
     @Override
     public void onLocationChanged(Location location) {
-
         if (isLocationEnabled(getApplicationContext()) == false){
             finish();
             Toast.makeText(getApplicationContext(),"Location services must be turned on", Toast.LENGTH_LONG).show();
@@ -278,6 +375,11 @@ public class DinerMapActivity extends FragmentActivity implements GoogleApiClien
         mLastLocation = location;
         if (mCurrLocationMarker != null) {
             mCurrLocationMarker.remove();
+        }
+
+        markers = new Marker[restaurants.size()];
+        for (int j = 0; j < restaurants.size(); j++) {
+            initialize(restaurants.get(j));
         }
 
         //Place current location marker
@@ -377,41 +479,68 @@ public class DinerMapActivity extends FragmentActivity implements GoogleApiClien
     }
 
     private void initialize(Restaurant restaurant) {
-        Geocoder coder = new Geocoder(getApplicationContext());
-        List<android.location.Address> address = null;
-        ArrayList<android.location.Address> addressList = new ArrayList<>();
-        LatLng latlng;
+        if (restaurant.getLatitude() != null
+                && restaurant.getLongitude() != null
+                && restaurant.getMenu() != null
+                && restaurant.getId() != null) {
 
-        String streetAddress = restaurant.getStreet() + "," + restaurant.getCity() + "," + restaurant.getState() + "," + restaurant.getZipcode();
-        try {
-            address = coder.getFromLocationName(streetAddress, 1);
-            if (address.size() == 0) {
+            Location tempLocation = new Location("");
+            tempLocation.setLatitude(restaurant.getLatitude());
+            tempLocation.setLongitude(restaurant.getLongitude());
 
-            } else {
-                android.location.Address location = address.get(0);
-                tempLocation = new Location("");
+            float tempDistance = (currentLocation.distanceTo(tempLocation));
 
+            tempDistance *= 0.000621371;
 
-                tempLocation.set(currentLocation);
-                tempLocation.setLatitude(location.getLatitude());
-                tempLocation.setLongitude(location.getLongitude());
-                float tempDistance = (currentLocation.distanceTo(tempLocation));
-                tempDistance *= 0.000621371;
-                if(restaurant.getDeliveryRadius() != null) {
-                    if ((int) tempDistance < restaurant.getDeliveryRadius()) {
-                        double tempdouble = (double) tempDistance;
-                        tempdouble *= 100;
-                        tempdouble = Math.round(tempdouble);
-                        tempdouble /= 100;
-                        markers[j] = (mMap.addMarker(new MarkerOptions().position(new LatLng(location.getLatitude(), location.getLongitude())).title(restaurant.getName())));
-                        markers[j].setSnippet("Restaurant Type: " + restaurant.getRestaurantType() + "\n" + "Delivery Charge: $" + restaurant.getCharge() + "\n" + " Distance Away: " + tempdouble);
-                        markers[j].setTag(restaurant.getId());
-                    }
+            if(restaurant.getDeliveryRadius() != null) {
+                if ((int) tempDistance < restaurant.getDeliveryRadius()) {
+                    double tempdouble = (double) tempDistance;
+                    tempdouble *= 100;
+                    tempdouble = Math.round(tempdouble);
+                    tempdouble /= 100;
+                    markers[j] = (mMap.addMarker(new MarkerOptions().position(new LatLng(restaurant.getLatitude(), restaurant.getLongitude())).title(restaurant.getName())));
+                    markers[j].setSnippet("Restaurant Type: " + restaurant.getRestaurantType() + "\n" + "Delivery Charge: $" + restaurant.getCharge() + "\n" + " Distance Away: " + tempdouble);
+                    markers[j].setTag(restaurant.getId());
                 }
-            }
 
-        } catch (IOException e) {
-            e.printStackTrace();
+        }
+
+
+//        Geocoder coder = new Geocoder(getApplicationContext());
+//        List<android.location.Address> address = null;
+//        ArrayList<android.location.Address> addressList = new ArrayList<>();
+//        LatLng latlng;
+//
+//        String streetAddress = restaurant.getStreet() + "," + restaurant.getCity() + "," + restaurant.getState() + "," + restaurant.getZipcode();
+//        try {
+//            address = coder.getFromLocationName(streetAddress, 1);
+//            if (address.size() == 0) {
+//
+//            } else {
+//                android.location.Address location = address.get(0);
+//                tempLocation = new Location("");
+//
+//
+//                tempLocation.set(currentLocation);
+//                tempLocation.setLatitude(location.getLatitude());
+//                tempLocation.setLongitude(location.getLongitude());
+//                float tempDistance = (currentLocation.distanceTo(tempLocation));
+//                tempDistance *= 0.000621371;
+//                if(restaurant.getDeliveryRadius() != null) {
+//                    if ((int) tempDistance < restaurant.getDeliveryRadius()) {
+//                        double tempdouble = (double) tempDistance;
+//                        tempdouble *= 100;
+//                        tempdouble = Math.round(tempdouble);
+//                        tempdouble /= 100;
+//                        markers[j] = (mMap.addMarker(new MarkerOptions().position(new LatLng(location.getLatitude(), location.getLongitude())).title(restaurant.getName())));
+//                        markers[j].setSnippet("Restaurant Type: " + restaurant.getRestaurantType() + "\n" + "Delivery Charge: $" + restaurant.getCharge() + "\n" + " Distance Away: " + tempdouble);
+//                        markers[j].setTag(restaurant.getId());
+//                    }
+//                }
+//            }
+//
+//        } catch (IOException e) {
+//            e.printStackTrace();
         }
     }
 
@@ -455,6 +584,86 @@ public class DinerMapActivity extends FragmentActivity implements GoogleApiClien
         }
     }
 
+    private boolean getRestaurantHours(String restaurantId) {
+        final int dayOfWeek = getDayOfWeekFromCurrentDate();
+
+
+        restaurantHours
+                .find("restaurantId = '" + restaurantId + "'")
+                .addOnCompleteListener(DinerMapActivity.this, new OnCompleteListener<TaskResult<DeliveryHours>>() {
+                    @Override
+                    public void onComplete(@NonNull Task<TaskResult<DeliveryHours>> task) {
+                        List<DeliveryHours> deliveryHours = task.getResult().getResults();
+                        if (!deliveryHours.isEmpty() && !deliveryHours.get(0).getDays().isEmpty()) {
+                            StringBuilder hoursTextBuilder = new StringBuilder();
+
+                            Day dayHours = deliveryHours.get(0).getDays().get(dayOfWeek);
+                            if (dayHours.isOpen()) {
+                                if (compareOpenTimeWithCurrentTime(dayHours.getHourOpen())) {
+                                    if (compareClosedTimeWithCurrentTime(dayHours.getHourClosed())) {
+                                        hoursTextBuilder.append("CURRENTLY OPEN. ");
+                                        hoursTextBuilder.append("Open today from ");
+                                        hoursTextBuilder.append(DateFormatter.convertMilitaryTimeToStandard(dayHours.getHourOpen()));
+                                        hoursTextBuilder.append(" to ");
+                                        hoursTextBuilder.append(DateFormatter.convertMilitaryTimeToStandard(dayHours.getHourClosed()));
+                                        hoursTextBuilder.append(".");
+                                        bool = true;
+                                        //setRestaurantHoursText(hoursTextBuilder.toString(), restaurantOpenClosed, Color.BLUE);
+                                    } else {
+                                        hoursTextBuilder.append("CLOSED. ");
+                                        hoursTextBuilder.append("Open today from ");
+                                        hoursTextBuilder.append(DateFormatter.convertMilitaryTimeToStandard(dayHours.getHourOpen()));
+                                        hoursTextBuilder.append(" to ");
+                                        hoursTextBuilder.append(DateFormatter.convertMilitaryTimeToStandard(dayHours.getHourClosed()));
+                                        hoursTextBuilder.append(".");
+                                        bool = false;
+                                        //setRestaurantHoursText(hoursTextBuilder.toString(), restaurantOpenClosed, Color.argb(255, 128, 128, 128));
+                                    }
+                                } else {
+                                    hoursTextBuilder.append("CURRENTLY CLOSED. ");
+                                    hoursTextBuilder.append("Open today from ");
+                                    hoursTextBuilder.append(DateFormatter.convertMilitaryTimeToStandard(dayHours.getHourOpen()));
+                                    hoursTextBuilder.append(" to ");
+                                    hoursTextBuilder.append(DateFormatter.convertMilitaryTimeToStandard(dayHours.getHourClosed()));
+                                    hoursTextBuilder.append(".");
+                                    bool = false;
+                                   //setRestaurantHoursText(hoursTextBuilder.toString(), restaurantOpenClosed, Color.argb(255, 128, 128, 128));
+                                }
+                            } else {
+                                hoursTextBuilder.append("CLOSED. ");
+                                hoursTextBuilder.append("Not open today.");
+                                bool = false;
+                                //setRestaurantHoursText(hoursTextBuilder.toString(), restaurantOpenClosed, Color.argb(255, 128, 128, 128));
+                            }
+                        } else {
+                            bool = false;
+                            //setRestaurantHoursText("CLOSED. No delivery hours have been set for today.", restaurantOpenClosed, Color.argb(255, 128, 128, 128));
+                        }
+
+                    }
+
+                });
+        return bool;
+    }
+
+
+    private boolean compareOpenTimeWithCurrentTime(int hourOpen) {
+        int currentMilitaryTime = DateFormatter.convertStandardTimeToMilitaryTime(currentDate);
+        return currentMilitaryTime > hourOpen;
+    }
+
+    private boolean compareClosedTimeWithCurrentTime(int hourClosed) {
+        int currentMilitaryTime = DateFormatter.convertStandardTimeToMilitaryTime(currentDate);
+        return currentMilitaryTime < hourClosed;
+    }
+
+    private int getDayOfWeekFromCurrentDate() {
+        Calendar calendar = Calendar.getInstance();
+        calendar.setTime(currentDate);
+
+        //have to subtract 1 because when the days of the week were created they were created as a
+        //zero-based list, whereas calendar uses a 1-based list
+        return calendar.get(Calendar.DAY_OF_WEEK) - 1;
+    }
+
 }
-
-

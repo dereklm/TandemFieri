@@ -8,11 +8,26 @@ public class DisplayItem {
     String name;
     double basePrice;
     double total;
+    int quantity;
 
     public DisplayItem(String name, double basePrice) {
         this.name = name;
         this.basePrice = basePrice;
         this.total = this.basePrice;
+        this.quantity = 0;
+    }
+
+    public DisplayItem(String name){
+        this.name = name;
+        this.quantity = 0;
+    }
+
+    public int getQuantity() {
+        return quantity;
+    }
+
+    public void setQuantity(int quantity) {
+        this.quantity = quantity;
     }
 
     public String getName() {
@@ -40,11 +55,11 @@ public class DisplayItem {
     }
 
     public void addOne() {
-        //and base price to total
-        setTotal(this.total + this.basePrice);
+        this.quantity = getQuantity() + 1;
+        setTotal(getQuantity() * getBasePrice());
     }
 
     public String toString(){
-        return name + " " + basePrice + " " + total;
+        return name + " " + quantity + " " + basePrice + " " + total;
     }
 }
