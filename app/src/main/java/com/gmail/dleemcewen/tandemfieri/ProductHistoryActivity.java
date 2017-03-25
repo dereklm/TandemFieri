@@ -24,7 +24,6 @@ import com.gmail.dleemcewen.tandemfieri.Filters.CriteriaAfterStartDate;
 import com.gmail.dleemcewen.tandemfieri.Filters.CriteriaBeforeEndDate;
 import com.gmail.dleemcewen.tandemfieri.Filters.CriteriaSelectedItem;
 import com.gmail.dleemcewen.tandemfieri.Interfaces.Criteria;
-import com.gmail.dleemcewen.tandemfieri.Logging.LogWriter;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -35,12 +34,11 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.Locale;
-import java.util.logging.Level;
 
 import static com.gmail.dleemcewen.tandemfieri.R.id.select_item;
 
 public class ProductHistoryActivity extends AppCompatActivity implements DatePickerFragment.DateListener{
-    int viewId;
+    private int viewId;
     private TextView fromDate;
     private TextView toDate;
     private Date date_from;
@@ -123,7 +121,7 @@ public class ProductHistoryActivity extends AppCompatActivity implements DatePic
             public void onClick(DialogInterface dialogInterface, int i) {
                 selectedMenuItem = restaurant.getMenu().getSubItems().get(i).getName();
                 itemSelected = true;
-                LogWriter.log(getApplicationContext(), Level.INFO, "The selected item is: " + selectedMenuItem);
+                //LogWriter.log(getApplicationContext(), Level.INFO, "The selected item is: " + selectedMenuItem);
             }
         });
         return builder.create();

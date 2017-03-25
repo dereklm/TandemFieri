@@ -21,7 +21,6 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.RatingBar;
 import android.widget.TextView;
@@ -69,6 +68,7 @@ public class DinerMainMenu extends AppCompatActivity {
     List<Restaurant> restaurantsList;
     DatabaseReference mDatabase;
     static MenuItem deliveryOption;
+    //DinerRestaurantsListAdapter adapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -533,5 +533,14 @@ public class DinerMainMenu extends AppCompatActivity {
             checkLocationPermission();
         }
         return result;
+    }
+
+    @Override
+    public void onResume(){
+        super.onResume();
+        if(!restaurantsList.isEmpty()){
+            restaurantsList.clear();
+            retrieveData();
+        }
     }
 }//end Activity
