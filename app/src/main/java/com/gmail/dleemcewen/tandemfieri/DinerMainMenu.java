@@ -7,7 +7,6 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.content.res.Resources;
-import android.location.Geocoder;
 import android.location.Location;
 import android.location.LocationManager;
 import android.os.Bundle;
@@ -15,6 +14,7 @@ import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -37,7 +37,11 @@ import com.gmail.dleemcewen.tandemfieri.Logging.LogWriter;
 import com.gmail.dleemcewen.tandemfieri.Repositories.NotificationMessages;
 import com.gmail.dleemcewen.tandemfieri.Repositories.Ratings;
 import com.gmail.dleemcewen.tandemfieri.Tasks.TaskResult;
-import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.common.ConnectionResult;
+import com.google.android.gms.common.api.GoogleApiClient;
+import com.google.android.gms.common.api.GoogleApiClient.ConnectionCallbacks;
+import com.google.android.gms.common.api.GoogleApiClient.OnConnectionFailedListener;
+import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
@@ -47,7 +51,6 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
@@ -59,7 +62,9 @@ import static android.os.Build.VERSION_CODES.M;
 import static com.gmail.dleemcewen.tandemfieri.DinerMapActivity.MY_PERMISSIONS_REQUEST_LOCATION;
 import static com.paypal.android.sdk.onetouch.core.metadata.ah.t;
 
-public class DinerMainMenu extends AppCompatActivity {
+public class DinerMainMenu extends AppCompatActivity implements ConnectionCallbacks, OnConnectionFailedListener {
+    protected static final String TAG = "DinerMainMenu";
+
     private NotificationMessages<NotificationMessage> notificationsRepository;
     private Ratings<Rating> ratingsRepository;
     private int notificationId;
@@ -71,6 +76,9 @@ public class DinerMainMenu extends AppCompatActivity {
     static MenuItem deliveryOption;
     private String controlString;
 
+    protected GoogleApiClient mMap;
+    protected Location mLastLocation;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -79,7 +87,7 @@ public class DinerMainMenu extends AppCompatActivity {
         getHandles();
         initialize();
         getNotificationOrderDataToDisplayForDriverRating(notificationId, skipRating);
-        retrieveData();
+        //retrieveData();
         resendExistingDinerNotifications();
 
         LogWriter.log(getApplicationContext(), Level.INFO, "The user is " + user.getEmail());
@@ -89,6 +97,11 @@ public class DinerMainMenu extends AppCompatActivity {
     @Override
     protected void onStart() {
         super.onStart();
+
+        if (mMap != null) {
+            mMap.connect();
+        }
+
         if (notificationsRepository == null) {
             notificationsRepository = new NotificationMessages<>(DinerMainMenu.this);
         }
@@ -97,8 +110,38 @@ public class DinerMainMenu extends AppCompatActivity {
     @Override
     protected void onStop() {
         super.onStop();
+
+        if (mMap.isConnected()) {
+            mMap.disconnect();
+        }
+
         notificationsRepository.finalize();
         notificationsRepository = null;
+    }
+
+    @Override
+    public void onConnected(Bundle bundle) {
+        Log.v(TAG, "Map Connected");
+
+        try {
+            mLastLocation = LocationServices.FusedLocationApi.getLastLocation(mMap);
+        } catch (SecurityException e) {
+            Log.i(TAG, "SecurityException: " + e.getMessage());
+        }
+
+        if (mLastLocation != null) {
+            retrieveData();
+        }
+    }
+
+    @Override
+    public void onConnectionFailed(ConnectionResult result) {
+        Log.i(TAG, "Connection failed: " + result.getErrorMessage());
+    }
+
+    @Override
+    public void onConnectionSuspended(int cause) {
+        Log.i(TAG, "Connection suspended");
     }
 
     private void getHandles(){
@@ -125,6 +168,8 @@ public class DinerMainMenu extends AppCompatActivity {
                     openMenu((Restaurant) parent.getItemAtPosition(position), controlString);
             }
         });
+
+        verifyLocationSettings();
     }
 
     private void openMenu(Restaurant r, String controlString){
@@ -171,14 +216,6 @@ public class DinerMainMenu extends AppCompatActivity {
                 return true;
             case R.id.order_history:
                 displayOrderHistory();
-                return true;
-            case R.id.payment:
-                Bundle bundle = new Bundle();
-                bundle.putSerializable("User", user);
-                Intent intent = new Intent(DinerMainMenu.this, FakePayment.class);
-                intent.putExtras(bundle);
-                startActivity(intent);
-
                 return true;
             case R.id.rateRestaurant:
                 rateRestaurant();
@@ -452,6 +489,7 @@ public class DinerMainMenu extends AppCompatActivity {
         mDatabase.addValueEventListener(new ValueEventListener() {
                 @Override
                 public void onDataChange(DataSnapshot dataSnapshot) {
+                    restaurantsList.clear();
 
                     //everything to do with restaurant list code here
                     for (DataSnapshot child : dataSnapshot.getChildren()) {
@@ -480,47 +518,35 @@ public class DinerMainMenu extends AppCompatActivity {
     }//end retrieve data
 
     private boolean restaurantNearby(Restaurant r){
-        Geocoder coder = new Geocoder(getApplicationContext());
-        List<android.location.Address> address = null;
-        LatLng latlng;
-        Location tempLocation;
-        Location currentLocation = getUserLocation();
+        if (r.getLatitude() != null
+                && r.getLongitude() != null
+                && r.getMenu() != null
+                && r.getId() != null) {
 
-        String streetAddress = r.getStreet() + "," + r.getCity() + "," + r.getState() + "," + r.getZipcode();
-        try {
-            address = coder.getFromLocationName(streetAddress, 1);
-            if (address.size() == 0) {
+            Location tempLocation = new Location("");
+            tempLocation.setLatitude(r.getLatitude());
+            tempLocation.setLongitude(r.getLongitude());
 
-            } else {
+            float tempDistance = (mLastLocation.distanceTo(tempLocation));
 
-                android.location.Address location = address.get(0);
-                tempLocation = new Location("");
+            tempDistance *= 0.000621371;
 
+            Log.v(TAG + ":GEOCODE", String.valueOf(mLastLocation.getLatitude()));
+            Log.v(TAG + ":GEOCODE", String.valueOf(tempLocation.getLatitude()));
+            Log.v(TAG + ":GEOCODE", r.getName());
 
-                tempLocation.set(currentLocation);
-                tempLocation.setLatitude(location.getLatitude());
-                tempLocation.setLongitude(location.getLongitude());
-                float tempDistance = (currentLocation.distanceTo(tempLocation));
-                tempDistance *= 0.000621371;
-                if (r.getDeliveryRadius() != null) {
-                    if ((int) tempDistance < r.getDeliveryRadius()) {
-                        double tempdouble = (double) tempDistance;
-                        tempdouble *= 100;
-                        tempdouble = Math.round(tempdouble);
-                        tempdouble /= 100;
-                        return true;
-                    }
+            if(r.getDeliveryRadius() != null) {
+                if ((int) tempDistance < r.getDeliveryRadius()) {
+                    return true;
                 }
             }
-
-        } catch (IOException e) {
-            e.printStackTrace();
         }
+
        return false;
     }//end restaurant nearby
 
-    private Location getUserLocation(){
-        Location result = new Location("");
+    private void verifyLocationSettings() {
+        boolean locationPermission = true;
 
         LocationManager locManager = (LocationManager)getSystemService(Context.LOCATION_SERVICE);
         if(locManager == null){
@@ -531,16 +557,31 @@ public class DinerMainMenu extends AppCompatActivity {
         }
         boolean network_enabled = locManager.isProviderEnabled(LocationManager.NETWORK_PROVIDER);
 
-       if(network_enabled){
-
-           result = locManager.getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
-
+        if (!network_enabled) {
+            network_enabled = locManager.isProviderEnabled(LocationManager.GPS_PROVIDER);
         }
 
         if (android.os.Build.VERSION.SDK_INT >= M) {
             checkLocationPermission();
         }
-        return result;
+
+        Log.v(TAG, "Location Permission: " + String.valueOf(locationPermission));
+        Log.v(TAG, "Network enabled: " + String.valueOf(network_enabled));
+
+        if (locationPermission && network_enabled) {
+            Log.v(TAG, "BUILD CLIENT");
+            buildGoogleApiClient();
+        }
+    }
+
+    protected synchronized void buildGoogleApiClient() {
+        mMap = new GoogleApiClient.Builder(this)
+                .addConnectionCallbacks(this)
+                .addOnConnectionFailedListener(this)
+                .addApi(LocationServices.API)
+                .build();
+
+        mMap.connect();
     }
 
     @Override

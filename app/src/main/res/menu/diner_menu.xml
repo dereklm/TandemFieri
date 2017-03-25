@@ -8,8 +8,6 @@
     <item android:id="@+id/delivery"
         android:title="Track my delivery"
         android:visible="true"/>
-    <item android:id="@+id/payment"		
-        android:title="Payment"/>
     <item android:id="@+id/rateRestaurant"
         android:title="Rate a restaurant"/>
     <item android:id="@+id/account"

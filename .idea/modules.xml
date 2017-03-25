@@ -5,6 +5,7 @@
       <module fileurl="file://$PROJECT_DIR$/Android App.iml" filepath="$PROJECT_DIR$/Android App.iml" />
       <module fileurl="file://$PROJECT_DIR$/TandemFieri-tempWorkspace.iml" filepath="$PROJECT_DIR$/TandemFieri-tempWorkspace.iml" />
       <module fileurl="file://$PROJECT_DIR$/app/app.iml" filepath="$PROJECT_DIR$/app/app.iml" />
+      <module fileurl="file://$PROJECT_DIR$/tandemfieri.iml" filepath="$PROJECT_DIR$/tandemfieri.iml" />
     </modules>
   </component>
 </project>

@@ -14,6 +14,7 @@ import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.content.ContextCompat;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.Gravity;
 import android.view.View;
 import android.widget.LinearLayout;
@@ -63,6 +64,8 @@ public class DinerMapActivity extends FragmentActivity implements GoogleApiClien
         GoogleApiClient.OnConnectionFailedListener,
         LocationListener, OnMapReadyCallback, GoogleMap.OnMarkerClickListener {
 
+    protected static final String TAG = "DinerMapActivity";
+
     private User user;
     private GoogleMap mMap;
     GoogleApiClient mGoogleApiClient;
@@ -111,12 +114,12 @@ public class DinerMapActivity extends FragmentActivity implements GoogleApiClien
         }
         boolean network_enabled = locManager.isProviderEnabled(LocationManager.NETWORK_PROVIDER);
 
-        Location location;
+        if (!network_enabled) {
+            network_enabled = locManager.isProviderEnabled(LocationManager.GPS_PROVIDER);
+        }
 
-        if(network_enabled){
-
+        if (network_enabled){
             currentLocation = locManager.getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
-
         }
 
         if (android.os.Build.VERSION.SDK_INT >= M) {
@@ -346,6 +349,8 @@ public class DinerMapActivity extends FragmentActivity implements GoogleApiClien
 
     @Override
     public void onConnected(Bundle bundle) {
+        Log.v(TAG, "Connected");
+
         mLocationRequest = new LocationRequest();
         mLocationRequest.setInterval(1000);
         mLocationRequest.setFastestInterval(1000);
@@ -355,6 +360,11 @@ public class DinerMapActivity extends FragmentActivity implements GoogleApiClien
                 == PackageManager.PERMISSION_GRANTED) {
             FusedLocationApi.requestLocationUpdates(mGoogleApiClient, mLocationRequest, this);
 
+        }
+
+        markers = new Marker[restaurants.size()];
+        for (int j = 0; j < restaurants.size(); j++) {
+            initialize(restaurants.get(j));
         }
 
     }
@@ -482,7 +492,8 @@ public class DinerMapActivity extends FragmentActivity implements GoogleApiClien
         if (restaurant.getLatitude() != null
                 && restaurant.getLongitude() != null
                 && restaurant.getMenu() != null
-                && restaurant.getId() != null) {
+                && restaurant.getId() != null
+                && currentLocation != null) {
 
             Location tempLocation = new Location("");
             tempLocation.setLatitude(restaurant.getLatitude());
@@ -502,45 +513,7 @@ public class DinerMapActivity extends FragmentActivity implements GoogleApiClien
                     markers[j].setSnippet("Restaurant Type: " + restaurant.getRestaurantType() + "\n" + "Delivery Charge: $" + restaurant.getCharge() + "\n" + " Distance Away: " + tempdouble);
                     markers[j].setTag(restaurant.getId());
                 }
-
-        }
-
-
-//        Geocoder coder = new Geocoder(getApplicationContext());
-//        List<android.location.Address> address = null;
-//        ArrayList<android.location.Address> addressList = new ArrayList<>();
-//        LatLng latlng;
-//
-//        String streetAddress = restaurant.getStreet() + "," + restaurant.getCity() + "," + restaurant.getState() + "," + restaurant.getZipcode();
-//        try {
-//            address = coder.getFromLocationName(streetAddress, 1);
-//            if (address.size() == 0) {
-//
-//            } else {
-//                android.location.Address location = address.get(0);
-//                tempLocation = new Location("");
-//
-//
-//                tempLocation.set(currentLocation);
-//                tempLocation.setLatitude(location.getLatitude());
-//                tempLocation.setLongitude(location.getLongitude());
-//                float tempDistance = (currentLocation.distanceTo(tempLocation));
-//                tempDistance *= 0.000621371;
-//                if(restaurant.getDeliveryRadius() != null) {
-//                    if ((int) tempDistance < restaurant.getDeliveryRadius()) {
-//                        double tempdouble = (double) tempDistance;
-//                        tempdouble *= 100;
-//                        tempdouble = Math.round(tempdouble);
-//                        tempdouble /= 100;
-//                        markers[j] = (mMap.addMarker(new MarkerOptions().position(new LatLng(location.getLatitude(), location.getLongitude())).title(restaurant.getName())));
-//                        markers[j].setSnippet("Restaurant Type: " + restaurant.getRestaurantType() + "\n" + "Delivery Charge: $" + restaurant.getCharge() + "\n" + " Distance Away: " + tempdouble);
-//                        markers[j].setTag(restaurant.getId());
-//                    }
-//                }
-//            }
-//
-//        } catch (IOException e) {
-//            e.printStackTrace();
+            }
         }
     }
 
