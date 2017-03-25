@@ -23,7 +23,6 @@ import com.google.firebase.database.DatabaseReference;
 import java.util.ArrayList;
 
 import static com.gmail.dleemcewen.tandemfieri.R.id.orderLaunch;
-import static com.paypal.android.sdk.onetouch.core.metadata.ah.S;
 
 public class LookAtMenuActivity extends AppCompatActivity {
     User user;

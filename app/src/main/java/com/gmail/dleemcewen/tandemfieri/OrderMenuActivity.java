@@ -1,5 +1,6 @@
 package com.gmail.dleemcewen.tandemfieri;
 
+import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
@@ -155,7 +156,7 @@ public class OrderMenuActivity extends AppCompatActivity implements AdapterView.
                 intent.putExtra("Latitude", latitude);
                 intent.putExtra("Longitude", longitude);
                 intent.putExtra("braintreeID", user.getBraintreeId());
-                startActivity(intent);
+                startActivityForResult(intent, 1);
             }
         });
     }
@@ -186,6 +187,14 @@ public class OrderMenuActivity extends AppCompatActivity implements AdapterView.
     protected void onResume() {
         super.onResume();
         resetSelections();
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if (requestCode == 1) {
+            if (resultCode == Activity.RESULT_CANCELED) order = new Order();
+            else order = (Order) data.getSerializableExtra("order");
+        }
     }
 
     private void resetSelections() {
