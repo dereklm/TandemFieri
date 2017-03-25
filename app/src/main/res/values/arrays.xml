@@ -63,4 +63,12 @@
         <item>Pizza</item>
         <item>American</item>
     </string-array>
+
+    <string-array name="order_statuses">
+        <item>All</item>
+        <item>CREATING</item>
+        <item>PAYMENT PENDING</item>
+        <item>EN ROUTE</item>
+        <item>COMPLETE</item>
+    </string-array>
 </resources>

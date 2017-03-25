@@ -37,11 +37,21 @@ public class DateFormatter {
      * @return date in timestamp format
      */
     public static Timestamp toTimeStamp(Date dateValue) {
+        Calendar calendar = Calendar.getInstance();
+        calendar.setTime(dateValue);
+
+        StringBuilder formattedDateString = new StringBuilder();
+        formattedDateString.append(Integer.valueOf(calendar.get(Calendar.MONTH)));
+        formattedDateString.append("/");
+        formattedDateString.append(Integer.valueOf(calendar.get(Calendar.DAY_OF_MONTH)));
+        formattedDateString.append("/");
+        formattedDateString.append(Integer.valueOf(calendar.get(Calendar.YEAR)));
+
         DateFormat format = new SimpleDateFormat("MM/dd/yyyy", Locale.US);
         Date formattedDate = new Date();
 
         try {
-            formattedDate = format.parse(dateValue.toString());
+            formattedDate = format.parse(formattedDateString.toString());
         } catch (ParseException e) {
             e.printStackTrace();
         }
@@ -63,12 +73,34 @@ public class DateFormatter {
     }
 
     /**
-     * convertMilitaryTimeToStandard converts an integer representing military time
-     * to standard time
+     * convertMilitaryTimeToStandardString converts an integer representing military time
+     * to standard time and returns the result as a string
      * @param militaryTime integer representing military time
-     * @return standard time
+     * @return standard time in string format
      */
-    public static String convertMilitaryTimeToStandard(int militaryTime) {
+    public static String convertMilitaryTimeToStandardString(int militaryTime) {
+        Date newDate = militaryTimeToDate(militaryTime);
+
+        DateFormat dateFormatter = new SimpleDateFormat("hh:mm a", Locale.US);
+        return dateFormatter.format(newDate);
+    }
+
+    /**
+     * convertMilitaryTimeToStandardDate converts an integer representing military time to
+     * standard time and returns the result as a date
+     * @param militaryTime integer representing military time
+     * @return standard time in date format
+     */
+    public static Date convertMilitaryTimeToStandardDate(int militaryTime) {
+        return militaryTimeToDate(militaryTime);
+    }
+
+    /**
+     * militaryTimeToDate converts military time to a date
+     * @param militaryTime integer representing military time
+     * @return date
+     */
+    private static Date militaryTimeToDate(int militaryTime) {
         int hours = militaryTime / 100;
         int minutes = militaryTime - (hours * 100);
 
@@ -77,7 +109,6 @@ public class DateFormatter {
         calendar.set(Calendar.HOUR_OF_DAY, hours);
         calendar.set(Calendar.MINUTE, minutes);
 
-        DateFormat dateFormatter = new SimpleDateFormat("hh:mm a", Locale.US);
-        return dateFormatter.format(calendar.getTime());
+        return calendar.getTime();
     }
 }

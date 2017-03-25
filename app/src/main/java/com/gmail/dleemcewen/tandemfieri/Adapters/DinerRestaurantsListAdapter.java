@@ -12,9 +12,11 @@ import android.widget.TextView;
 
 import com.gmail.dleemcewen.tandemfieri.Entities.Day;
 import com.gmail.dleemcewen.tandemfieri.Entities.DeliveryHours;
+import com.gmail.dleemcewen.tandemfieri.Entities.Rating;
 import com.gmail.dleemcewen.tandemfieri.Formatters.DateFormatter;
 import com.gmail.dleemcewen.tandemfieri.R;
 import com.gmail.dleemcewen.tandemfieri.Entities.Restaurant;
+import com.gmail.dleemcewen.tandemfieri.Repositories.Ratings;
 import com.gmail.dleemcewen.tandemfieri.Repositories.RestaurantHours;
 import com.gmail.dleemcewen.tandemfieri.Tasks.TaskResult;
 import com.google.android.gms.tasks.OnCompleteListener;
@@ -24,6 +26,7 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
+import java.util.Locale;
 
 /**
  * DinerRestaurantsListAdapter provides the required methods to render the
@@ -34,11 +37,13 @@ public class DinerRestaurantsListAdapter extends BaseAdapter {
     private Activity context;
     private List<Restaurant> restaurantsList;
     private RestaurantHours<DeliveryHours> restaurantHours;
+    private Ratings<Rating> ratings;
     private Date currentDate;
 
     public DinerRestaurantsListAdapter(Activity context, List<Restaurant> restaurantsList) {
         this.context = context;
         this.restaurantHours = new RestaurantHours<>(context);
+        this.ratings = new Ratings<>(context);
         this.currentDate = new Date();
 
         if (!restaurantsList.isEmpty()) {
@@ -132,16 +137,29 @@ public class DinerRestaurantsListAdapter extends BaseAdapter {
                 break;
         }
 
-        TextView restaurantOpenClosed = (TextView)convertView.findViewById(R.id.restaurant_openclosed);
+        TextView restaurantOpenClosed = (TextView)convertView.findViewById(R.id.restaurantOpenClosed);
         setRestaurantHours(restaurant.getId(), restaurantOpenClosed);
+
+        TextView restaurantAverageRating = (TextView)convertView.findViewById(R.id.restaurantAverageRating);
+        getRestaurantAverageRating(restaurant.getId(), restaurantAverageRating);
 
         return convertView;
     }
 
+    /**
+     * setRestaurantHours calculates and sets the restaurant hours text for a restaurant
+     * @param restaurantId uniquely identifies the restaurant
+     * @param restaurantOpenClosed identifies the textview to update
+     */
     private void setRestaurantHours(String restaurantId, TextView restaurantOpenClosed) {
         getRestaurantHours(restaurantId, restaurantOpenClosed);
     }
 
+    /**
+     * getRestaurantHours retrieves the hours for the specified restaurant
+     * @param restaurantId uniquely identifies the restaurant
+     * @param restaurantOpenClosed identifies the textview to update
+     */
     private void getRestaurantHours(String restaurantId, final TextView restaurantOpenClosed) {
         final int dayOfWeek = getDayOfWeekFromCurrentDate();
 
@@ -152,42 +170,9 @@ public class DinerRestaurantsListAdapter extends BaseAdapter {
                 public void onComplete(@NonNull Task<TaskResult<DeliveryHours>> task) {
                     List<DeliveryHours> deliveryHours = task.getResult().getResults();
                     if (!deliveryHours.isEmpty() && !deliveryHours.get(0).getDays().isEmpty()) {
-                        StringBuilder hoursTextBuilder = new StringBuilder();
-
                         Day dayHours = deliveryHours.get(0).getDays().get(dayOfWeek);
-                        if (dayHours.isOpen()) {
-                            if (compareOpenTimeWithCurrentTime(dayHours.getHourOpen())) {
-                                if (compareClosedTimeWithCurrentTime(dayHours.getHourClosed())) {
-                                    hoursTextBuilder.append("CURRENTLY OPEN. ");
-                                    hoursTextBuilder.append("Open today from ");
-                                    hoursTextBuilder.append(DateFormatter.convertMilitaryTimeToStandard(dayHours.getHourOpen()));
-                                    hoursTextBuilder.append(" to ");
-                                    hoursTextBuilder.append(DateFormatter.convertMilitaryTimeToStandard(dayHours.getHourClosed()));
-                                    hoursTextBuilder.append(".");
-                                    setRestaurantHoursText(hoursTextBuilder.toString(), restaurantOpenClosed, Color.BLUE);
-                                } else {
-                                    hoursTextBuilder.append("CLOSED. ");
-                                    hoursTextBuilder.append("Open today from ");
-                                    hoursTextBuilder.append(DateFormatter.convertMilitaryTimeToStandard(dayHours.getHourOpen()));
-                                    hoursTextBuilder.append(" to ");
-                                    hoursTextBuilder.append(DateFormatter.convertMilitaryTimeToStandard(dayHours.getHourClosed()));
-                                    hoursTextBuilder.append(".");
-                                    setRestaurantHoursText(hoursTextBuilder.toString(), restaurantOpenClosed, Color.argb(255, 128, 128, 128));
-                                }
-                            } else {
-                                hoursTextBuilder.append("CURRENTLY CLOSED. ");
-                                hoursTextBuilder.append("Open today from ");
-                                hoursTextBuilder.append(DateFormatter.convertMilitaryTimeToStandard(dayHours.getHourOpen()));
-                                hoursTextBuilder.append(" to ");
-                                hoursTextBuilder.append(DateFormatter.convertMilitaryTimeToStandard(dayHours.getHourClosed()));
-                                hoursTextBuilder.append(".");
-                                setRestaurantHoursText(hoursTextBuilder.toString(), restaurantOpenClosed, Color.argb(255, 128, 128, 128));
-                            }
-                        } else {
-                            hoursTextBuilder.append("CLOSED. ");
-                            hoursTextBuilder.append("Not open today.");
-                            setRestaurantHoursText(hoursTextBuilder.toString(), restaurantOpenClosed, Color.argb(255, 128, 128, 128));
-                        }
+
+                        buildRestaurantHoursText(dayHours, restaurantOpenClosed);
                     } else {
                         setRestaurantHoursText("CLOSED. No delivery hours have been set for today.", restaurantOpenClosed, Color.argb(255, 128, 128, 128));
                     }
@@ -196,25 +181,46 @@ public class DinerRestaurantsListAdapter extends BaseAdapter {
     }
 
     /**
-     * compareOpenTimeWithCurrentTime compares the defined open time with the current time
-     * to determine if the restaurant is currently open
-     * @param hourOpen indicates the time the restaurant opens in military format
-     * @return true or false
+     * buildRestaurantHoursText builds the restaurant hours text
+     * @param dayHours indicates the hours the restaurant is open for each day
+     * @param restaurantOpenClosed identifies the textview to update
      */
-    private boolean compareOpenTimeWithCurrentTime(int hourOpen) {
-        int currentMilitaryTime = DateFormatter.convertStandardTimeToMilitaryTime(currentDate);
-        return currentMilitaryTime > hourOpen;
-    }
+    private void buildRestaurantHoursText(Day dayHours, TextView restaurantOpenClosed) {
+        StringBuilder hoursTextBuilder = new StringBuilder();
 
-    /**
-     * compareClosedTimeWithCurrentTime compares the defined closed time with the current time
-     * to determine if the restaurant is currently closed
-     * @param hourClosed indicates the time the restaurant closes in military format
-     * @return true or false
-     */
-    private boolean compareClosedTimeWithCurrentTime(int hourClosed) {
-        int currentMilitaryTime = DateFormatter.convertStandardTimeToMilitaryTime(currentDate);
-        return currentMilitaryTime < hourClosed;
+        if (dayHours.isOpen()) {
+            if (dayHours.compareOpenTimeWithCurrentTime(dayHours.getHourOpen(), currentDate)) {
+                if (dayHours.compareClosedTimeWithCurrentTime(dayHours.getHourClosed(), currentDate)) {
+                    hoursTextBuilder.append("CURRENTLY OPEN. ");
+                    hoursTextBuilder.append("Open today from ");
+                    hoursTextBuilder.append(DateFormatter.convertMilitaryTimeToStandardString(dayHours.getHourOpen()));
+                    hoursTextBuilder.append(" to ");
+                    hoursTextBuilder.append(DateFormatter.convertMilitaryTimeToStandardString(dayHours.getHourClosed()));
+                    hoursTextBuilder.append(".");
+                    setRestaurantHoursText(hoursTextBuilder.toString(), restaurantOpenClosed, Color.BLUE);
+                } else {
+                    hoursTextBuilder.append("CLOSED. ");
+                    hoursTextBuilder.append("Open today from ");
+                    hoursTextBuilder.append(DateFormatter.convertMilitaryTimeToStandardString(dayHours.getHourOpen()));
+                    hoursTextBuilder.append(" to ");
+                    hoursTextBuilder.append(DateFormatter.convertMilitaryTimeToStandardString(dayHours.getHourClosed()));
+                    hoursTextBuilder.append(".");
+                    setRestaurantHoursText(hoursTextBuilder.toString(), restaurantOpenClosed, Color.argb(255, 128, 128, 128));
+                }
+            } else {
+                hoursTextBuilder.append("CURRENTLY CLOSED. ");
+                hoursTextBuilder.append("Open today from ");
+                hoursTextBuilder.append(DateFormatter.convertMilitaryTimeToStandardString(dayHours.getHourOpen()));
+                hoursTextBuilder.append(" to ");
+                hoursTextBuilder.append(DateFormatter.convertMilitaryTimeToStandardString(dayHours.getHourClosed()));
+                hoursTextBuilder.append(".");
+                setRestaurantHoursText(hoursTextBuilder.toString(), restaurantOpenClosed, Color.argb(255, 128, 128, 128));
+            }
+        } else {
+            hoursTextBuilder.append("CLOSED. ");
+            hoursTextBuilder.append("Not open today.");
+            setRestaurantHoursText(hoursTextBuilder.toString(), restaurantOpenClosed, Color.argb(255, 128, 128, 128));
+        }
     }
 
     /**
@@ -240,5 +246,53 @@ public class DinerRestaurantsListAdapter extends BaseAdapter {
         //have to subtract 1 because when the days of the week were created they were created as a
         //zero-based list, whereas calendar uses a 1-based list
         return calendar.get(Calendar.DAY_OF_WEEK) - 1;
+    }
+
+    /**
+     * getRestaurantAverageRating calculates the average rating for a given restaurant
+     * @param restaurantId uniquely identifies the restaurant
+     * @param restaurantAverageRating identifies the textview to update
+     */
+    private void getRestaurantAverageRating(String restaurantId, final TextView restaurantAverageRating) {
+        ratings
+            .find("restaurantId = '" + restaurantId + "'")
+            .addOnCompleteListener(context, new OnCompleteListener<TaskResult<Rating>>() {
+                @Override
+                public void onComplete(@NonNull Task<TaskResult<Rating>> task) {
+                    Float averageRating = 0F;
+                    List<Rating> ratings = task.getResult().getResults();
+
+                    if (!ratings.isEmpty()) {
+                        Float totalRating = 0F;
+                        int numberOfApplicableRatings = 0;
+
+                        for (Rating rating : ratings) {
+                            if (rating.getDriverId() == null && rating.getOrderId() == null) {
+                                totalRating += rating.getRating();
+                                numberOfApplicableRatings++;
+                            }
+                        }
+
+                        averageRating = totalRating / numberOfApplicableRatings;
+                    }
+
+                    setRestaurantAverageRatingText(averageRating, restaurantAverageRating);
+                }
+            });
+    }
+
+    /**
+     * setRestaurantAverageRatingText formats and sets the average rating text for a restaurant
+     * @param averageRating indicates the average rating
+     * @param restaurantAverageRating identifies the textview to update
+     */
+    private void setRestaurantAverageRatingText(Float averageRating, TextView restaurantAverageRating) {
+        if (averageRating > 0) {
+            restaurantAverageRating
+                .setText("Average rating: " + String.format(Locale.US, "%.2f", averageRating));
+        } else {
+            restaurantAverageRating
+                .setText("No ratings yet");
+        }
     }
 }

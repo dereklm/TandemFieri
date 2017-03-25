@@ -162,7 +162,7 @@ public class DinerMainMenu extends AppCompatActivity implements ConnectionCallba
         listview.setOnItemClickListener(new AdapterView.OnItemClickListener() {
                 @Override
             public void onItemClick(AdapterView<?> parent, final View view, int position, long id) {
-                    TextView textView = (TextView) view.findViewById(R.id.restaurant_openclosed);
+                    TextView textView = (TextView) view.findViewById(R.id.restaurantOpenClosed);
                     controlString = textView.getText().toString();
 
                     openMenu((Restaurant) parent.getItemAtPosition(position), controlString);

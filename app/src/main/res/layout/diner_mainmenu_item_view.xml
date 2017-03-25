@@ -12,9 +12,17 @@
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:id="@+id/restaurant_openclosed"
+        android:id="@+id/restaurantOpenClosed"
         android:layout_marginLeft="48dp"
         android:textSize="@dimen/regular_text_size"
         android:textStyle="italic"/>
-
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/restaurantAverageRating"
+        android:layout_marginRight="@dimen/activity_horizontal_margin"
+        android:gravity="right"
+        android:layout_gravity="right"
+        android:textSize="@dimen/regular_text_size"
+        android:textStyle="italic|bold"/>
 </LinearLayout>

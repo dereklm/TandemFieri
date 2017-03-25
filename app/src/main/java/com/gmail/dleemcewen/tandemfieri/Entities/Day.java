@@ -1,6 +1,10 @@
 package com.gmail.dleemcewen.tandemfieri.Entities;
 
+import com.gmail.dleemcewen.tandemfieri.Formatters.DateFormatter;
 import com.google.firebase.database.Exclude;
+
+import java.util.Calendar;
+import java.util.Date;
 
 /**
  * Created by Ruth on 2/24/2017.
@@ -90,5 +94,37 @@ public class Day {
                 ", hourClosed='" + hourClosed + '\'' +
                 ", isOpen=" + isOpen +
                 '}';
+    }
+
+    /**
+     * compareOpenTimeWithCurrentTime compares the defined open time with the current time
+     * to determine if the restaurant is currently open
+     * @param hourOpen indicates the time the restaurant opens in military format
+     * @return true or false
+     */
+    @Exclude
+    public boolean compareOpenTimeWithCurrentTime(int hourOpen, Date currentDate) {
+        int currentMilitaryTime = DateFormatter.convertStandardTimeToMilitaryTime(currentDate);
+        return currentMilitaryTime > hourOpen;
+    }
+
+    /**
+     * compareClosedTimeWithCurrentTime compares the defined closed time with the current date/time
+     * to determine if the restaurant is currently closed
+     * @param hourClosed indicates the time the restaurant closes in military format
+     * @return true or false
+     */
+    @Exclude
+    public boolean compareClosedTimeWithCurrentTime(int hourClosed, Date currentDate) {
+        Date closedTime = DateFormatter.convertMilitaryTimeToStandardDate(hourClosed);
+
+        if ((hourClosed / 100) < 12) {
+            Calendar calendar = Calendar.getInstance();
+            calendar.setTime(closedTime);
+            int day = calendar.get(Calendar.DAY_OF_YEAR);
+            calendar.set(Calendar.DAY_OF_YEAR, ++day);
+            closedTime = calendar.getTime();
+        }
+        return closedTime.after(currentDate);
     }
 }
