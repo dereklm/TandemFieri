@@ -23,6 +23,7 @@ import com.gmail.dleemcewen.tandemfieri.Entities.DeliveryHours;
 import com.gmail.dleemcewen.tandemfieri.Entities.Restaurant;
 import com.gmail.dleemcewen.tandemfieri.Entities.User;
 import com.gmail.dleemcewen.tandemfieri.Logging.LogWriter;
+import com.gmail.dleemcewen.tandemfieri.ManageOrders;
 import com.gmail.dleemcewen.tandemfieri.ManageRestaurantDrivers;
 import com.gmail.dleemcewen.tandemfieri.ProductHistoryActivity;
 import com.gmail.dleemcewen.tandemfieri.R;
@@ -275,7 +276,7 @@ public class ManageRestaurantExpandableListAdapter extends BaseExpandableListAda
         Button manageDrivers = (Button)convertView.findViewById(R.id.manageDrivers);
         Button rateDrivers = (Button)convertView.findViewById(R.id.rateDrivers);
         Button deliveryHours = (Button)convertView.findViewById(R.id.deliveryHours);
-        Button manageOrders = (Button)convertView.findViewById(R.id.manageOrders);
+
 
         manageMenuItems.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -353,16 +354,6 @@ public class ManageRestaurantExpandableListAdapter extends BaseExpandableListAda
             }
         });
 
-        manageOrders.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-               /* Intent intent = new Intent(context, ManageOrders.class);
-                intent.putExtra("restId",selectedChild.getKey());
-                intent.putExtra("ID", user.getAuthUserID());
-                context.startActivity(intent);*/
-                LogWriter.log(context, Level.INFO, "Should open manage orders");
-            }
-        });
 
         return convertView;
     }

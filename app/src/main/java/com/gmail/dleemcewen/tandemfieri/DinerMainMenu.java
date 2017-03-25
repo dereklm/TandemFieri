@@ -57,6 +57,7 @@ import java.util.logging.Level;
 import static android.Manifest.permission.ACCESS_FINE_LOCATION;
 import static android.os.Build.VERSION_CODES.M;
 import static com.gmail.dleemcewen.tandemfieri.DinerMapActivity.MY_PERMISSIONS_REQUEST_LOCATION;
+import static com.paypal.android.sdk.onetouch.core.metadata.ah.t;
 
 public class DinerMainMenu extends AppCompatActivity {
     private NotificationMessages<NotificationMessage> notificationsRepository;
@@ -68,7 +69,7 @@ public class DinerMainMenu extends AppCompatActivity {
     List<Restaurant> restaurantsList;
     DatabaseReference mDatabase;
     static MenuItem deliveryOption;
-    //DinerRestaurantsListAdapter adapter;
+    private String controlString;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -118,15 +119,20 @@ public class DinerMainMenu extends AppCompatActivity {
         listview.setOnItemClickListener(new AdapterView.OnItemClickListener() {
                 @Override
             public void onItemClick(AdapterView<?> parent, final View view, int position, long id) {
-                openMenu((Restaurant) parent.getItemAtPosition(position));
+                    TextView textView = (TextView) view.findViewById(R.id.restaurant_openclosed);
+                    controlString = textView.getText().toString();
+
+                    openMenu((Restaurant) parent.getItemAtPosition(position), controlString);
             }
         });
     }
 
-    private void openMenu(Restaurant r){
+    private void openMenu(Restaurant r, String controlString){
+
         Bundle restaurantBundle = new Bundle();
         Intent intent = new Intent(DinerMainMenu.this, LookAtMenuActivity.class);
         restaurantBundle.putSerializable("Restaurant", r);
+        restaurantBundle.putString("OpenClosed", controlString);
         intent.putExtras(restaurantBundle);
         startActivity(intent);
     }
@@ -226,6 +232,7 @@ public class DinerMainMenu extends AppCompatActivity {
         Intent intent = new Intent(DinerMainMenu.this, DinerMapActivity.class);
         Bundle userBundle = new Bundle();
         userBundle.putSerializable("User", user);
+        userBundle.putString("OpenClosed", controlString);
         intent.putExtras(userBundle);
         startActivity(intent);
     }
