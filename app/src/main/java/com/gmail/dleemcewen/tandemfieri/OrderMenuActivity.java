@@ -155,7 +155,7 @@ public class OrderMenuActivity extends AppCompatActivity implements AdapterView.
                 intent.putExtra("Latitude", latitude);
                 intent.putExtra("Longitude", longitude);
                 intent.putExtra("braintreeID", user.getBraintreeId());
-                startActivity(intent);
+                startActivityForResult(intent, 1);
             }
         });
     }
