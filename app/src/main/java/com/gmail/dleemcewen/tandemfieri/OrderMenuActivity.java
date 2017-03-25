@@ -1,5 +1,6 @@
 package com.gmail.dleemcewen.tandemfieri;
 
+import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
@@ -191,7 +192,8 @@ public class OrderMenuActivity extends AppCompatActivity implements AdapterView.
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         if (requestCode == 1) {
-            order = (Order) data.getSerializableExtra("order");
+            if (resultCode == Activity.RESULT_CANCELED) order = new Order();
+            else order = (Order) data.getSerializableExtra("order");
         }
     }
 
