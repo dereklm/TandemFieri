@@ -60,7 +60,6 @@ import java.util.logging.Level;
 import static android.Manifest.permission.ACCESS_FINE_LOCATION;
 import static android.os.Build.VERSION_CODES.M;
 import static com.gmail.dleemcewen.tandemfieri.DinerMapActivity.MY_PERMISSIONS_REQUEST_LOCATION;
-import static com.paypal.android.sdk.onetouch.core.metadata.ah.t;
 
 public class DinerMainMenu extends AppCompatActivity implements ConnectionCallbacks, OnConnectionFailedListener {
     protected static final String TAG = "DinerMainMenu";
