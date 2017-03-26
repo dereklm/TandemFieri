@@ -83,9 +83,9 @@ public class RestaurantMapActivity extends Activity implements OnMapReadyCallbac
                                     @Override
                                     public void onComplete(DatabaseError error, DatabaseReference reference) {
                                        if (error != null) {
-                                           Toast.makeText(getApplicationContext(), "Unable to save change, try again later!", Toast.LENGTH_LONG);
+                                           Toast.makeText(getApplicationContext(), "Unable to save change, try again later!", Toast.LENGTH_LONG).show();
                                        } else {
-                                           Toast.makeText(getApplicationContext(), "Delivery area saved!", Toast.LENGTH_LONG);
+                                           Toast.makeText(getApplicationContext(), "Delivery area saved!", Toast.LENGTH_LONG).show();
                                            EventBus.getDefault()
                                                    .post(new ActivityEvent(ActivityEvent.Result.REFRESH_RESTAURANT_LIST));
                                        }

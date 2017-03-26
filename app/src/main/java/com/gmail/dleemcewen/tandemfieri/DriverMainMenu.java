@@ -166,7 +166,7 @@ public class DriverMainMenu extends AppCompatActivity {
     }
 
     private void startDelivery(){
-        if(currentOrderId.equals(null)){
+        if(currentOrderId == null || currentOrderId.equals("")){
             Toast.makeText(getApplicationContext(), "Make sure you set a delivery as your current one", Toast.LENGTH_LONG).show();
         }else {
             for (Order order : entities) {

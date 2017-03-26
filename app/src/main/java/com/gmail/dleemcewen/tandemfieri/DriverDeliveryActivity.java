@@ -16,6 +16,7 @@ import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
@@ -52,6 +53,8 @@ import static com.google.android.gms.location.LocationServices.FusedLocationApi;
 public class DriverDeliveryActivity extends AppCompatActivity implements GoogleApiClient.ConnectionCallbacks,
         GoogleApiClient.OnConnectionFailedListener,
         LocationListener {
+
+    protected static final String TAG = "DriverDeliveryActivity";
 
     GoogleApiClient mGoogleApiClient;
     Location mLastLocation, currentLocation, customerLocation;
@@ -132,12 +135,12 @@ public class DriverDeliveryActivity extends AppCompatActivity implements GoogleA
         }
         boolean network_enabled = locManager.isProviderEnabled(LocationManager.NETWORK_PROVIDER);
 
-        Location location;
+        if (!network_enabled) {
+            network_enabled = locManager.isProviderEnabled(LocationManager.GPS_PROVIDER);
+        }
 
         if(network_enabled){
-
             currentLocation = locManager.getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
-
         }
 
         if (android.os.Build.VERSION.SDK_INT >= M) {
@@ -288,6 +291,7 @@ public class DriverDeliveryActivity extends AppCompatActivity implements GoogleA
 
     @Override
     public void onLocationChanged(Location location) {
+        Log.v(TAG, "locationChanged");
 
         if (isLocationEnabled(getApplicationContext()) == false){
             finish();
@@ -303,6 +307,13 @@ public class DriverDeliveryActivity extends AppCompatActivity implements GoogleA
 
         mDatabase.child("Latitude").setValue(currentLocation.getLatitude()).equals("Latitude");
         mDatabase.child("Longtitude").setValue(currentLocation.getLongitude()).equals("Longitude");
+
+        Toast.makeText(getApplicationContext(), ""+(currentLocation.distanceTo(customerLocation) * 0.000621371), Toast.LENGTH_LONG).show();
+        if((currentLocation.distanceTo(customerLocation) * 0.000621371) < 0.1){
+            Toast.makeText(getApplicationContext(), "You are here", Toast.LENGTH_LONG).show();
+            completeButton.setClickable(true);
+            completeButton.setBackgroundColor(Color.parseColor("Green"));
+        }
 
         //stop location updates
         if (mGoogleApiClient != null) {

@@ -178,6 +178,8 @@ public class DinerMainMenu extends AppCompatActivity implements ConnectionCallba
         restaurantBundle.putSerializable("Restaurant", r);
         restaurantBundle.putString("OpenClosed", controlString);
         restaurantBundle.putSerializable("User", user);
+        restaurantBundle.putString("Latitude", String.valueOf(mLastLocation.getLatitude()));
+        restaurantBundle.putString("Longitude", String.valueOf(mLastLocation.getLongitude()));
         intent.putExtras(restaurantBundle);
         startActivity(intent);
     }

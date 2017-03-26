@@ -14,21 +14,22 @@ public class Day {
     String name;
     int hourOpen;   //military time
     int hourClosed; //military time
-    boolean isOpen;
+
+    boolean open;
 
     public Day() {
     }
 
     public Day(String name, boolean isOpen) {
         this.name = name;
-        this.isOpen = isOpen;
+        this.open = isOpen;
     }
 
     public Day(String name, int hourOpen, int hourClosed, boolean isOpen) {
         this.name = name;
         this.hourOpen = hourOpen;
         this.hourClosed = hourClosed;
-        this.isOpen = isOpen;
+        this.open = isOpen;
     }
 
     public String getName() {
@@ -56,11 +57,11 @@ public class Day {
     }
 
     public boolean isOpen() {
-        return isOpen;
+        return open;
     }
 
     public void setOpen(boolean open) {
-        isOpen = open;
+        this.open = open;
     }
 
     /*return the hours of delivery similar to military format
@@ -92,7 +93,7 @@ public class Day {
                 "name='" + name + '\'' +
                 ", hourOpen='" + hourOpen + '\'' +
                 ", hourClosed='" + hourClosed + '\'' +
-                ", isOpen=" + isOpen +
+                ", isOpen=" + open +
                 '}';
     }
 
@@ -105,6 +106,7 @@ public class Day {
     @Exclude
     public boolean compareOpenTimeWithCurrentTime(int hourOpen, Date currentDate) {
         int currentMilitaryTime = DateFormatter.convertStandardTimeToMilitaryTime(currentDate);
+
         return currentMilitaryTime > hourOpen;
     }
 

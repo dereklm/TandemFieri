@@ -117,6 +117,7 @@ public class CartActivity extends AppCompatActivity {
         order.setCustomerId(uid);
         order.setRestaurantId(restaurantId);
         order.setRestaurantName(restName);
+        order.setStatus(OrderEnum.PAYMENT_PENDING);
 
         cancelButton.setOnClickListener(new View.OnClickListener() {
             @Override
