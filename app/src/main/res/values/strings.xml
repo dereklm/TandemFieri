@@ -14,6 +14,7 @@
     <string name="createAccount">Create Account</string>
     <string name="signupTitle">Sign Up</string>
     <string name="hintFirstName">First Name</string>
+    <string name="no_assigned_orders">You have no assigned orders.</string>
     <string name="hintLastName">Last Name</string>
     <string name="hintAddress">Address</string>
     <string name="hintCity">City</string>

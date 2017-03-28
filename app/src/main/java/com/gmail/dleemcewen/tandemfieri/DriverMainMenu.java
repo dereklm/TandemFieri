@@ -9,19 +9,14 @@ import android.support.v7.app.AppCompatActivity;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
-
 import android.view.View;
-import android.widget.AdapterView;
-import android.widget.ListView;
-import android.widget.Spinner;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.gmail.dleemcewen.tandemfieri.Adapters.OrdersListAdapterAddress;
 import com.gmail.dleemcewen.tandemfieri.Entities.Order;
 import com.gmail.dleemcewen.tandemfieri.Entities.User;
-import com.gmail.dleemcewen.tandemfieri.Enums.OrderEnum;
 import com.gmail.dleemcewen.tandemfieri.Logging.LogWriter;
-import com.gmail.dleemcewen.tandemfieri.Repositories.Orders;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -40,10 +35,10 @@ public class DriverMainMenu extends AppCompatActivity {
     private DatabaseReference mDatabaseDelivery, mDatabaseCurrentDelivery;
     private Order order, currentOrder;
     private Context context;
-    private ListView ordersListView;
     private List<Order> entities;
-    private Orders<Order> orders;
     private OrdersListAdapterAddress listAdapter;
+    private TextView noOrders;
+    private boolean ordersShown = false;
     private String currentFilter = "";
 
     @Override
@@ -53,10 +48,9 @@ public class DriverMainMenu extends AppCompatActivity {
 
         Bundle bundle = this.getIntent().getExtras();
         user = (User) bundle.getSerializable("User");
-
         context = this;
 
-        ordersListView = (ListView) findViewById(R.id.orders);
+        noOrders = (TextView) findViewById(R.id.no_assigned_orders);
 
         LogWriter.log(getApplicationContext(), Level.INFO, "The user is " + user.getAuthUserID());
         mDatabaseDelivery = FirebaseDatabase.getInstance().getReference().child("Delivery").child(user.getAuthUserID()).child("Order");
@@ -69,7 +63,7 @@ public class DriverMainMenu extends AppCompatActivity {
                 //order = dataSnapshot.child("Order").getValue(Order.class);
 
                 for (DataSnapshot child : dataSnapshot.getChildren()) {
-                    for(DataSnapshot child2: child.getChildren()) {
+                    for (DataSnapshot child2 : child.getChildren()) {
                         order = child2.getValue(Order.class);
                     }
                     //Toast.makeText(getApplicationContext(), ""+child.child("Order").getValue(), Toast.LENGTH_LONG).show();
@@ -79,14 +73,20 @@ public class DriverMainMenu extends AppCompatActivity {
                 entities = new ArrayList<Order>();
 
                 for (DataSnapshot child : dataSnapshot.getChildren()) {
-                    for(DataSnapshot child2: child.getChildren()) {
+                    for (DataSnapshot child2 : child.getChildren()) {
                         entities.add(child2.getValue(Order.class));
                     }
                     //Toast.makeText(getApplicationContext(), ""+child.child("Order").getValue(), Toast.LENGTH_LONG).show();
                     //order = child.child("Order").getValue(Order.class);
                 }
-                loadList();
 
+                if (!ordersShown && order != null) {
+                    noOrders.setVisibility(View.INVISIBLE);
+                    ordersShown = true;
+                    showMyDeliveries();
+                } else if (order == null) {
+                    noOrders.setVisibility(View.VISIBLE);
+                }
             }
 
             @Override
@@ -105,22 +105,27 @@ public class DriverMainMenu extends AppCompatActivity {
 
             }
         });
-
-        Spinner spinner = (Spinner) findViewById(R.id.OrderStatus);
-        spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
-            @Override
-            public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
-                currentFilter = adapterView.getItemAtPosition(i).toString().equalsIgnoreCase("all")? "":adapterView.getItemAtPosition(i).toString();
-                loadList();
-            }
-
-            @Override
-            public void onNothingSelected(AdapterView<?> adapterView) {
-
-            }
-        });
-
     }//end onCreate
+
+    public void setCurrentOrder(Order order) {
+        this.currentOrder = order;
+    }
+
+    public Order getCurrentOrder() {
+        return currentOrder;
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        if (ordersShown && order != null) {
+            noOrders.setVisibility(View.INVISIBLE);
+            currentOrder = null;
+            showMyDeliveries();
+        } else if (order == null) {
+            noOrders.setVisibility(View.VISIBLE);
+        }
+    }
 
     //create menu
     @Override
@@ -147,9 +152,6 @@ public class DriverMainMenu extends AppCompatActivity {
             case R.id.delivery:
                 startDelivery();
                 return true;
-            case R.id.myDeliveries:
-                showMyDeliveries();
-                return true;
             default:
                 return super.onOptionsItemSelected(item);
         }
@@ -170,7 +172,7 @@ public class DriverMainMenu extends AppCompatActivity {
             Toast.makeText(getApplicationContext(), "Make sure you set a delivery as your current one", Toast.LENGTH_LONG).show();
         }else {
             for (Order order : entities) {
-                if (order.getCustomerId().equals(currentOrderId)) {
+                if (order.getOrderId().equals(currentOrderId)) {
                     currentOrder = order;
                 }
             }
@@ -185,12 +187,6 @@ public class DriverMainMenu extends AppCompatActivity {
         }
     }
 
-    private void connect(){
-        Intent intent = new Intent(DriverMainMenu.this, ConnectActivity.class);
-        intent.putExtra("ID", user.getAuthUserID());
-        startActivity(intent);
-    }
-
     /**
      * showMyDeliveries displays all of the deliveries assigned to the current driver
      */
@@ -202,7 +198,7 @@ public class DriverMainMenu extends AppCompatActivity {
         Bundle args = new Bundle();
         args.putString("driverId", user.getAuthUserID());
         args.putString("restaurantId", user.getRestaurantId());
-        args.putSerializable("Order", order);
+        args.putString("customerId", order.getCustomerId());
         driverOrders.setArguments(args);
 
         fragmentTransaction.add(R.id.activity_driver_main_menu, driverOrders);
@@ -229,40 +225,5 @@ public class DriverMainMenu extends AppCompatActivity {
         intent.putExtras(driverBundle);
         intent.putExtra("UserType", "Driver");
         startActivity(intent);
-    }
-
-    private void loadList() {
-        OrderEnum match = null;
-        List<Order> toShow = new ArrayList<>();
-        switch(currentFilter){
-            case "":
-                match= null;
-                break;
-            case "CREATING":
-                match= OrderEnum.CREATING;
-                break;
-            case "PAYMENT PENDING":
-                match = OrderEnum.PAYMENT_PENDING;
-                break;
-            case "EN ROUTE":
-                match = OrderEnum.EN_ROUTE;
-                break;
-            case "COMPLETE":
-                match = OrderEnum.COMPLETE;
-                break;
-        }
-        if(match!=null){
-            for(Order o : entities){
-                if(o.getStatus() == match) toShow.add(o);
-            }
-            listAdapter = new OrdersListAdapterAddress(context,toShow);
-            ordersListView.setAdapter(listAdapter);
-        }
-        else{
-            if(entities!=null) {
-                listAdapter = new OrdersListAdapterAddress(context, entities);
-                ordersListView.setAdapter(listAdapter);
-            }
-        }
     }
 }//end Activity

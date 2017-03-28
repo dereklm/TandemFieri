@@ -27,15 +27,6 @@
             android:divider="@android:color/darker_gray"
             android:dividerHeight="0.5dp" />
         <Button
-            android:id="@+id/closeMyOrders"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_below="@id/myDeliveriesList"
-            android:layout_alignParentLeft="true"
-            android:layout_alignParentStart="true"
-            android:text="@string/close">
-        </Button>
-        <Button
             android:id="@+id/selectCurrentDelivery"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"

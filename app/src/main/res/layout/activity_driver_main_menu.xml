@@ -11,30 +11,12 @@
     tools:context="com.gmail.dleemcewen.tandemfieri.DriverMainMenu">
 
     <TextView
-        android:id="@+id/title"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="Driver Main Menu"
-        android:textSize="35sp"/>
-
-    <Spinner
-        android:id="@+id/OrderStatus"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_below="@id/title"
-        android:entries="@array/order_statuses">
-
-    </Spinner>
-
-
-    <ListView
-        android:id="@+id/orders"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_below="@id/OrderStatus"
-        android:layout_alignParentBottom="true"
-        ></ListView>
-
-
+        android:gravity="center"
+        android:id="@+id/no_assigned_orders"
+        android:text="@string/no_assigned_orders"
+        android:textSize="20dp"
+        android:visibility="invisible"
+        android:layout_height="wrap_content" />
 
 </RelativeLayout>
