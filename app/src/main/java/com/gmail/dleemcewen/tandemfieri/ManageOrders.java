@@ -10,9 +10,12 @@ import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.Toast;
 
+import com.gmail.dleemcewen.tandemfieri.Constants.NotificationConstants;
+import com.gmail.dleemcewen.tandemfieri.Entities.NotificationMessage;
 import com.gmail.dleemcewen.tandemfieri.Entities.Order;
 import com.gmail.dleemcewen.tandemfieri.Entities.User;
 import com.gmail.dleemcewen.tandemfieri.Enums.OrderEnum;
+import com.gmail.dleemcewen.tandemfieri.Repositories.NotificationMessages;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -26,6 +29,7 @@ import static android.R.attr.button;
 
 
 public class ManageOrders extends AppCompatActivity {
+    private NotificationMessages<NotificationMessage> notifications;
     public DatabaseReference mDatabaseOrders, mDatabaseDrivers, mDatabaseSendToDrivers;
     public String ID, restID, clickedYes;
     public Order order;
@@ -43,7 +47,7 @@ public class ManageOrders extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_manage_orders);
 
-
+        notifications = new NotificationMessages<>(ManageOrders.this);
         alertDialogBuilder = new AlertDialog.Builder(this);
 
 
@@ -83,7 +87,6 @@ public class ManageOrders extends AppCompatActivity {
                         mDatabase.child("Delivery").child(user2.getAuthUserID()).child("Order").child(order.getCustomerId()).child(order.getOrderId()).child("OwnerId").removeValue();
                         mDatabase.child("Delivery").child(user.getAuthUserID()).child("Order").child(order.getCustomerId()).child(order.getOrderId()).setValue(order);
                         mDatabase.child("Delivery").child(user.getAuthUserID()).child("Order").child(order.getCustomerId()).child(order.getOrderId()).child("OwnerId").setValue(owner.getAuthUserID());
-
                     }
                 }
 
@@ -102,6 +105,12 @@ public class ManageOrders extends AppCompatActivity {
                         mDatabase.child("Delivery").child(user.getAuthUserID()).child("Order").child(order.getCustomerId()).child(order.getOrderId()).child("OwnerId").setValue(owner.getAuthUserID());
                         mDatabase.child("Order").child(owner.getAuthUserID()).child(order.getOrderId()).child("Assigned").setValue("True");
                         mDatabase.child("Order").child(owner.getAuthUserID()).child(order.getOrderId()).child("status").setValue(OrderEnum.EN_ROUTE);
+
+                        //make sure to set the order status to en_route directly in the order object
+                        order.setStatus(OrderEnum.EN_ROUTE);
+
+                        //send notification to driver
+                        notifications.sendNotification(NotificationConstants.Action.ADDED, order, user.getAuthUserID());
                     }
                 }
                 controlBool = false;
@@ -109,8 +118,6 @@ public class ManageOrders extends AppCompatActivity {
 
         });
 
-        // This is causing an error....
-        // doesn't look like Order is ever added to the bundle
         order = (Order) bundle.getSerializable("Order");
         restID = order.getRestaurantId();
 

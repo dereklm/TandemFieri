@@ -55,6 +55,7 @@ public class NotificationService extends IntentService {
         notification.putString("notificationType", intent.getStringExtra("notificationType"));
         notification.putString("key", intent.getStringExtra("key"));
         notification.putString("notificationId", intent.getStringExtra("notificationId"));
+        notification.putString("userId", intent.getStringExtra("userId"));
         notification.putSerializable("entity", (Serializable)entity);
 
         NotificationPublisher notificationPublisher = NotificationPublisher.getInstance();

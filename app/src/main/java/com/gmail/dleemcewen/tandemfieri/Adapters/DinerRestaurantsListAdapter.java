@@ -189,8 +189,8 @@ public class DinerRestaurantsListAdapter extends BaseAdapter {
         StringBuilder hoursTextBuilder = new StringBuilder();
 
         if (dayHours.getOpen()) {
-            if (dayHours.compareOpenTimeWithCurrentTime(dayHours.getHourOpen(), currentDate)) {
-                if (dayHours.compareClosedTimeWithCurrentTime(dayHours.getHourClosed(), currentDate)) {
+            if (dayHours.compareOpenTimeWithCurrentTime(currentDate)) {
+                if (dayHours.compareClosedTimeWithCurrentTime(currentDate)) {
                     hoursTextBuilder.append("CURRENTLY OPEN. ");
                     hoursTextBuilder.append("Open today from ");
                     hoursTextBuilder.append(DateFormatter.convertMilitaryTimeToStandardString(dayHours.getHourOpen()));

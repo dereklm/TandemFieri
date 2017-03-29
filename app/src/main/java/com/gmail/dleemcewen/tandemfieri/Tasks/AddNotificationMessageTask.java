@@ -6,6 +6,7 @@ import android.support.annotation.NonNull;
 import com.gmail.dleemcewen.tandemfieri.Abstracts.Entity;
 import com.gmail.dleemcewen.tandemfieri.Constants.NotificationConstants;
 import com.gmail.dleemcewen.tandemfieri.Entities.NotificationMessage;
+import com.gmail.dleemcewen.tandemfieri.Entities.User;
 import com.google.android.gms.tasks.Continuation;
 import com.google.android.gms.tasks.Task;
 import com.google.android.gms.tasks.TaskCompletionSource;
@@ -29,16 +30,18 @@ public class AddNotificationMessageTask<T extends Entity> implements Continuatio
     private DatabaseReference dataContext;
     private NotificationConstants.Action action;
     private T entity;
+    private String userId;
 
     /**
      * Default constructor
      * @param dataContext indicates the dataContext
      * @param entity identifies the entity to add
      */
-    public AddNotificationMessageTask(DatabaseReference dataContext, NotificationConstants.Action action, T entity) {
+    public AddNotificationMessageTask(DatabaseReference dataContext, NotificationConstants.Action action, T entity, String userId) {
         this.dataContext = dataContext;
         this.action = action;
         this.entity = entity;
+        this.userId = userId;
     }
 
     @Override
@@ -56,6 +59,7 @@ public class AddNotificationMessageTask<T extends Entity> implements Continuatio
             notificationMessageEntity.setNotificationType(entity.getClass().getSimpleName());
             notificationMessageEntity.setData(entity, entity.getClass());
             notificationMessageEntity.setNotificationId("1" + formattedDate);
+            notificationMessageEntity.setUserId(userId);
 
             dataContext.child(notificationMessageEntity.getKey().toString()).setValue(notificationMessageEntity);
             dataContext.addListenerForSingleValueEvent(new ValueEventListener() {

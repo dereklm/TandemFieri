@@ -100,27 +100,28 @@ public class Day {
     /**
      * compareOpenTimeWithCurrentTime compares the defined open time with the current time
      * to determine if the restaurant is currently open
-     * @param hourOpen indicates the time the restaurant opens in military format
+     * @param currentDate indicates the current date/time
      * @return true or false
      */
     @Exclude
-    public boolean compareOpenTimeWithCurrentTime(int hourOpen, Date currentDate) {
+    public boolean compareOpenTimeWithCurrentTime(Date currentDate) {
         int currentMilitaryTime = DateFormatter.convertStandardTimeToMilitaryTime(currentDate);
-
-        return currentMilitaryTime > hourOpen;
+        return currentMilitaryTime > this.getHourOpen();
     }
 
     /**
      * compareClosedTimeWithCurrentTime compares the defined closed time with the current date/time
      * to determine if the restaurant is currently closed
-     * @param hourClosed indicates the time the restaurant closes in military format
+     * @param currentDate indicates the current date/time
      * @return true or false
      */
     @Exclude
-    public boolean compareClosedTimeWithCurrentTime(int hourClosed, Date currentDate) {
-        Date closedTime = DateFormatter.convertMilitaryTimeToStandardDate(hourClosed);
+    public boolean compareClosedTimeWithCurrentTime(Date currentDate) {
+        Date closedTime = DateFormatter.convertMilitaryTimeToStandardDate(this.getHourClosed());
 
-        if ((hourClosed / 100) < 12) {
+        //if the restaurant's closing time is earlier than its opening time
+        //then consider the closing date to be the next day
+        if (this.getHourClosed() < this.getHourOpen()) {
             Calendar calendar = Calendar.getInstance();
             calendar.setTime(closedTime);
             int day = calendar.get(Calendar.DAY_OF_YEAR);

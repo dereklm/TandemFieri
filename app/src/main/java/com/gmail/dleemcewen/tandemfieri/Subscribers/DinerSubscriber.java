@@ -81,6 +81,7 @@ public class DinerSubscriber implements ISubscriber {
             Bundle rateDriverBundle = new Bundle();
             rateDriverBundle.putSerializable("User", dinerUser);
             rateDriverBundle.putInt("notificationId", notificationId);
+            rateDriverBundle.putString("driverId", notificationData.get("userId").toString());
 
             Intent ratingIntent = new Intent(context, DinerMainMenu.class);
             ratingIntent.putExtras(rateDriverBundle);
@@ -89,6 +90,7 @@ public class DinerSubscriber implements ISubscriber {
             Bundle cancelRatingBundle = new Bundle();
             cancelRatingBundle.putSerializable("User", dinerUser);
             cancelRatingBundle.putInt("notificationId", notificationId);
+            rateDriverBundle.putString("driverId", notificationData.get("userId").toString());
             cancelRatingBundle.putBoolean("skipRating", true);
 
             Intent cancelIntent = new Intent(context, DinerMainMenu.class);
@@ -133,3 +135,4 @@ public class DinerSubscriber implements ISubscriber {
         }
     }
 }
+

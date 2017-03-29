@@ -13,6 +13,7 @@ public class NotificationMessage extends Entity implements Serializable {
     private String notificationType;
     private Object data;
     private String notificationId;
+    private String userId;
 
     /**
      * Default constructor
@@ -81,5 +82,21 @@ public class NotificationMessage extends Entity implements Serializable {
      */
     public void setNotificationId(String notificationId) {
         this.notificationId = notificationId;
+    }
+
+    /**
+     * getUserId returns the userid associated with the notification message
+     * @return userid associated with the notification message
+     */
+    public String getUserId() {
+        return userId;
+    }
+
+    /**
+     * setUserId sets the userid to be associated with the notification message
+     * @param userId indicates the user id to be associated with the notification message
+     */
+    public void setUserId(String userId) {
+        this.userId = userId;
     }
 }

@@ -27,15 +27,25 @@
         </activity>
         <activity android:name=".CreateAccountActivity" />
         <activity android:name=".AlmostDoneActivity" />
-        <activity android:name=".DinerMainMenu"
-            android:parentActivityName="com.gmail.dleemcewen.tandemfieri.MainActivity">
+        <activity
+            android:name=".DinerMainMenu"
+            android:parentActivityName=".MainActivity">
+
             <!-- Parent activity meta-data to support 4.0 and lower -->
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="com.gmail.dleemcewen.tandemfieri.MainActivity" />
         </activity>
         <activity android:name=".RestaurantMainMenu" />
-        <activity android:name=".DriverMainMenu" />
+        <activity
+            android:name=".DriverMainMenu"
+            android:parentActivityName=".MainActivity">
+
+            <!-- Parent activity meta-data to support 4.0 and lower -->
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="com.gmail.dleemcewen.tandemfieri.MainActivity" />
+        </activity>
         <activity android:name=".CreateRestaurant" />
         <activity android:name=".CreateDeliveryHoursActivity" />
         <activity android:name=".menubuilder.MenuBuilderActivity" />
@@ -58,7 +68,6 @@
             android:name=".DinerMapActivity"
             android:label="@string/title_activity_diner_map" />
         <activity android:name=".ManageRestaurantDrivers" />
-        <activity android:name=".FakePayment" />
 
         <meta-data
             android:name="com.google.android.geo.API_KEY"
@@ -83,6 +92,7 @@
         <activity android:name=".DinerOrderHistoryActivity" />
         <activity android:name=".ViewOrderActivity" />
         <activity android:name=".ProductHistoryActivity" />
+
     </application>
 
 </manifest>

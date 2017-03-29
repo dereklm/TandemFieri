@@ -29,12 +29,13 @@ public class NotificationPublisher implements IPublish {
     }
 
     //Get the only object available
-    public static NotificationPublisher getInstance(){
+    public static NotificationPublisher getInstance() {
         return instance;
     }
 
     /**
      * subscribe adds a new subscriber to the list of subscribers
+     *
      * @param subscriber indicates the subscriber to add
      */
     @Override
@@ -44,11 +45,22 @@ public class NotificationPublisher implements IPublish {
 
     /**
      * unsubscribe removes an existing subscriber from the list of subscribers
+     *
      * @param subscriber indicates the subscriber to remove
      */
     @Override
     public void unsubscribe(ISubscriber subscriber) {
         subscribers.remove(subscriber);
+    }
+
+    /**
+     * getSubscribers returns a list of the current subscribers
+     *
+     * @return list of the current subscribers
+     */
+    @Override
+    public List<ISubscriber> getSubscribers() {
+        return subscribers;
     }
 
     /**
@@ -76,6 +88,7 @@ public class NotificationPublisher implements IPublish {
 
                     if (!filterResults.contains(false)) {
                         entityHashMap.put("notificationId", notification.getString("notificationId"));
+                        entityHashMap.put("userId", notification.getString("userId"));
                         subscriber.update(notification);
                     }
                 } else {

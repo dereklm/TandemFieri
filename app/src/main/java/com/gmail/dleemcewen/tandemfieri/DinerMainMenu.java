@@ -67,6 +67,7 @@ public class DinerMainMenu extends AppCompatActivity implements ConnectionCallba
     private NotificationMessages<NotificationMessage> notificationsRepository;
     private Ratings<Rating> ratingsRepository;
     private int notificationId;
+    private String driverId;
     public boolean skipRating;
     User user;
     ListView listview;
@@ -100,10 +101,6 @@ public class DinerMainMenu extends AppCompatActivity implements ConnectionCallba
         if (mMap != null) {
             mMap.connect();
         }
-
-        if (notificationsRepository == null) {
-            notificationsRepository = new NotificationMessages<>(DinerMainMenu.this);
-        }
     }
 
     @Override
@@ -113,9 +110,6 @@ public class DinerMainMenu extends AppCompatActivity implements ConnectionCallba
         if (mMap.isConnected()) {
             mMap.disconnect();
         }
-
-        notificationsRepository.finalize();
-        notificationsRepository = null;
     }
 
     @Override
@@ -129,6 +123,7 @@ public class DinerMainMenu extends AppCompatActivity implements ConnectionCallba
         }
 
         if (mLastLocation != null) {
+            restaurantsList.clear();
             retrieveData();
         }
     }
@@ -155,6 +150,7 @@ public class DinerMainMenu extends AppCompatActivity implements ConnectionCallba
         Bundle bundle = this.getIntent().getExtras();
         user = (User) bundle.getSerializable("User");
         notificationId = bundle.getInt("notificationId");
+        driverId = bundle.getString("driverId");
         skipRating = bundle.getBoolean("skipRating", false);
 
         restaurantsList = new ArrayList<>();
@@ -368,7 +364,7 @@ public class DinerMainMenu extends AppCompatActivity implements ConnectionCallba
                         newDriverRating.setRating(driverRatingBar.getRating());
                         newDriverRating.setRestaurantId(orderData.get("restaurantId").toString());
                         newDriverRating.setOrderId(orderData.get("orderId").toString());
-                        newDriverRating.setDriverId(user.getAuthUserID());
+                        newDriverRating.setDriverId(driverId);
 
                         ratingsRepository.add(newDriverRating);
 
@@ -497,17 +493,11 @@ public class DinerMainMenu extends AppCompatActivity implements ConnectionCallba
                         Restaurant r = child.getValue(Restaurant.class);
                         if(restaurantNearby(r)) {
                             restaurantsList.add(r);
-                            //LogWriter.log(getApplicationContext(), Level.INFO, "The restaurant  is " + r.toString());
                         }
                     }
 
                     DinerRestaurantsListAdapter adapter =
                         new DinerRestaurantsListAdapter(DinerMainMenu.this, restaurantsList);
-
-                    /*ArrayAdapter<Restaurant> adapter = new ArrayAdapter<>(
-                            getApplicationContext(),
-                            R.layout.diner_mainmenu_item_view,
-                            restaurantsList);*/
 
                     listview.setAdapter(adapter);
 

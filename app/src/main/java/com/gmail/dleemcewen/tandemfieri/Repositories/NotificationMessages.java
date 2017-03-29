@@ -8,9 +8,9 @@ import com.gmail.dleemcewen.tandemfieri.Abstracts.Entity;
 import com.gmail.dleemcewen.tandemfieri.Abstracts.Repository;
 import com.gmail.dleemcewen.tandemfieri.Constants.NotificationConstants;
 import com.gmail.dleemcewen.tandemfieri.Entities.NotificationMessage;
+import com.gmail.dleemcewen.tandemfieri.Entities.User;
 import com.gmail.dleemcewen.tandemfieri.EventListeners.QueryCompleteListener;
 import com.gmail.dleemcewen.tandemfieri.Services.NotificationService;
-import com.gmail.dleemcewen.tandemfieri.Tasks.AddEntityTask;
 import com.gmail.dleemcewen.tandemfieri.Tasks.AddNotificationMessageTask;
 import com.gmail.dleemcewen.tandemfieri.Tasks.NetworkConnectivityCheckTask;
 import com.gmail.dleemcewen.tandemfieri.Tasks.TaskResult;
@@ -35,8 +35,6 @@ import java.util.List;
 public class NotificationMessages<T extends Entity> extends Repository<NotificationMessage> {
     private Context context;
     private DatabaseReference dataContext;
-    private boolean sendNotificationMessages = false;
-    private ChildEventListener notificationChildEventListener;
 
     /**
      * Default constructor
@@ -45,67 +43,15 @@ public class NotificationMessages<T extends Entity> extends Repository<Notificat
     public NotificationMessages(final Context context) {
         super(context);
         this.context = context;
-
-        dataContext = getDataContext(NotificationMessage.class.getSimpleName());
-        notificationChildEventListener = dataContext.addChildEventListener(new ChildEventListener() {
-            @Override
-            public void onChildAdded(DataSnapshot dataSnapshot, String s) {
-                if (sendNotificationMessages) {
-                    NotificationMessage childNotificationMessageRecord = dataSnapshot.getValue(NotificationMessage.class);
-                    childNotificationMessageRecord.setKey(dataSnapshot.getKey());
-
-                    sendNotificationMessage(childNotificationMessageRecord);
-                }
-            }
-
-            @Override
-            public void onChildChanged(DataSnapshot dataSnapshot, String s) {
-                NotificationMessage childNotificationMessageRecord = dataSnapshot.getValue(NotificationMessage.class);
-                childNotificationMessageRecord.setKey(dataSnapshot.getKey());
-            }
-
-            @Override
-            public void onChildRemoved(DataSnapshot dataSnapshot) {
-                NotificationMessage childNotificationMessageRecord = dataSnapshot.getValue(NotificationMessage.class);
-                childNotificationMessageRecord.setKey(dataSnapshot.getKey());
-            }
-
-            @Override
-            public void onChildMoved(DataSnapshot dataSnapshot, String s) {
-                //not implemented
-            }
-
-            @Override
-            public void onCancelled(DatabaseError databaseError) {
-                //TODO
-            }
-        });
-        dataContext.addListenerForSingleValueEvent(new ValueEventListener() {
-            @Override
-            public void onDataChange(DataSnapshot dataSnapshot) {
-                sendNotificationMessages = true;
-            }
-
-            @Override
-            public void onCancelled(DatabaseError databaseError) {
-
-            }
-        });
-    }
-
-    /**
-     * finalize cleans up the child event listener when the repository removed
-     */
-    public void finalize() {
-        dataContext.removeEventListener(notificationChildEventListener);
     }
 
     /**
      * sends a new notification containing the data from the supplied entity
      * @param action indicates the notification constant to include in the activity
      * @param entity indicates the data from the supplied entity to include
+     * @param userId indicates the user id
      */
-    public <T extends Entity> Task<TaskResult<T>> sendNotification(final NotificationConstants.Action action, T entity) {
+    public <T extends Entity> Task<TaskResult<T>> sendNotification(final NotificationConstants.Action action, T entity, String userId) {
         String[] childNodes = new String[searchNodes.size()];
         childNodes = searchNodes.toArray(childNodes);
 
@@ -113,7 +59,7 @@ public class NotificationMessages<T extends Entity> extends Repository<Notificat
 
         return Tasks.<Void>forResult(null)
                 .continueWithTask(new NetworkConnectivityCheckTask(context))
-                .continueWithTask(new AddNotificationMessageTask<>(dataContext, action, entity))
+                .continueWithTask(new AddNotificationMessageTask<>(dataContext, action, entity, userId))
                 .continueWith(new Continuation<TaskResult<T>, TaskResult<T>>() {
                     @Override
                     public TaskResult<T> then(@NonNull Task<TaskResult<T>> task) throws Exception {
@@ -155,6 +101,7 @@ public class NotificationMessages<T extends Entity> extends Repository<Notificat
         intent.putExtra("notificationType", childNotificationMessageRecord.getNotificationType());
         intent.putExtra("entity", (Serializable) childNotificationMessageRecord.getData());
         intent.putExtra("key", childNotificationMessageRecord.getKey());
+        intent.putExtra("userId", childNotificationMessageRecord.getUserId());
         context.startService(intent);
     }
 

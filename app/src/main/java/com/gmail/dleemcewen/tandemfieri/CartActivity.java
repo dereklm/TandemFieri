@@ -231,7 +231,7 @@ public class CartActivity extends AppCompatActivity {
                                     Toast.LENGTH_LONG).show();
 
                             notificationsRepository
-                                    .sendNotification(NotificationConstants.Action.ADDED, order);
+                                    .sendNotification(NotificationConstants.Action.ADDED, order, uid);
 
                             enableDeliveryMap();
 

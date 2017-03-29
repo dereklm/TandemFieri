@@ -187,7 +187,9 @@ public class DriverRatings extends AppCompatActivity {
                         //all ratings for date range could include ratings for other restaurants
                         //so filter out all entries except those for the current restaurant
                         for (Rating rating : entities) {
-                            if (rating.getRestaurantId().equals(restaurant.getKey())) {
+                            if (rating.getRestaurantId().equals(restaurant.getKey())
+                                    && rating.getDriverId() != null
+                                    && rating.getOrderId() != null) {
                                 matchedRatingsList.add(rating);
                             }
                         }
@@ -220,7 +222,8 @@ public class DriverRatings extends AppCompatActivity {
                         driverIdsFromMatchedRatingsList.add(rating.getDriverId());
                     }
 
-                    for (User user : task.getResult().getResults()) {
+                    List<User> allDrivers = task.getResult().getResults();
+                    for (User user : allDrivers) {
                         if (driverIdsFromMatchedRatingsList.contains(user.getAuthUserID())) {
                             distinctDrivers.add(user);
                         }

@@ -41,7 +41,7 @@ public class DateFormatter {
         calendar.setTime(dateValue);
 
         StringBuilder formattedDateString = new StringBuilder();
-        formattedDateString.append(Integer.valueOf(calendar.get(Calendar.MONTH)));
+        formattedDateString.append(Integer.valueOf(calendar.get(Calendar.MONTH)) + 1);
         formattedDateString.append("/");
         formattedDateString.append(Integer.valueOf(calendar.get(Calendar.DAY_OF_MONTH)));
         formattedDateString.append("/");

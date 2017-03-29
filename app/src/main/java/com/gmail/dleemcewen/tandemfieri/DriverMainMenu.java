@@ -2,9 +2,11 @@ package com.gmail.dleemcewen.tandemfieri;
 
 import android.app.FragmentManager;
 import android.app.FragmentTransaction;
+import android.app.NotificationManager;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -14,9 +16,15 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.gmail.dleemcewen.tandemfieri.Adapters.OrdersListAdapterAddress;
+import com.gmail.dleemcewen.tandemfieri.Entities.NotificationMessage;
 import com.gmail.dleemcewen.tandemfieri.Entities.Order;
 import com.gmail.dleemcewen.tandemfieri.Entities.User;
 import com.gmail.dleemcewen.tandemfieri.Logging.LogWriter;
+import com.gmail.dleemcewen.tandemfieri.Repositories.NotificationMessages;
+import com.gmail.dleemcewen.tandemfieri.Repositories.Orders;
+import com.gmail.dleemcewen.tandemfieri.Tasks.TaskResult;
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -40,6 +48,7 @@ public class DriverMainMenu extends AppCompatActivity {
     private TextView noOrders;
     private boolean ordersShown = false;
     private String currentFilter = "";
+    private NotificationMessages<NotificationMessage> notifications;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -49,12 +58,38 @@ public class DriverMainMenu extends AppCompatActivity {
         Bundle bundle = this.getIntent().getExtras();
         user = (User) bundle.getSerializable("User");
         context = this;
+        notifications = new NotificationMessages<>(DriverMainMenu.this);
 
         noOrders = (TextView) findViewById(R.id.no_assigned_orders);
 
         LogWriter.log(getApplicationContext(), Level.INFO, "The user is " + user.getAuthUserID());
         mDatabaseDelivery = FirebaseDatabase.getInstance().getReference().child("Delivery").child(user.getAuthUserID()).child("Order");
         mDatabaseCurrentDelivery = FirebaseDatabase.getInstance().getReference().child("Delivery").child(user.getAuthUserID());
+
+        final int notificationId = bundle.getInt("notificationId");
+        if (notificationId != 0) {
+            NotificationManager notificationManager =
+                    (NotificationManager) this.getSystemService(NOTIFICATION_SERVICE);
+
+            notificationManager.cancel(notificationId);
+
+            new Thread(new Runnable() {
+                @Override
+                public void run() {
+                    notifications
+                        .find("notificationId = '" + notificationId + "'")
+                        .addOnCompleteListener(DriverMainMenu.this, new OnCompleteListener<TaskResult<NotificationMessage>>() {
+                            @Override
+                            public void onComplete(@NonNull Task<TaskResult<NotificationMessage>> task) {
+                                List<NotificationMessage> messages = task.getResult().getResults();
+                                if (!messages.isEmpty()) {
+                                    notifications.remove(messages.get(0));
+                                }
+                            }
+                        });
+                }
+            }).start();
+        }//end notification block
 
         mDatabaseDelivery.addValueEventListener(new ValueEventListener() {
             @Override
