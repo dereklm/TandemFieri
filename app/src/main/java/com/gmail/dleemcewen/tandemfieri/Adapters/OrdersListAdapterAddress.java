@@ -26,6 +26,7 @@ public class OrdersListAdapterAddress extends BaseAdapter {
     private final Context context;
     private final List<Order> values;
     private DatabaseReference mDatabaseDelivery;
+    private boolean useDate = false;
 
     public OrdersListAdapterAddress(Context context, List<Order> values){
         super();
@@ -55,7 +56,8 @@ public class OrdersListAdapterAddress extends BaseAdapter {
         View rowView=inflater.inflate(R.layout.order_address_row,parent,false);
         Order order = (Order) getItem(position);
         TextView totalItems = (TextView) rowView.findViewById(R.id.totalItems);
-        totalItems.setText(order.getStatus().toString());
+        if(!useDate)totalItems.setText(order.getStatus().toString());
+        else totalItems.setText(order.getOrderDate().toString());
         mDatabaseDelivery = FirebaseDatabase.getInstance().getReference().child("User").child("Diner").child(order.getCustomerId());
         final TextView address = (TextView) rowView.findViewById(R.id.address);
 
@@ -73,4 +75,11 @@ public class OrdersListAdapterAddress extends BaseAdapter {
     }
 
 
+    public boolean isUseDate() {
+        return useDate;
+    }
+
+    public void setUseDate(boolean useDate) {
+        this.useDate = useDate;
+    }
 }

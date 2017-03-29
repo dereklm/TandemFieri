@@ -4,6 +4,8 @@
         android:title="Start deliveries"/>
     <item android:id="@+id/myDeliveries"
         android:title="@string/myDeliveries"/>
+    <item android:id="@+id/completedItems"
+        android:title="Completed deliveries" />
     <item android:id="@+id/account"
         android:title="Account" >
         <menu>
