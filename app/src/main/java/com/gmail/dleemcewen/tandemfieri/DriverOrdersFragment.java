@@ -121,30 +121,28 @@ public class DriverOrdersFragment extends DialogFragment {
      * retrieve data
      */
     private void retrieveData() {
-        if (order != null) {
-            deliveriesRepository = (Deliveries<Delivery>) deliveriesRepository
-                    .atNode(driverId)
-                    .atNode("Order")
-                    .atNode(customerId);
+        deliveriesRepository = (Deliveries<Delivery>) deliveriesRepository
+                .atNode(driverId)
+                .atNode("Order")
+                .atNode(customerId);
 
-            deliveriesRepository
-                    .findOrders("status != '" + OrderEnum.COMPLETE.toString() + "'")
-                    .addOnCompleteListener(getActivity(), new OnCompleteListener<TaskResult<Order>>() {
-                        @Override
-                        public void onComplete(@NonNull Task<TaskResult<Order>> task) {
-                            List<Order> orders = task.getResult().getResults();
-                            driverOrders.clear();
+        deliveriesRepository
+                .findOrders("status != '" + OrderEnum.COMPLETE.toString() + "'")
+                .addOnCompleteListener(getActivity(), new OnCompleteListener<TaskResult<Order>>() {
+                    @Override
+                    public void onComplete(@NonNull Task<TaskResult<Order>> task) {
+                        List<Order> orders = task.getResult().getResults();
+                        driverOrders.clear();
 
-                            if (!orders.isEmpty()) {
-                                driverOrders.addAll(orders);
-                            }
-
-                            //bind the orders to the listview
-                            listAdapter = new DriverOrdersListAdapter(getActivity(), DriverOrdersFragment.this, driverOrders);
-                            myDeliveriesList.setAdapter(listAdapter);
+                        if (!orders.isEmpty()) {
+                            driverOrders.addAll(orders);
                         }
-                    });
-        }
+
+                        //bind the orders to the listview
+                        listAdapter = new DriverOrdersListAdapter(getActivity(), DriverOrdersFragment.this, driverOrders);
+                        myDeliveriesList.setAdapter(listAdapter);
+                    }
+                });
     }
 
     /**
