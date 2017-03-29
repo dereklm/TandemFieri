@@ -13,42 +13,38 @@
     tools:context="com.gmail.dleemcewen.tandemfieri.DriverDeliveryActivity"
     tools:showIn="@layout/activity_driver_delivery">
 
-    <Button
-        android:text="Navigate"
-        android:layout_width="wrap_content"
+    <LinearLayout
+        android:id="@+id/ll"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:id="@+id/navigateButton"
-        app:layout_anchorGravity="center_vertical|center_horizontal"
-        android:layout_gravity="center_vertical|center_horizontal"
-        android:layout_alignParentTop="true"
-        android:layout_alignParentLeft="true"
-        android:layout_alignParentStart="true" />
+        android:orientation="horizontal">
 
-    <Button
-        android:text="Complete"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignParentTop="true"
-        android:layout_centerHorizontal="true"
-        android:background="@color/bt_error_red"
-        android:id="@+id/completeButton" />
+        <com.beardedhen.androidbootstrap.BootstrapButton
+            style="@style/primary_button"
+            android:text="Navigate"
+            android:id="@+id/navigateButton" />
 
-    <Button
-        android:text="Cancel"
-        android:background="@color/bt_error_red"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:id="@+id/cancelButton"
-        android:layout_alignParentTop="true"
-        android:layout_alignParentRight="true"
-        android:layout_alignParentEnd="true" />
+        <com.beardedhen.androidbootstrap.BootstrapButton
+            style="@style/success_button"
+            android:text="Complete"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/completeButton" />
+
+        <com.beardedhen.androidbootstrap.BootstrapButton
+            style="@style/danger_button"
+            android:text="Cancel"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/cancelButton" />
+    </LinearLayout>
 
     <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
         xmlns:tools="http://schemas.android.com/tools"
         android:id="@+id/activity_cart"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_below="@+id/navigateButton"
+        android:layout_below="@+id/ll"
         android:orientation="vertical"
         android:paddingBottom="5dp"
         android:paddingLeft="5dp"

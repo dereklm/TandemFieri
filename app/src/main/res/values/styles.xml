@@ -22,4 +22,33 @@
         <item name="colorControlActivated">@color/blue</item>
     </style>
 
+    <style name="primary_button">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_margin">5dp</item>
+        <item name="bootstrapBrand">primary</item>
+        <item name="bootstrapSize">lg</item>
+        <item name="showOutline">false</item>
+        <item name="roundedCorners">true</item>
+    </style>
+
+    <style name="success_button">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_margin">5dp</item>
+        <item name="bootstrapBrand">success</item>
+        <item name="bootstrapSize">lg</item>
+        <item name="showOutline">false</item>
+        <item name="roundedCorners">true</item>
+    </style>
+
+    <style name="danger_button">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_margin">5dp</item>
+        <item name="bootstrapBrand">danger</item>
+        <item name="bootstrapSize">lg</item>
+        <item name="showOutline">false</item>
+        <item name="roundedCorners">true</item>
+    </style>
 </resources>

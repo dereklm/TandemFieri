@@ -57,6 +57,7 @@ dependencies {
     compile 'com.github.rtoshiro.securesharedpreferences:securesharedpreferences:1.2.0'
     compile 'com.braintreepayments.api:drop-in:3.+'
     compile 'io.card:android-sdk:[5.5.0,6.0.0)'
+    compile 'com.beardedhen:androidbootstrap:2.3.1'
     testCompile 'junit:junit:4.12'
 }
 

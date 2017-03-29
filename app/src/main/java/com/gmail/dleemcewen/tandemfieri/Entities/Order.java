@@ -21,7 +21,7 @@ public class Order extends Entity implements Serializable {
     private String restaurantId;
     private String customerId;
     private String braintreeTransactionId;
-
+    private String driverComment;
     private String latitude;
     private String longitude;
     private double subTotal;
@@ -193,6 +193,14 @@ public class Order extends Entity implements Serializable {
 
     public void setBraintreeTransactionId(String braintreeTransactionId) {
         this.braintreeTransactionId = braintreeTransactionId;
+    }
+
+    public String getDriverComment() {
+        return driverComment;
+    }
+
+    public void setDriverComment(String driverComment) {
+        this.driverComment = driverComment;
     }
 
     public String toString(){

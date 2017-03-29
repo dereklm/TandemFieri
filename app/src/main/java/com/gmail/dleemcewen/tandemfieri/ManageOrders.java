@@ -60,7 +60,7 @@ public class ManageOrders extends AppCompatActivity {
         mQuery = FirebaseDatabase.getInstance().getReference().child("Delivery");
         /*
         Some kind of on click listener will be used to send the order to driver for the driver to get it use
-        mDatabase.child("Delivery").child(driverID).child("Order").setValue(order);
+        mDeliveryLocation.child("Delivery").child(driverID).child("Order").setValue(order);
 
          */
 

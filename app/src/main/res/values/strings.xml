@@ -87,4 +87,7 @@
     <string name="selectCurrentDelivery">Select current delivery</string>
     <string name="manageOrders">Manage Orders</string>
     <string name="payment_method">Payment Method</string>
+    <string name="delivery_comments">Delivery Comments</string>
+    <string name="complete_delivery">Complete Delivery?</string>
+    <string name="comment_not_required">Comment not required</string>
 </resources>
