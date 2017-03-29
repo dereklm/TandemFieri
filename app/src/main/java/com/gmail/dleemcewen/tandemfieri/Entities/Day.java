@@ -56,7 +56,7 @@ public class Day {
         this.hourClosed = hourClosed;
     }
 
-    public boolean isOpen() {
+    public boolean getOpen() {
         return open;
     }
 

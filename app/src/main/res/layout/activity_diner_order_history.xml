@@ -23,24 +23,46 @@
         android:layout_height="wrap_content"
         android:orientation="horizontal"
         android:id="@+id/heading_layout"
-        android:layout_below="@id/title_order_history">
+        android:layout_below="@+id/title_order_history"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true">
 
         <Button
-            android:layout_width="wrap_content"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:id="@+id/sort_by_button"
-            android:text="Sort By"
-            android:layout_gravity="start"
+            android:text="Sort"
+            android:layout_weight="2"
             android:background="@android:color/transparent"/>
 
         <Button
-            android:layout_width="match_parent"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:id="@+id/execute_button"
             android:text="Show Order History"
-            android:textAlignment="textEnd"
-            android:layout_gravity="end"
+            android:layout_weight="4"
             android:background="@android:color/transparent"/>
+
+        <TextView
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:text="AMOUNT"
+            android:textAlignment="textEnd"
+            android:layout_gravity="center_vertical"
+            android:textColor="@android:color/black"
+            android:layout_weight="2"
+            tools:ignore="RtlCompat" />
+
+        <ImageButton
+            android:contentDescription="Sort by Amount"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:id="@+id/sort_by_amount_button"
+            android:background="@android:drawable/arrow_down_float"
+            android:backgroundTint="@color/colorAccent"
+            android:layout_gravity="center_vertical"
+            android:layout_weight="1"
+            tools:ignore="RtlCompat" />
 
     </LinearLayout>
 
@@ -124,14 +146,13 @@
             style="@style/Base.Widget.AppCompat.Spinner.Underlined"/>
     </LinearLayout>
 
-
     <ListView
         android:id="@+id/diner_order_history_listview"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:divider="@android:color/darker_gray"
         android:dividerHeight="0.5dp"
-        android:layout_below="@id/heading_layout"
-        android:visibility="invisible"/>
+        android:visibility="invisible"
+        android:layout_below="@id/heading_layout" />
 
 </RelativeLayout>

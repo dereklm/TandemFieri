@@ -9,6 +9,7 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.CheckBox;
+import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.Spinner;
@@ -32,15 +33,20 @@ import com.google.firebase.database.ValueEventListener;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.Date;
 import java.util.Locale;
 import java.util.logging.Level;
 
+import static android.R.drawable.arrow_down_float;
+import static android.R.drawable.arrow_up_float;
 import static java.lang.String.valueOf;
 
 public class DinerOrderHistoryActivity extends AppCompatActivity implements DatePickerFragment.DateListener{
 
     private Button sortByButton, executeSortButton;
+    private ImageButton amountButton;
     private LinearLayout checkboxLayout, selectDateLayout, spinnerLayout;
     private CheckBox sortByDateBox, sortByRestaurantBox;
     private TextView fromDateView, toDateView;
@@ -56,6 +62,7 @@ public class DinerOrderHistoryActivity extends AppCompatActivity implements Date
     private Date dateFrom, dateTo;
     private String restaurantSelected = "";
     private int viewId;
+    private boolean descending = true;
 
     private DateListener dateListener;
 
@@ -73,6 +80,7 @@ public class DinerOrderHistoryActivity extends AppCompatActivity implements Date
     private void getHandles(){
         sortByButton = (Button)findViewById(R.id.sort_by_button);
         executeSortButton = (Button)findViewById(R.id.execute_button);
+        amountButton = (ImageButton)findViewById(R.id.sort_by_amount_button);
         checkboxLayout = (LinearLayout)findViewById(R.id.sort_checkbox_layout);
         selectDateLayout = (LinearLayout)findViewById(R.id.date_options_layout);
         spinnerLayout = (LinearLayout)findViewById(R.id.restaurant_spinner_layout);
@@ -122,11 +130,17 @@ public class DinerOrderHistoryActivity extends AppCompatActivity implements Date
         executeSortButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                resetView();
-                sortOrders();
-                sortByDateBox.setChecked(false);
-                sortByRestaurantBox.setChecked(false);
-                orderHistoryView.setVisibility(View.VISIBLE);
+                executeSort();
+            }
+        });
+
+        amountButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if(displayList.isEmpty()){
+                    executeSort();
+                }
+                sortByAmount();
             }
         });
 
@@ -169,6 +183,46 @@ public class DinerOrderHistoryActivity extends AppCompatActivity implements Date
                 restaurantSelected = "";
             }
         });
+    }
+
+    private void executeSort(){
+        resetView();
+        sortOrders();
+        sortByDateBox.setChecked(false);
+        sortByRestaurantBox.setChecked(false);
+        orderHistoryView.setVisibility(View.VISIBLE);
+    }
+
+    private void sortByAmount() {
+        if(descending){
+             Comparator<Order> descendingSort = new Comparator<Order>() {
+
+                 @Override
+                 public int compare(Order order1, Order order2) {
+                     return (int) (order2.getTotal() - order1.getTotal());
+                 }
+            };
+
+            Collections.sort(displayList, descendingSort);
+
+            amountButton.setBackgroundResource(arrow_down_float);
+            dinerOrderHistoryArrayAdapter.notifyDataSetChanged();
+            descending = false;
+        }else{
+            Comparator<Order> ascendingSort = new Comparator<Order>() {
+
+                @Override
+                public int compare(Order order1, Order order2) {
+                    return (int) (order1.getTotal() - order2.getTotal());
+                }
+            };
+
+            Collections.sort(displayList, ascendingSort);
+
+            amountButton.setBackgroundResource(arrow_up_float);
+            dinerOrderHistoryArrayAdapter.notifyDataSetChanged();
+            descending = true;
+        }
     }
 
     private void resetView(){

@@ -224,7 +224,7 @@ public class DinerMapActivity extends FragmentActivity implements GoogleApiClien
                                                 StringBuilder hoursTextBuilder = new StringBuilder();
 
                                                 Day dayHours = deliveryHours.get(0).getDays().get(dayOfWeek);
-                                                if (dayHours.isOpen()) {
+                                                if (dayHours.getOpen()) {
                                                     if (dayHours.compareOpenTimeWithCurrentTime(dayHours.getHourOpen(), currentDate)) {
                                                         if (dayHours.compareClosedTimeWithCurrentTime(dayHours.getHourClosed(), currentDate)) {
                                                             controlString = "OPEN";
@@ -571,7 +571,7 @@ public class DinerMapActivity extends FragmentActivity implements GoogleApiClien
                             StringBuilder hoursTextBuilder = new StringBuilder();
 
                             Day dayHours = deliveryHours.get(0).getDays().get(dayOfWeek);
-                            if (dayHours.isOpen()) {
+                            if (dayHours.getOpen()) {
                                 if (dayHours.compareOpenTimeWithCurrentTime(dayHours.getHourOpen(), currentDate)) {
                                     if (dayHours.compareClosedTimeWithCurrentTime(dayHours.getHourClosed(), currentDate)) {
                                         hoursTextBuilder.append("CURRENTLY OPEN. ");
