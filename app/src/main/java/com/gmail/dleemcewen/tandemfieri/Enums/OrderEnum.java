@@ -10,5 +10,6 @@ public enum OrderEnum implements Serializable {
     CREATING,
     PAYMENT_PENDING,
     EN_ROUTE,
-    COMPLETE;
+    COMPLETE,
+    REFUNDED
 }

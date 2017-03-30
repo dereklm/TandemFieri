@@ -313,7 +313,7 @@ public class CartActivity extends AppCompatActivity {
                 nonce = new Nonce(result.getPaymentMethodNonce().getNonce());
 
                 Log.v("BRAINTREE DEBUG", "NONCE: " + nonce.getNonce());  //REMOVE ME, TESTING ONLY
-                LogWriter.log(getApplicationContext(), Level.WARNING, "Nounce: " + result.getPaymentMethodNonce().getNonce());
+                LogWriter.log(getApplicationContext(), Level.WARNING, "Nonce: " + result.getPaymentMethodNonce().getNonce());
             } else if (resultCode == Activity.RESULT_CANCELED) {
                 LogWriter.log(getApplicationContext(), Level.WARNING, "Canceled");
             } else {

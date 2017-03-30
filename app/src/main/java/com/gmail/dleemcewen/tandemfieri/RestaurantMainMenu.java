@@ -16,6 +16,8 @@ import com.gmail.dleemcewen.tandemfieri.Adapters.RestaurantMainMenuExpandableLis
 import com.gmail.dleemcewen.tandemfieri.Entities.NotificationMessage;
 import com.gmail.dleemcewen.tandemfieri.Entities.Order;
 import com.gmail.dleemcewen.tandemfieri.Entities.User;
+import com.gmail.dleemcewen.tandemfieri.Enums.OrderEnum;
+import com.gmail.dleemcewen.tandemfieri.Events.ActivityEvent;
 import com.gmail.dleemcewen.tandemfieri.Logging.LogWriter;
 import com.gmail.dleemcewen.tandemfieri.Repositories.NotificationMessages;
 import com.gmail.dleemcewen.tandemfieri.Tasks.TaskResult;
@@ -29,6 +31,7 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
 import org.greenrobot.eventbus.EventBus;
+import org.greenrobot.eventbus.Subscribe;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -38,6 +41,8 @@ import java.util.Map;
 import java.util.logging.Level;
 
 public class RestaurantMainMenu extends AppCompatActivity {
+
+    protected static final String TAG = "RestaurantMainMenu";
 
     private User user;
     private NotificationMessages<NotificationMessage> notificationsRepository;
@@ -52,6 +57,8 @@ public class RestaurantMainMenu extends AppCompatActivity {
         setContentView(R.layout.activity_restaurant_main_menu);
 
         context = this;
+
+        EventBus.getDefault().register(this);
 
         notificationsRepository = new NotificationMessages<>(RestaurantMainMenu.this);
 
@@ -196,25 +203,28 @@ public class RestaurantMainMenu extends AppCompatActivity {
 
                             Order order = orders.getValue(Order.class);
 
+                            if (order.getStatus() != OrderEnum.COMPLETE
+                                    && order.getStatus() != OrderEnum.REFUNDED) {
                                 //add the children to the adapter list
-                                if(orders.child("Assigned").exists()){
+                                if (orders.child("Assigned").exists()) {
                                     orderAssigned.add(order);
-                                }else {
+                                } else {
                                     orderEntities.add(order);
                                 }
                             }
-                            if(orderEntities.isEmpty()&&orderAssigned.isEmpty()){
-                                //Toast.makeText(getApplicationContext(), "There are no orders on file.", Toast.LENGTH_LONG).show();
-                            }else {
-                                listAdapter = new RestaurantMainMenuExpandableListAdapter(
-                                        (Activity) context, orderEntities, buildExpandableChildData(orderEntities), user);
-                                listAdapterAssigned = new RestaurantMainMenuExpandableListAdapter(
-                                        (Activity) context, orderAssigned, buildExpandableChildData(orderAssigned), user);
-                                orderList.setAdapter(listAdapter);
-                                assignedOrderList.setAdapter(listAdapterAssigned);
-                            }
+                        }
+
+                        //if (orderEntities.isEmpty() && orderAssigned.isEmpty()){
+                            //Toast.makeText(getApplicationContext(), "There are no orders on file.", Toast.LENGTH_LONG).show();
                         //}
-                   }//end on data change
+
+                        listAdapter = new RestaurantMainMenuExpandableListAdapter(
+                                (Activity) context, orderEntities, buildExpandableChildData(orderEntities), user);
+                        listAdapterAssigned = new RestaurantMainMenuExpandableListAdapter(
+                                (Activity) context, orderAssigned, buildExpandableChildData(orderAssigned), user);
+                        orderList.setAdapter(listAdapter);
+                        assignedOrderList.setAdapter(listAdapterAssigned);
+                    }//end on data change
 
                     @Override
                     public void onCancelled(DatabaseError databaseError) {}
@@ -241,6 +251,13 @@ public class RestaurantMainMenu extends AppCompatActivity {
         super.onResume();  // Always call the superclass method first
 
         retrieveData();
+    }
+
+    @Subscribe
+    public void onEvent(ActivityEvent event) {
+        if (event.result == ActivityEvent.Result.REFRESH_RESTAURANT_MAIN_MENU) {
+            retrieveData();
+        }
     }
 
 }//end Activity

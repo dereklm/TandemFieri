@@ -11,7 +11,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:textSize="@dimen/button_text_size"
-        android:text="@string/manageMenuItemsButton" />
+        android:text="@string/change_status" />
 
     <Button
         android:id="@+id/manage_button"
@@ -21,4 +21,11 @@
         android:textSize="@dimen/button_text_size"
         android:text="@string/manageOrders" />
 
+    <Button
+        android:id="@+id/refund_button"
+        android:focusable="false"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textSize="@dimen/button_text_size"
+        android:text="@string/refund_order" />
 </LinearLayout>

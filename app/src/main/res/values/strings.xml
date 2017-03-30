@@ -90,4 +90,7 @@
     <string name="delivery_comments">Delivery Comments</string>
     <string name="complete_delivery">Complete Delivery?</string>
     <string name="comment_not_required">Comment not required</string>
+    <string name="refund_order">Refund Order</string>
+    <string name="change_status">Change Status</string>
+    <string name="confirm_refund">Are your sure you want to refund this order?</string>
 </resources>
