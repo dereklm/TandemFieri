@@ -22,6 +22,7 @@ public class Order extends Entity implements Serializable {
     private String customerId;
     private String braintreeTransactionId;
     private String driverComment;
+    private String refundReason;
     private String latitude;
     private String longitude;
     private double subTotal;
@@ -201,6 +202,14 @@ public class Order extends Entity implements Serializable {
 
     public void setDriverComment(String driverComment) {
         this.driverComment = driverComment;
+    }
+
+    public void setRefundReason(String refundReason) {
+        this.refundReason = refundReason;
+    }
+
+    public String getRefundReason() {
+        return refundReason;
     }
 
     public String toString(){

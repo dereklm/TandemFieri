@@ -15,6 +15,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseExpandableListAdapter;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -26,6 +27,7 @@ import com.gmail.dleemcewen.tandemfieri.Events.ActivityEvent;
 import com.gmail.dleemcewen.tandemfieri.Json.Braintree.Transaction;
 import com.gmail.dleemcewen.tandemfieri.ManageOrders;
 import com.gmail.dleemcewen.tandemfieri.R;
+import com.gmail.dleemcewen.tandemfieri.Utility.General;
 import com.gmail.dleemcewen.tandemfieri.ViewOrderActivity;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
@@ -175,7 +177,13 @@ public class RestaurantMainMenuExpandableListAdapter extends BaseExpandableListA
     }//end get child view
 
     private void refundDialog(final Order order, final User user) {
+        LayoutInflater li = LayoutInflater.from(context);
+        View view = li.inflate(R.layout.dialog_restaurant_refund, null);
+
         AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(context);
+        alertDialogBuilder.setView(view);
+
+        final EditText comments = (EditText) view.findViewById(R.id.et_refund_comment);
 
         alertDialogBuilder
                 .setCancelable(false)
@@ -183,12 +191,18 @@ public class RestaurantMainMenuExpandableListAdapter extends BaseExpandableListA
                 .setPositiveButton(context.getString(R.string.yes),
                         new DialogInterface.OnClickListener() {
                             public void onClick(DialogInterface dialog, int id) {
+                                if (General.isEditTextEmpty(comments)) {
+                                    Toast.makeText(context, "Please enter the refund reason.", Toast.LENGTH_LONG).show();
+                                    dialog.cancel();
+                                    return;
+                                }
+
                                 mDialog = new ProgressDialog(context);
                                 mDialog.setMessage("Processing refund!");
                                 mDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
                                 mDialog.show();
 
-                                findTransaction(order, user);
+                                findTransaction(order, user, comments);
                             }
                         })
                 .setNegativeButton(context.getString(R.string.no),
@@ -202,7 +216,7 @@ public class RestaurantMainMenuExpandableListAdapter extends BaseExpandableListA
         alertDialog.show();
     }
 
-    private void findTransaction(final Order order, final User user) {
+    private void findTransaction(final Order order, final User user, final TextView reason) {
         if (order.getStatus() == OrderEnum.PAYMENT_PENDING) {
             Toast.makeText(context, "Unable to refund. Payment never submitted.", Toast.LENGTH_LONG).show();
             return;
@@ -260,7 +274,8 @@ public class RestaurantMainMenuExpandableListAdapter extends BaseExpandableListA
                                     detail.transactionID,
                                     user.getAuthUserID(),
                                     order.getOrderId(),
-                                    isENROUTE);
+                                    isENROUTE,
+                                    reason);
                         } else {
                             Log.v("Braintree:", "FindTransaction: " + detail.error);
                             mDialog.hide();
@@ -284,7 +299,7 @@ public class RestaurantMainMenuExpandableListAdapter extends BaseExpandableListA
         //End rest api
     }
 
-    private void processRefund(RefundTypeEnum type, String transactionID, final String ownerID, final String orderID, final boolean isENROUTE) {
+    private void processRefund(RefundTypeEnum type, String transactionID, final String ownerID, final String orderID, final boolean isENROUTE, final TextView reason) {
         AsyncHttpClient client = new AsyncHttpClient();
         RequestParams params = new RequestParams();
 
@@ -314,6 +329,7 @@ public class RestaurantMainMenuExpandableListAdapter extends BaseExpandableListA
 
                             mDatabase = FirebaseDatabase.getInstance().getReference();
                             mDatabase.child("Order").child(ownerID).child(orderID).child("status").setValue(OrderEnum.REFUNDED);
+                            mDatabase.child("Order").child(ownerID).child(orderID).child("refundReason").setValue(reason.getText().toString());
 
                             EventBus.getDefault()
                                     .post(new ActivityEvent(ActivityEvent.Result.REFRESH_RESTAURANT_MAIN_MENU));
