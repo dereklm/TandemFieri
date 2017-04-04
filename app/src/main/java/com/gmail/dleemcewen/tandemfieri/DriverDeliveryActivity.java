@@ -426,8 +426,10 @@ public class DriverDeliveryActivity extends AppCompatActivity implements
                                     order.setDriverComment(comments.getText().toString());
                                 }
 
-                                mDatabase.child("Delivery").child(user.getAuthUserID()).child("Order").child(order.getCustomerId()).child(order.getOrderId()).removeValue();
-                                mDatabase.child("Delivery").child(user.getAuthUserID()).child("currentOrderId").removeValue();
+                                //reemoved to keep track of passed orders
+                                //mDatabase.child("Delivery").child(user.getAuthUserID()).child("Order").child(order.getCustomerId()).child(order.getOrderId()).removeValue();
+                                mDatabase.child("Delivery").child(user.getAuthUserID()).child("Order").child(order.getCustomerId()).child(order.getOrderId()).child("status").setValue(OrderEnum.COMPLETE);
+                                //mDatabase.child("Delivery").child(user.getAuthUserID()).child("currentOrderId").removeValue();
                                 mDatabase.child("Delivery Location").child(order.getCustomerId()).removeValue();
                                 mDatabase.child("Order").child(ownerId).child(order.getOrderId()).setValue(order);
 
