@@ -11,7 +11,7 @@
     tools:context="com.gmail.dleemcewen.tandemfieri.MainActivity">
 
 
-    <TextView
+    <com.beardedhen.androidbootstrap.AwesomeTextView
         android:text="@string/signInTitle"
         android:textSize="30sp"
         android:layout_marginTop="50dp"
@@ -40,6 +40,7 @@
         android:inputType="textPassword"
         android:ems="10"
         android:layout_marginTop="20dp"
+        android:layout_marginBottom="10dp"
         android:hint="@string/hintPassword"
         android:id="@+id/password"
         android:layout_below="@+id/email"
@@ -48,7 +49,8 @@
         android:layout_alignRight="@+id/signInTitle"
         android:layout_alignEnd="@+id/signInTitle" />
 
-    <Button
+    <com.beardedhen.androidbootstrap.BootstrapButton
+        style="@style/primary_button"
         android:text="@string/signInButton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"

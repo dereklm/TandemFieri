@@ -12,6 +12,7 @@ import android.widget.EditText;
 import android.widget.Spinner;
 import android.widget.Toast;
 
+import com.beardedhen.androidbootstrap.BootstrapButton;
 import com.gmail.dleemcewen.tandemfieri.Entities.User;
 import com.gmail.dleemcewen.tandemfieri.Formatters.StringFormatter;
 import com.gmail.dleemcewen.tandemfieri.Interfaces.AsyncHttpResponse;
@@ -47,7 +48,7 @@ public class EditAccountActivity extends AppCompatActivity implements AdapterVie
     private FirebaseUser fireuser;
 
     private EditText firstName, lastName, address, city, zip, phoneNumber, email;
-    private Button saveButton, cancelButton;
+    private BootstrapButton saveButton, cancelButton;
 
     private String state = "";
     private Spinner states;
@@ -103,8 +104,8 @@ public class EditAccountActivity extends AppCompatActivity implements AdapterVie
         zip = (EditText) findViewById(R.id.zip);
         phoneNumber = (EditText) findViewById(R.id.phone);
         email = (EditText) findViewById(R.id.email);
-        saveButton = (Button) findViewById(R.id.save_Button);
-        cancelButton = (Button) findViewById(R.id.cancel_Button);
+        saveButton = (BootstrapButton) findViewById(R.id.save_Button);
+        cancelButton = (BootstrapButton) findViewById(R.id.cancel_Button);
 
 
         states.setOnItemSelectedListener(this);

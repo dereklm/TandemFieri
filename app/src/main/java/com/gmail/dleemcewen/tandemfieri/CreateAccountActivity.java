@@ -15,11 +15,12 @@ import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
-import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Spinner;
 import android.widget.Toast;
 
+import com.beardedhen.androidbootstrap.BootstrapButton;
+import com.beardedhen.androidbootstrap.BootstrapEditText;
 import com.gmail.dleemcewen.tandemfieri.Constants.AddressConstants;
 import com.gmail.dleemcewen.tandemfieri.Interfaces.AsyncHttpResponse;
 import com.gmail.dleemcewen.tandemfieri.Json.AddressGeocode.AddressGeocode;
@@ -37,7 +38,7 @@ public class CreateAccountActivity extends AppCompatActivity implements AdapterV
         GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener,
         ActivityCompat.OnRequestPermissionsResultCallback {
 
-    public Button nextButton, myLocation;
+    public BootstrapButton nextButton, myLocation;
     public EditText firstName, lastName, address, city, zip, phoneNumber, email;
 
     protected Location location;
@@ -56,8 +57,8 @@ public class CreateAccountActivity extends AppCompatActivity implements AdapterV
 
         activityInstance = this;
 
-        nextButton = (Button) findViewById(R.id.nextButton);
-        myLocation = (Button) findViewById(R.id.location_button);
+        nextButton = (BootstrapButton) findViewById(R.id.nextButton);
+        myLocation = (BootstrapButton) findViewById(R.id.location_button);
         firstName = (EditText) findViewById(R.id.firstName);
         lastName = (EditText) findViewById(R.id.lastName);
         address = (EditText) findViewById(R.id.address);

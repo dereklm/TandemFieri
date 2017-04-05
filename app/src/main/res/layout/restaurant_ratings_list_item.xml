@@ -8,7 +8,8 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:textSize="@dimen/title_text_size" />
-    <Button
+    <com.beardedhen.androidbootstrap.BootstrapButton
+        style="@style/primary_button"
         android:id="@+id/selectRestaurantToRate"
         android:background="@android:color/transparent"
         android:focusable="false"

@@ -39,7 +39,8 @@
         android:layout_weight="10">
     </ExpandableListView>
 
-    <Button
+    <com.beardedhen.androidbootstrap.BootstrapButton
+        style="@style/success_button"
         android:id="@+id/cart"
         android:text="@string/go_to_cart"
         android:layout_width="match_parent"

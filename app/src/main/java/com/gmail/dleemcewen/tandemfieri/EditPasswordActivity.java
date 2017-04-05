@@ -9,6 +9,7 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
 
+import com.beardedhen.androidbootstrap.BootstrapButton;
 import com.gmail.dleemcewen.tandemfieri.Entities.User;
 import com.gmail.dleemcewen.tandemfieri.Logging.LogWriter;
 import com.google.android.gms.tasks.OnCompleteListener;
@@ -30,7 +31,7 @@ public class EditPasswordActivity extends AppCompatActivity {
     private FirebaseAuth mAuth;
 
     private EditText password, confirmPswd, oldPassword;
-    private Button saveButton, cancelButton;
+    private BootstrapButton saveButton, cancelButton;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -84,8 +85,8 @@ public class EditPasswordActivity extends AppCompatActivity {
         oldPassword = (EditText)findViewById(R.id.old_password);
         password = (EditText)findViewById(R.id.password);
         confirmPswd = (EditText)findViewById(R.id.confirmPassword);
-        saveButton = (Button) findViewById(R.id.saveButton);
-        cancelButton = (Button)findViewById(R.id.cancelButton);
+        saveButton = (BootstrapButton) findViewById(R.id.saveButton);
+        cancelButton = (BootstrapButton)findViewById(R.id.cancelButton);
 
         //program button listeners
         //cancels the page and returns to previous page

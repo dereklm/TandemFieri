@@ -10,6 +10,7 @@ import android.widget.EditText;
 import android.widget.RadioButton;
 import android.widget.Toast;
 
+import com.beardedhen.androidbootstrap.BootstrapButton;
 import com.gmail.dleemcewen.tandemfieri.Entities.User;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
@@ -22,8 +23,7 @@ import com.google.firebase.database.FirebaseDatabase;
 public class AlmostDoneActivity extends AppCompatActivity{
 
     public String firstName, lastName, address, city, state, zip, phoneNumber, email;
-    public Button createButton;
-    public Button cancelButton;
+    public BootstrapButton createButton, cancelButton;
     public EditText password, confirmPassword;
     public User newUser;
     private DatabaseReference mDatabase;
@@ -44,8 +44,8 @@ public class AlmostDoneActivity extends AppCompatActivity{
         password = (EditText) findViewById(R.id.password);
         confirmPassword = (EditText) findViewById(R.id.confrimPassword);
 
-        createButton = (Button) findViewById(R.id.createButton);
-        cancelButton = (Button) findViewById(R.id.cancelButton);
+        createButton = (BootstrapButton) findViewById(R.id.createButton);
+        cancelButton = (BootstrapButton) findViewById(R.id.cancelButton);
 
         firstName = getIntent().getStringExtra("firstName");
         lastName = getIntent().getStringExtra("lastName");

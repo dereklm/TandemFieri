@@ -7,11 +7,12 @@ import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
-import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.beardedhen.androidbootstrap.BootstrapButton;
+import com.beardedhen.androidbootstrap.BootstrapEditText;
 import com.gmail.dleemcewen.tandemfieri.Entities.NotificationMessage;
 import com.gmail.dleemcewen.tandemfieri.Entities.Restaurant;
 import com.gmail.dleemcewen.tandemfieri.Entities.User;
@@ -50,7 +51,6 @@ import com.loopj.android.http.RequestParams;
 import org.json.JSONObject;
 
 import java.io.Serializable;
-import java.util.AbstractMap;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
@@ -61,7 +61,7 @@ public class MainActivity extends AppCompatActivity {
 
     public TextView createAccount;
     public EditText email, password;
-    public Button signInButton;
+    public BootstrapButton signInButton;
 
     private FirebaseAuth mAuth;
     private FirebaseAuth.AuthStateListener authenticatorListener;
@@ -95,7 +95,7 @@ public class MainActivity extends AppCompatActivity {
 //        }
 
         createAccount = (TextView) findViewById(R.id.createAccount);
-        signInButton = (Button) findViewById(R.id.signInButton);
+        signInButton = (BootstrapButton) findViewById(R.id.signInButton);
         email = (EditText) findViewById(R.id.email);
         password = (EditText) findViewById(R.id.password);
 

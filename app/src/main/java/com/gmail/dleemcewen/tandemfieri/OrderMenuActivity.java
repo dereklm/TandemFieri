@@ -12,6 +12,7 @@ import android.widget.ExpandableListView;
 import android.widget.Spinner;
 import android.widget.Toast;
 
+import com.beardedhen.androidbootstrap.BootstrapButton;
 import com.gmail.dleemcewen.tandemfieri.Adapters.OrderItemAdapter;
 import com.gmail.dleemcewen.tandemfieri.Entities.Order;
 import com.gmail.dleemcewen.tandemfieri.Entities.OrderItem;
@@ -39,7 +40,7 @@ public class OrderMenuActivity extends AppCompatActivity implements AdapterView.
     private Restaurant restaurant;
     private ExpandableListView expandableListView;
     private HashMap<String, List<OrderItem>> menuCategories;
-    private Button goToCart;
+    private BootstrapButton goToCart;
     private Spinner categorySpinner;
     private ArrayAdapter<String> spinnerAdapter;
     private String latitude, longitude;
@@ -50,18 +51,20 @@ public class OrderMenuActivity extends AppCompatActivity implements AdapterView.
         setContentView(R.layout.activity_order_menu);
 
         Bundle bundle = this.getIntent().getExtras();
-
-        menuCategories = new HashMap<>();
-        menuItems = new ArrayList<>();
         restaurant = (Restaurant) getIntent().getSerializableExtra("Restaurant");
         user = (User) getIntent().getSerializableExtra("User");
         latitude = bundle.getString("Latitude");
         longitude = bundle.getString("Longitude");
 
+
+
+        menuCategories = new HashMap<>();
+        menuItems = new ArrayList<>();
+
         menuItems.addAll(restaurant.getMenu().getSubItems());
         items = new ArrayList<>();
         expandableListView = (ExpandableListView) findViewById(R.id.menu_items);
-        goToCart = (Button) findViewById(R.id.cart);
+        goToCart = (BootstrapButton) findViewById(R.id.cart);
         categorySpinner = (Spinner) findViewById(R.id.category_spinner);
         order = new Order();
 
