@@ -12,11 +12,11 @@
         android:layout_marginLeft="?android:attr/expandableListPreferredItemPaddingLeft"
         android:paddingLeft="16dp"
         android:textSize="@dimen/regular_text_size" />
-    <Button
+    <com.beardedhen.androidbootstrap.BootstrapButton
+        style="@style/danger_button"
         android:id="@+id/remove"
-        android:background="@android:color/transparent"
         android:focusable="false"
-        android:layout_width="34dp"
+        android:layout_width="wrap_content"
         android:layout_height="match_parent"
-        android:drawableRight="@drawable/ic_remove"/>
+        android:drawableLeft="@drawable/ic_remove"/>
 </LinearLayout>

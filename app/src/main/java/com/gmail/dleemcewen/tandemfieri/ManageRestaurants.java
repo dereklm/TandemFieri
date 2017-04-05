@@ -7,10 +7,10 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
-import android.widget.Button;
 import android.widget.ExpandableListView;
 import android.widget.TextView;
 
+import com.beardedhen.androidbootstrap.BootstrapButton;
 import com.gmail.dleemcewen.tandemfieri.Adapters.ManageRestaurantExpandableListAdapter;
 import com.gmail.dleemcewen.tandemfieri.Entities.Restaurant;
 import com.gmail.dleemcewen.tandemfieri.Entities.User;
@@ -32,7 +32,7 @@ import java.util.logging.Level;
 
 public class ManageRestaurants extends AppCompatActivity {
     private TextView header;
-    private Button addRestaurant;
+    private BootstrapButton addRestaurant;
     private ExpandableListView restaurantsList;
     private ManageRestaurantExpandableListAdapter listAdapter;
     private Restaurants<Restaurant> restaurants;
@@ -93,7 +93,7 @@ public class ManageRestaurants extends AppCompatActivity {
      */
     private void findControlReferences() {
         header = (TextView)findViewById(R.id.header);
-        addRestaurant = (Button)findViewById(R.id.addRestaurant);
+        addRestaurant = (BootstrapButton) findViewById(R.id.addRestaurant);
         restaurantsList = (ExpandableListView)findViewById(R.id.restaurantsList);
     }
 
