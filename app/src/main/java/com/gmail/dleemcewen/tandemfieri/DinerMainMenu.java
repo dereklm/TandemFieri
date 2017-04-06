@@ -27,6 +27,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.gmail.dleemcewen.tandemfieri.Adapters.DinerRestaurantsListAdapter;
+import com.gmail.dleemcewen.tandemfieri.Entities.DeliveryHours;
 import com.gmail.dleemcewen.tandemfieri.Entities.NotificationMessage;
 import com.gmail.dleemcewen.tandemfieri.Entities.Rating;
 import com.gmail.dleemcewen.tandemfieri.Entities.Restaurant;
@@ -36,6 +37,7 @@ import com.gmail.dleemcewen.tandemfieri.Formatters.DateFormatter;
 import com.gmail.dleemcewen.tandemfieri.Logging.LogWriter;
 import com.gmail.dleemcewen.tandemfieri.Repositories.NotificationMessages;
 import com.gmail.dleemcewen.tandemfieri.Repositories.Ratings;
+import com.gmail.dleemcewen.tandemfieri.Repositories.RestaurantHours;
 import com.gmail.dleemcewen.tandemfieri.Tasks.TaskResult;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
@@ -66,6 +68,7 @@ public class DinerMainMenu extends AppCompatActivity implements ConnectionCallba
 
     private NotificationMessages<NotificationMessage> notificationsRepository;
     private Ratings<Rating> ratingsRepository;
+    private RestaurantHours<DeliveryHours> restaurantHours;
     private int notificationId;
     private String driverId;
     public boolean skipRating;
@@ -146,6 +149,7 @@ public class DinerMainMenu extends AppCompatActivity implements ConnectionCallba
         notificationId = 0;
         notificationsRepository = new NotificationMessages<>(DinerMainMenu.this);
         ratingsRepository = new Ratings<>(DinerMainMenu.this);
+        restaurantHours = new RestaurantHours<>(DinerMainMenu.this);
 
         Bundle bundle = this.getIntent().getExtras();
         user = (User) bundle.getSerializable("User");
@@ -480,32 +484,46 @@ public class DinerMainMenu extends AppCompatActivity implements ConnectionCallba
 
     /*Retrieves restaurants within delivery range*/
     private void retrieveData(){
-
-        mDatabase = FirebaseDatabase.getInstance().getReference().child("Restaurant");
-
-        mDatabase.addValueEventListener(new ValueEventListener() {
+        restaurantHours
+            .find()
+            .addOnCompleteListener(DinerMainMenu.this, new OnCompleteListener<TaskResult<DeliveryHours>>() {
                 @Override
-                public void onDataChange(DataSnapshot dataSnapshot) {
-                    restaurantsList.clear();
+                public void onComplete(@NonNull Task<TaskResult<DeliveryHours>> task) {
+                    final List<DeliveryHours> allDeliveryHours = task.getResult().getResults();
 
-                    //everything to do with restaurant list code here
-                    for (DataSnapshot child : dataSnapshot.getChildren()) {
-                        Restaurant r = child.getValue(Restaurant.class);
-                        if(restaurantNearby(r)) {
-                            restaurantsList.add(r);
-                        }
-                    }
+                    mDatabase = FirebaseDatabase.getInstance().getReference().child("Restaurant");
+                    mDatabase.addListenerForSingleValueEvent(new ValueEventListener() {
+                        @Override
+                        public void onDataChange(DataSnapshot dataSnapshot) {
+                            List<DeliveryHours> restaurantsDeliveryHours = new ArrayList<>();
 
-                    DinerRestaurantsListAdapter adapter =
-                        new DinerRestaurantsListAdapter(DinerMainMenu.this, restaurantsList);
+                            restaurantsList.clear();
 
-                    listview.setAdapter(adapter);
+                            //everything to do with restaurant list code here
+                            for (DataSnapshot child : dataSnapshot.getChildren()) {
+                                Restaurant r = child.getValue(Restaurant.class);
+                                if (restaurantNearby(r)) {
+                                    restaurantsList.add(r);
 
-                }//end on data change
+                                    for (DeliveryHours hours : allDeliveryHours) {
+                                        if (hours.getRestaurantId().equals(r.getId())) {
+                                            restaurantsDeliveryHours.add(hours);
+                                        }
+                                    }
+                                }
+                            }
 
-                @Override
-                public void onCancelled(DatabaseError databaseError) {}
-            });//end listener
+                            DinerRestaurantsListAdapter adapter =
+                                    new DinerRestaurantsListAdapter(DinerMainMenu.this, restaurantsList, restaurantsDeliveryHours);
+
+                            listview.setAdapter(adapter);
+                        }//end on data change
+
+                        @Override
+                        public void onCancelled(DatabaseError databaseError) {}
+                    });//end listener
+                }
+            });
     }//end retrieve data
 
     private boolean restaurantNearby(Restaurant r){

@@ -432,7 +432,7 @@ public class DriverDeliveryActivity extends AppCompatActivity implements
                                 mDatabase.child("Order").child(ownerId).child(order.getOrderId()).setValue(order);
 
                                 //send notification to diner for driver rating
-                                sendNotificationToDiner(order, user);
+                                sendNotificationToDiner(order, order.getCustomerId());
 
                                 finish();
                                 Toast.makeText(getApplicationContext(), "Order completed.", Toast.LENGTH_LONG).show();
@@ -449,8 +449,8 @@ public class DriverDeliveryActivity extends AppCompatActivity implements
         alertDialog.show();
     }
 
-    private void sendNotificationToDiner(Order order, User user) {
+    private void sendNotificationToDiner(Order order, String customerId) {
         order.setStatus(OrderEnum.COMPLETE);
-        notifications.sendNotification(NotificationConstants.Action.ADDED, order, user.getAuthUserID());
+        notifications.sendNotification(NotificationConstants.Action.ADDED, order, customerId);
     }
 }

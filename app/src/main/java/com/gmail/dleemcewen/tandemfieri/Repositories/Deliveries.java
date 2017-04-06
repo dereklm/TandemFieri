@@ -19,6 +19,7 @@ import com.google.android.gms.tasks.Continuation;
 import com.google.android.gms.tasks.Task;
 import com.google.android.gms.tasks.TaskCompletionSource;
 import com.google.android.gms.tasks.Tasks;
+import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 
 import java.lang.reflect.Field;
@@ -111,7 +112,33 @@ public class Deliveries<T extends Entity> extends Repository<Delivery> {
         }
     }
 
+    /**
+     * findDriverIdForOrder finds the driver id associated with the given order
+     * @param orderId uniquely identifies the order
+     * @param deliveries indicates the deliveries to search through
+     * @return the matching driver id
+     */
+    public String findDriverIdForOrder(final String orderId, final DataSnapshot deliveries) {
+        String foundDriverId = "";
 
+        for (DataSnapshot drivers : deliveries.getChildren())
+        {
+            String driverId = drivers.getKey();
+
+            for (DataSnapshot customer : drivers.child("Order").getChildren())
+            {
+                for (DataSnapshot order : customer.getChildren())
+                {
+                    Order orderEntity = order.getValue(Order.class);
+                    if (orderEntity.getOrderId().equals(orderId)) {
+                        foundDriverId = driverId;
+                    }
+                }
+            }
+        }
+
+        return foundDriverId;
+    }
 
     /**
      * find entities from the database

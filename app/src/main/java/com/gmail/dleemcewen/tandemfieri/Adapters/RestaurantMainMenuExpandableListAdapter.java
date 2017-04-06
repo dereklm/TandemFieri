@@ -6,7 +6,6 @@ import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.content.res.Resources;
 import android.graphics.Typeface;
 import android.os.Bundle;
 import android.util.Log;
@@ -15,20 +14,30 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseExpandableListAdapter;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.gmail.dleemcewen.tandemfieri.Constants.NotificationConstants;
+import com.gmail.dleemcewen.tandemfieri.Entities.Delivery;
+import com.gmail.dleemcewen.tandemfieri.Entities.NotificationMessage;
 import com.gmail.dleemcewen.tandemfieri.Entities.Order;
 import com.gmail.dleemcewen.tandemfieri.Entities.User;
 import com.gmail.dleemcewen.tandemfieri.Enums.OrderEnum;
 import com.gmail.dleemcewen.tandemfieri.Enums.RefundTypeEnum;
 import com.gmail.dleemcewen.tandemfieri.Events.ActivityEvent;
 import com.gmail.dleemcewen.tandemfieri.Json.Braintree.Transaction;
+import com.gmail.dleemcewen.tandemfieri.Logging.LogWriter;
 import com.gmail.dleemcewen.tandemfieri.ManageOrders;
 import com.gmail.dleemcewen.tandemfieri.R;
+import com.gmail.dleemcewen.tandemfieri.Repositories.Deliveries;
+import com.gmail.dleemcewen.tandemfieri.Repositories.NotificationMessages;
 import com.gmail.dleemcewen.tandemfieri.ViewOrderActivity;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.loopj.android.http.AsyncHttpClient;
@@ -40,6 +49,7 @@ import org.json.JSONObject;
 
 import java.util.List;
 import java.util.Map;
+import java.util.logging.Level;
 
 import cz.msebera.android.httpclient.Header;
 
@@ -52,14 +62,12 @@ public class RestaurantMainMenuExpandableListAdapter extends BaseExpandableListA
     private Activity context;
     private List<Order> orderList;
     private Map<String, List<Order>> childList;
-    private Resources resources;
     private DatabaseReference mDatabase;
     private TextView orderName;
-    private Order order;
-    private LayoutInflater inflater;
-    private Button manage_button;
     private User user;
     private ProgressDialog mDialog;
+    private NotificationMessages<NotificationMessage> notifications;
+    private Deliveries<Delivery> deliveries;
 
     public RestaurantMainMenuExpandableListAdapter(Activity context, List<Order> orderList,
                                                    Map<String, List<Order>> childList, User user) {
@@ -175,7 +183,13 @@ public class RestaurantMainMenuExpandableListAdapter extends BaseExpandableListA
     }//end get child view
 
     private void refundDialog(final Order order, final User user) {
+        LayoutInflater li = LayoutInflater.from(context);
+        View view = li.inflate(R.layout.dialog_restaurant_refund, null);
+
         AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(context);
+        alertDialogBuilder.setView(view);
+
+        final EditText comments = (EditText) view.findViewById(R.id.et_refund_comment);
 
         alertDialogBuilder
                 .setCancelable(false)
@@ -188,7 +202,7 @@ public class RestaurantMainMenuExpandableListAdapter extends BaseExpandableListA
                                 mDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
                                 mDialog.show();
 
-                                findTransaction(order, user);
+                                findTransaction(order, user, comments);
                             }
                         })
                 .setNegativeButton(context.getString(R.string.no),
@@ -202,7 +216,7 @@ public class RestaurantMainMenuExpandableListAdapter extends BaseExpandableListA
         alertDialog.show();
     }
 
-    private void findTransaction(final Order order, final User user) {
+    private void findTransaction(final Order order, final User user, final TextView reason) {
         if (order.getStatus() == OrderEnum.PAYMENT_PENDING) {
             Toast.makeText(context, "Unable to refund. Payment never submitted.", Toast.LENGTH_LONG).show();
             return;
@@ -259,8 +273,9 @@ public class RestaurantMainMenuExpandableListAdapter extends BaseExpandableListA
                             processRefund(type,
                                     detail.transactionID,
                                     user.getAuthUserID(),
-                                    order.getOrderId(),
-                                    isENROUTE);
+                                    order,
+                                    isENROUTE,
+                                    reason);
                         } else {
                             Log.v("Braintree:", "FindTransaction: " + detail.error);
                             mDialog.hide();
@@ -284,7 +299,8 @@ public class RestaurantMainMenuExpandableListAdapter extends BaseExpandableListA
         //End rest api
     }
 
-    private void processRefund(RefundTypeEnum type, String transactionID, final String ownerID, final String orderID, final boolean isENROUTE) {
+    private void processRefund(RefundTypeEnum type, String transactionID, final String ownerID,
+                               final Order order, final boolean isENROUTE, final TextView reason) {
         AsyncHttpClient client = new AsyncHttpClient();
         RequestParams params = new RequestParams();
 
@@ -313,15 +329,48 @@ public class RestaurantMainMenuExpandableListAdapter extends BaseExpandableListA
                             Log.v("Braintree", "Order refunded");
 
                             mDatabase = FirebaseDatabase.getInstance().getReference();
-                            mDatabase.child("Order").child(ownerID).child(orderID).child("status").setValue(OrderEnum.REFUNDED);
+                            mDatabase.child("Order").child(ownerID).child(order.getOrderId()).child("status").setValue(OrderEnum.REFUNDED);
+                            mDatabase.child("Order").child(ownerID).child(order.getOrderId()).child("refundReason").setValue(reason.getText().toString());
+
+                            //set status and refund reason in the order object as well
+                            order.setStatus(OrderEnum.REFUNDED);
+                            order.setRefundReason(reason.getText().toString());
+
+                            LogWriter.log(context, Level.FINE, "sending notification to diner");
+
+                            notifications = new NotificationMessages<>(context);
+
+                            //Send refunded notification to diner
+                            notifications
+                                .sendNotification(NotificationConstants.Action.REMOVED, order, order.getCustomerId());
+
+                            if (isENROUTE) {
+                                //Send Notification to Driver
+                                DatabaseReference deliveryDatabase = FirebaseDatabase.getInstance().getReference("Delivery");
+                                deliveryDatabase.addListenerForSingleValueEvent(new ValueEventListener() {
+                                    @Override
+                                    public void onDataChange(DataSnapshot dataSnapshot) {
+                                        deliveries = new Deliveries<>(context);
+                                        String driverId = deliveries.findDriverIdForOrder(order.getOrderId(), dataSnapshot);
+
+                                        notifications = new NotificationMessages<>(context);
+                                        notifications.sendNotification(NotificationConstants.Action.REMOVED, order, driverId);
+
+                                        //clean up delivery and delivery location in firebase
+                                        mDatabase.child("Delivery").child(driverId).child("Order").child(order.getCustomerId()).child(order.getOrderId()).removeValue();
+                                        mDatabase.child("Delivery").child(driverId).child("currentOrderId").removeValue();
+                                        mDatabase.child("Delivery Location").child(order.getCustomerId()).removeValue();
+                                    }
+
+                                    @Override
+                                    public void onCancelled(DatabaseError databaseError) {
+                                        //not implemented
+                                    }
+                                });
+                            }
 
                             EventBus.getDefault()
                                     .post(new ActivityEvent(ActivityEvent.Result.REFRESH_RESTAURANT_MAIN_MENU));
-
-                            if (isENROUTE) {
-                                //// TODO: 3/29/2017 Send Notification to Driver
-                                //  TODO: clean up driver delivery in firebase
-                            }
 
                             Toast.makeText(context,
                                     "Order refunded.",

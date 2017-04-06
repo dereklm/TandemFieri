@@ -36,21 +36,16 @@ import java.util.Locale;
 public class DinerRestaurantsListAdapter extends BaseAdapter {
     private Activity context;
     private List<Restaurant> restaurantsList;
-    private RestaurantHours<DeliveryHours> restaurantHours;
+    private List<DeliveryHours> deliveryHours;
     private Ratings<Rating> ratings;
     private Date currentDate;
 
-    public DinerRestaurantsListAdapter(Activity context, List<Restaurant> restaurantsList) {
+    public DinerRestaurantsListAdapter(Activity context, List<Restaurant> restaurantsList, List<DeliveryHours> deliveryHours) {
         this.context = context;
-        this.restaurantHours = new RestaurantHours<>(context);
+        this.deliveryHours = deliveryHours;
         this.ratings = new Ratings<>(context);
         this.currentDate = new Date();
-
-        if (!restaurantsList.isEmpty()) {
-            this.restaurantsList = restaurantsList;
-        } else {
-            this.restaurantsList = new ArrayList<>();
-        }
+        this.restaurantsList = restaurantsList;
     }
 
     /**
@@ -162,22 +157,21 @@ public class DinerRestaurantsListAdapter extends BaseAdapter {
      */
     private void getRestaurantHours(String restaurantId, final TextView restaurantOpenClosed) {
         final int dayOfWeek = getDayOfWeekFromCurrentDate();
+        boolean hoursProcessed = false;
 
-        restaurantHours
-            .find("restaurantId = '" + restaurantId + "'")
-            .addOnCompleteListener(context, new OnCompleteListener<TaskResult<DeliveryHours>>() {
-                @Override
-                public void onComplete(@NonNull Task<TaskResult<DeliveryHours>> task) {
-                    List<DeliveryHours> deliveryHours = task.getResult().getResults();
-                    if (!deliveryHours.isEmpty() && !deliveryHours.get(0).getDays().isEmpty()) {
-                        Day dayHours = deliveryHours.get(0).getDays().get(dayOfWeek);
+        for (DeliveryHours hours : deliveryHours) {
+            if (!hoursProcessed && hours.getRestaurantId().equals(restaurantId)) {
+                hoursProcessed = true;
 
-                        buildRestaurantHoursText(dayHours, restaurantOpenClosed);
-                    } else {
-                        setRestaurantHoursText("CLOSED. No delivery hours have been set for today.", restaurantOpenClosed, Color.argb(255, 128, 128, 128));
-                    }
+                if (!hours.getDays().isEmpty()) {
+                    Day dayHours = hours.getDays().get(dayOfWeek);
+
+                    buildRestaurantHoursText(dayHours, restaurantOpenClosed);
+                } else {
+                    setRestaurantHoursText("CLOSED. No delivery hours have been set for today.", restaurantOpenClosed, Color.argb(255, 128, 128, 128));
                 }
-            });
+            }
+        }
     }
 
     /**
