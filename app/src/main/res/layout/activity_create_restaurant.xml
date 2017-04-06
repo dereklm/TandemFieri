@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/activity_create_restaurant"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
@@ -19,7 +20,8 @@
         android:layout_alignParentStart="true"
         android:textSize="@dimen/title_text_size"
         android:id="@+id/title" />
-    <EditText
+    <com.rengwuxian.materialedittext.MaterialEditText
+        app:met_iconLeft="@drawable/ic_business_building"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:inputType="textCapWords"
@@ -57,7 +59,7 @@
         android:layout_below="@id/restaurantTypeSpinner"
         android:layout_alignParentLeft="true"
         android:layout_alignParentStart="true" />
-    <EditText
+    <com.rengwuxian.materialedittext.MaterialEditText
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:textSize="@dimen/regular_text_size"
@@ -67,7 +69,7 @@
         android:layout_alignParentLeft="true"
         android:layout_alignParentStart="true"
         android:inputType="textPostalAddress" />
-    <EditText
+    <com.rengwuxian.materialedittext.MaterialEditText
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:textSize="@dimen/regular_text_size"
@@ -93,7 +95,7 @@
             style="@style/Base.Widget.AppCompat.Spinner.Underlined"
             android:layout_width="wrap_content"
             android:layout_height="match_parent"/>
-        <EditText
+        <com.rengwuxian.materialedittext.MaterialEditText
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
             android:layout_weight="1"
@@ -129,7 +131,8 @@
             android:layout_alignParentRight="true"
             android:text="@string/deliveryHours" />
     </LinearLayout>
-    <EditText
+    <com.rengwuxian.materialedittext.MaterialEditText
+        app:met_iconLeft="@drawable/ic_dollar_sign"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:inputType="numberDecimal"
