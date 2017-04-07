@@ -12,18 +12,16 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseExpandableListAdapter;
-import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.beardedhen.androidbootstrap.BootstrapButton;
 import com.gmail.dleemcewen.tandemfieri.CreateDeliveryHoursActivity;
 import com.gmail.dleemcewen.tandemfieri.DriverRatings;
 import com.gmail.dleemcewen.tandemfieri.EditRestaurantActivity;
 import com.gmail.dleemcewen.tandemfieri.Entities.DeliveryHours;
 import com.gmail.dleemcewen.tandemfieri.Entities.Restaurant;
 import com.gmail.dleemcewen.tandemfieri.Entities.User;
-import com.gmail.dleemcewen.tandemfieri.Logging.LogWriter;
-import com.gmail.dleemcewen.tandemfieri.ManageOrders;
 import com.gmail.dleemcewen.tandemfieri.ManageRestaurantDrivers;
 import com.gmail.dleemcewen.tandemfieri.ProductHistoryActivity;
 import com.gmail.dleemcewen.tandemfieri.R;
@@ -41,7 +39,6 @@ import com.google.firebase.database.ValueEventListener;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
-import java.util.logging.Level;
 
 /**
  * ManageRestaurantExpandableListAdapter provides the required methods to render the expandable
@@ -196,7 +193,7 @@ public class ManageRestaurantExpandableListAdapter extends BaseExpandableListAda
             }
         });
 
-        Button removeRestaurant = (Button)convertView.findViewById(R.id.remove);
+        BootstrapButton removeRestaurant = (BootstrapButton) convertView.findViewById(R.id.remove);
         removeRestaurant.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -270,12 +267,12 @@ public class ManageRestaurantExpandableListAdapter extends BaseExpandableListAda
             convertView = layoutInflater.inflate(R.layout.manage_restaurants_list_item, null);
         }
 
-        Button manageMenuItems = (Button)convertView.findViewById(R.id.manageMenuItems);
-        Button viewSales = (Button)convertView.findViewById(R.id.viewSales);
-        Button viewDeliveryArea = (Button)convertView.findViewById(R.id.viewDeliveryArea);
-        Button manageDrivers = (Button)convertView.findViewById(R.id.manageDrivers);
-        Button rateDrivers = (Button)convertView.findViewById(R.id.rateDrivers);
-        Button deliveryHours = (Button)convertView.findViewById(R.id.deliveryHours);
+        BootstrapButton manageMenuItems = (BootstrapButton)convertView.findViewById(R.id.manageMenuItems);
+        BootstrapButton viewSales = (BootstrapButton)convertView.findViewById(R.id.viewSales);
+        BootstrapButton viewDeliveryArea = (BootstrapButton)convertView.findViewById(R.id.viewDeliveryArea);
+        BootstrapButton manageDrivers = (BootstrapButton)convertView.findViewById(R.id.manageDrivers);
+        BootstrapButton rateDrivers = (BootstrapButton)convertView.findViewById(R.id.rateDrivers);
+        BootstrapButton deliveryHours = (BootstrapButton)convertView.findViewById(R.id.deliveryHours);
 
 
         manageMenuItems.setOnClickListener(new View.OnClickListener() {

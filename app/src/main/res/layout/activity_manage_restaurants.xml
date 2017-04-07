@@ -23,10 +23,11 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:id="@+id/header" />
-        <Button
+        <com.beardedhen.androidbootstrap.BootstrapButton
+            style="@style/success_button"
             android:id="@+id/addRestaurant"
             android:background="@android:color/transparent"
-            android:layout_width="64dp"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="@string/addButton"
             android:drawableRight="@drawable/ic_add"

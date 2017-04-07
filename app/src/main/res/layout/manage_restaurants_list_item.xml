@@ -4,42 +4,48 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:paddingLeft="?android:attr/expandableListPreferredChildPaddingLeft">
-    <Button
+    <com.beardedhen.androidbootstrap.BootstrapButton
+        style="@style/primary_button"
         android:id="@+id/manageMenuItems"
         android:focusable="false"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:textSize="@dimen/button_text_size"
         android:text="@string/manageMenuItemsButton" />
-    <Button
+    <com.beardedhen.androidbootstrap.BootstrapButton
+        style="@style/primary_button"
         android:id="@+id/viewDeliveryArea"
         android:focusable="false"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:textSize="@dimen/button_text_size"
         android:text="@string/viewDeliveryAreaButton" />
-    <Button
+    <com.beardedhen.androidbootstrap.BootstrapButton
+        style="@style/primary_button"
         android:id="@+id/viewSales"
         android:focusable="false"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:textSize="@dimen/button_text_size"
         android:text="@string/viewSalesButton" />
-    <Button
+    <com.beardedhen.androidbootstrap.BootstrapButton
+        style="@style/primary_button"
         android:id="@+id/manageDrivers"
         android:focusable="false"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:textSize="@dimen/button_text_size"
         android:text="@string/manageDriversButton"/>
-    <Button
+    <com.beardedhen.androidbootstrap.BootstrapButton
+        style="@style/primary_button"
         android:id="@+id/rateDrivers"
         android:focusable="false"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:textSize="@dimen/button_text_size"
         android:text="@string/rateDriversButton"/>
-    <Button
+    <com.beardedhen.androidbootstrap.BootstrapButton
+        style="@style/primary_button"
         android:id="@+id/deliveryHours"
         android:focusable="false"
         android:layout_width="match_parent"
