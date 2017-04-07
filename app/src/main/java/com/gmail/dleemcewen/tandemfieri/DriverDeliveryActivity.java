@@ -426,15 +426,13 @@ public class DriverDeliveryActivity extends AppCompatActivity implements
                                     order.setDriverComment(comments.getText().toString());
                                 }
 
-                                //reemoved to keep track of passed orders
-                                //mDatabase.child("Delivery").child(user.getAuthUserID()).child("Order").child(order.getCustomerId()).child(order.getOrderId()).removeValue();
-                                mDatabase.child("Delivery").child(user.getAuthUserID()).child("Order").child(order.getCustomerId()).child(order.getOrderId()).child("status").setValue(OrderEnum.COMPLETE);
-                                //mDatabase.child("Delivery").child(user.getAuthUserID()).child("currentOrderId").removeValue();
+                                mDatabase.child("Delivery").child(user.getAuthUserID()).child("Order").child(order.getCustomerId()).child(order.getOrderId()).removeValue();
+                                mDatabase.child("Delivery").child(user.getAuthUserID()).child("currentOrderId").removeValue();
                                 mDatabase.child("Delivery Location").child(order.getCustomerId()).removeValue();
                                 mDatabase.child("Order").child(ownerId).child(order.getOrderId()).setValue(order);
 
                                 //send notification to diner for driver rating
-                                sendNotificationToDiner(order, user);
+                                sendNotificationToDiner(order, order.getCustomerId());
 
                                 finish();
                                 Toast.makeText(getApplicationContext(), "Order completed.", Toast.LENGTH_LONG).show();
@@ -451,8 +449,8 @@ public class DriverDeliveryActivity extends AppCompatActivity implements
         alertDialog.show();
     }
 
-    private void sendNotificationToDiner(Order order, User user) {
+    private void sendNotificationToDiner(Order order, String customerId) {
         order.setStatus(OrderEnum.COMPLETE);
-        notifications.sendNotification(NotificationConstants.Action.ADDED, order, user.getAuthUserID());
+        notifications.sendNotification(NotificationConstants.Action.ADDED, order, customerId);
     }
 }

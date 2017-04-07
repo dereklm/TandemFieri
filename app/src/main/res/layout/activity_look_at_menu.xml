@@ -1,32 +1,43 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/activity_look_at_menu"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:paddingBottom="@dimen/activity_vertical_margin"
-    android:paddingLeft="@dimen/activity_horizontal_margin"
-    android:paddingRight="@dimen/activity_horizontal_margin"
-    android:paddingTop="@dimen/activity_vertical_margin"
+    android:orientation="vertical"
+    android:paddingBottom="5dp"
+    android:paddingLeft="5dp"
+    android:paddingRight="5dp"
+    android:paddingTop="5dp"
     tools:context="com.gmail.dleemcewen.tandemfieri.LookAtMenuActivity">
 
     <TextView
-        android:id="@+id/restaurant_name"
-        android:layout_width="wrap_content"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_centerHorizontal="true"
-        android:textSize="30sp"
-        android:layout_alignParentTop="true"/>
+        android:textSize="13dp"
+        android:text="Browse through the menu and see if you like the restaurant"
+        android:gravity="center"
+        />
+
+    <Spinner
+        android:id="@+id/category_spinner"
+        android:ems="8"
+        android:hint="@string/hintCategories"
+        android:textSize="14dp"
+        android:paddingTop="20dp"
+        android:paddingBottom="20dp"
+        style="@style/Base.Widget.AppCompat.Spinner.Underlined"
+        android:gravity="center"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" />
+
+    <ExpandableListView
+        android:id="@+id/menu_items"
+        android:layout_width="match_parent"
+        android:paddingTop="20dp"
+        android:layout_height="0dp"
+        android:layout_weight="10">
+    </ExpandableListView>
 
 
-    <ListView
-        android:id="@+id/menuItemsOrder"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_below="@id/restaurant_name"
-        android:layout_alignParentLeft="true"
-        android:layout_alignParentStart="true">
-
-    </ListView>
-
-</RelativeLayout>
+</LinearLayout>

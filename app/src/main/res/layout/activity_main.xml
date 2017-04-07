@@ -12,7 +12,7 @@
     tools:context="com.gmail.dleemcewen.tandemfieri.MainActivity">
 
 
-    <TextView
+    <com.beardedhen.androidbootstrap.AwesomeTextView
         android:text="@string/signInTitle"
         android:textSize="30sp"
         android:layout_marginTop="50dp"
@@ -69,7 +69,8 @@
 
 </com.github.florent37.materialtextfield.MaterialTextField>
 
-    <Button
+    <com.beardedhen.androidbootstrap.BootstrapButton
+        style="@style/primary_button"
         android:text="@string/signInButton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"

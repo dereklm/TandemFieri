@@ -51,6 +51,7 @@
         android:layout_width="match_parent"
         android:id="@+id/address_container"
         android:orientation="horizontal"
+        android:layout_marginTop="20dp"
         android:layout_height="wrap_content">
 
         <EditText
@@ -61,18 +62,22 @@
             android:layout_weight="4"
             android:layout_height="wrap_content"
             android:layout_below="@+id/firstName"
-            android:layout_marginTop="20dp"
+
             android:id="@+id/address"
+            android:layout_marginBottom="0dp"
+
             android:layout_alignParentRight="true"
             android:layout_alignParentEnd="true"
             android:layout_alignParentLeft="true"
             android:layout_alignParentStart="true" />
 
-        <Button
-            android:layout_width="45dp"
+        <com.beardedhen.androidbootstrap.BootstrapButton
+            style="@style/primary_button"
+
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:id="@+id/location_button"
-            android:layout_marginTop="10dp"
+            android:layout_marginBottom="@+id/address"
             android:drawableLeft="@drawable/ic_room_black_24dp"
             />
 
@@ -140,6 +145,7 @@
         android:layout_alignParentLeft="true"
         android:layout_alignParentStart="true" />
 
+
     <EditText
         android:hint="@string/hintEmail"
         android:textSize="14sp"
@@ -154,7 +160,8 @@
         android:layout_alignParentLeft="true"
         android:layout_alignParentStart="true" />
 
-    <Button
+    <com.beardedhen.androidbootstrap.BootstrapButton
+        style="@style/primary_button"
         android:text="@string/nextButton"
         android:textSize="10sp"
         android:layout_width="wrap_content"

@@ -13,13 +13,13 @@ import android.widget.Button;
 import android.widget.RatingBar;
 import android.widget.TextView;
 
+import com.beardedhen.androidbootstrap.BootstrapButton;
 import com.gmail.dleemcewen.tandemfieri.Entities.Rating;
 import com.gmail.dleemcewen.tandemfieri.Entities.Restaurant;
 import com.gmail.dleemcewen.tandemfieri.Formatters.DateFormatter;
 import com.gmail.dleemcewen.tandemfieri.R;
 import com.gmail.dleemcewen.tandemfieri.Repositories.Ratings;
 
-import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
 
@@ -115,7 +115,7 @@ public class RestaurantRatingsListAdapter extends BaseAdapter {
         TextView rateableRestaurantName = (TextView)convertView.findViewById(R.id.restaurantToRate);
         rateableRestaurantName.setText(restaurant.getName());
 
-        Button selectRestaurantToRate = (Button)convertView.findViewById(R.id.selectRestaurantToRate);
+        BootstrapButton selectRestaurantToRate = (BootstrapButton)convertView.findViewById(R.id.selectRestaurantToRate);
         selectRestaurantToRate.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {

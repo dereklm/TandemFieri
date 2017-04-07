@@ -7,15 +7,20 @@ import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
-import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.gmail.dleemcewen.tandemfieri.Builders.DinerSubscriberBuilder;
+import com.gmail.dleemcewen.tandemfieri.Builders.DriverSubscriberBuilder;
+import com.gmail.dleemcewen.tandemfieri.Builders.RestaurantSubscriberBuilder;
+import com.beardedhen.androidbootstrap.BootstrapButton;
+import com.beardedhen.androidbootstrap.BootstrapEditText;
 import com.gmail.dleemcewen.tandemfieri.Entities.NotificationMessage;
 import com.gmail.dleemcewen.tandemfieri.Entities.Restaurant;
 import com.gmail.dleemcewen.tandemfieri.Entities.User;
 import com.gmail.dleemcewen.tandemfieri.Enums.OrderEnum;
+import com.gmail.dleemcewen.tandemfieri.EventListeners.SubscriberBuilderCompleteListener;
 import com.gmail.dleemcewen.tandemfieri.Filters.SubscriberFilter;
 import com.gmail.dleemcewen.tandemfieri.Interfaces.ISubscriber;
 import com.gmail.dleemcewen.tandemfieri.Json.Braintree.ClientToken;
@@ -50,7 +55,6 @@ import com.loopj.android.http.RequestParams;
 import org.json.JSONObject;
 
 import java.io.Serializable;
-import java.util.AbstractMap;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
@@ -61,7 +65,7 @@ public class MainActivity extends AppCompatActivity {
 
     public TextView createAccount;
     public EditText email, password;
-    public Button signInButton;
+    public BootstrapButton signInButton;
 
     private FirebaseAuth mAuth;
     private FirebaseAuth.AuthStateListener authenticatorListener;
@@ -95,7 +99,7 @@ public class MainActivity extends AppCompatActivity {
 //        }
 
         createAccount = (TextView) findViewById(R.id.createAccount);
-        signInButton = (Button) findViewById(R.id.signInButton);
+        signInButton = (BootstrapButton) findViewById(R.id.signInButton);
         email = (EditText) findViewById(R.id.email);
         password = (EditText) findViewById(R.id.password);
 
@@ -254,101 +258,73 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void navigateToMenu(DataSnapshot dataSnapshot) {
-
-        Bundle bundle = new Bundle();
-                           
-        User diner = dataSnapshot.child("Diner").child(mAuth.getCurrentUser().getUid()).getValue(User.class);
-        User driver = dataSnapshot.child("Driver").child(mAuth.getCurrentUser().getUid()).getValue(User.class);
+        final User diner = dataSnapshot.child("Diner").child(mAuth.getCurrentUser().getUid()).getValue(User.class);
+        final User driver = dataSnapshot.child("Driver").child(mAuth.getCurrentUser().getUid()).getValue(User.class);
         final User restaurantOwner = dataSnapshot.child("Restaurant").child(mAuth.getCurrentUser().getUid()).getValue(User.class);
 
-        Intent intent = null;
-
         if(diner != null){
-            List<Object> customerIds = new ArrayList<>();
-            customerIds.add(diner.getAuthUserID());
-
-            List<Object> orderStatuses = new ArrayList<>();
-            orderStatuses.add(OrderEnum.COMPLETE.toString());
-
-            List<SubscriberFilter> subscriberFilters = new ArrayList<>();
-            subscriberFilters.add(new SubscriberFilter("customerId", customerIds));
-            subscriberFilters.add(new SubscriberFilter("status", orderStatuses));
-
-            //register new diner subscriber
-            registerNewSubscriber(new DinerSubscriber(
-                    MainActivity.this,
-                    diner,
-                    subscriberFilters));
-
-            intent = new Intent(MainActivity.this, DinerMainMenu.class);
-            bundle.putSerializable("User", diner);
-
-            if (diner.getBraintreeId() == null || diner.getBraintreeId().equals("")) {
-                createBraintreeCustomer(diner);
-            } else {
-                Log.v("BRAINTREE DEBUG", "CUS ID FROM MENU: " + diner.getBraintreeId());  //REMOVE ME, TESTING ONLY
-                requestBraintreeClientToken(diner.getBraintreeId());
-            }
-
-            intent.putExtras(bundle);
-            startActivity(intent);
-        }else if(driver != null){
-            List<Object> restaurantIds = new ArrayList<>();
-            restaurantIds.add(driver.getRestaurantId());
-
-            List<Object> orderStatuses = new ArrayList<>();
-            orderStatuses.add(OrderEnum.EN_ROUTE.toString());
-
-            List<SubscriberFilter> subscriberFilters = new ArrayList<>();
-            subscriberFilters.add(new SubscriberFilter("restaurantId", restaurantIds));
-            subscriberFilters.add(new SubscriberFilter("status", orderStatuses));
-
-            //register new driver subscriber
-            registerNewSubscriber(new DriverSubscriber(
-                    MainActivity.this,
-                    driver,
-                    subscriberFilters));
-
-            intent = new Intent(MainActivity.this, DriverMainMenu.class);
-            bundle.putSerializable("User", driver);
-            intent.putExtras(bundle);
-            startActivity(intent);
-        }else if(restaurantOwner != null){
-            //Find all the restaurant ids for the restaurant owner
-            //to be able to associate them with the notifications
-            restaurantsRepository
-                .find("ownerId = '" + mAuth.getCurrentUser().getUid() + "'")
-                .addOnCompleteListener(MainActivity.this, new OnCompleteListener<TaskResult<Restaurant>>() {
+            //Register diners for refund and completed notifications
+            DinerSubscriberBuilder.Build(diner,
+                MainActivity.this,
+                new SubscriberBuilderCompleteListener<DinerSubscriber>() {
                     @Override
-                    public void onComplete(@NonNull Task<TaskResult<Restaurant>> task) {
-                        List<Restaurant> restaurants = task.getResult().getResults();
+                    public void onBuildComplete(List<ISubscriber> subscribers) {
+                        //register new diner refund subscriber
+                        registerNewSubscriber(subscribers.get(0));
 
-                        List<Object> restaurantIds = new ArrayList<>();
-                        for (Restaurant ownerRestaurant : restaurants) {
-                            restaurantIds.add(ownerRestaurant.getKey());
+                        //register new diner completed subscriber
+                        registerNewSubscriber(subscribers.get(1));
+
+                        Intent dinerIntent = new Intent(MainActivity.this, DinerMainMenu.class);
+                        Bundle dinerBundle = new Bundle();
+                        dinerBundle.putSerializable("User", diner);
+
+                        if (diner.getBraintreeId() == null || diner.getBraintreeId().equals("")) {
+                            createBraintreeCustomer(diner);
+                        } else {
+                            LogWriter.log(MainActivity.this, Level.FINE, "BRAINTREE DEBUG: CUS ID FROM MENU: " + diner.getBraintreeId());
+                            requestBraintreeClientToken(diner.getBraintreeId());
                         }
 
-                        List<Object> orderStatuses = new ArrayList<>();
-                        orderStatuses.add(OrderEnum.CREATING.toString());
-
-                        List<SubscriberFilter> subscriberFilters = new ArrayList<>();
-                        subscriberFilters.add(new SubscriberFilter("restaurantId", restaurantIds));
-                        subscriberFilters.add(new SubscriberFilter("status", orderStatuses));
-
-
-                        //register new restaurant subscriber
-                        registerNewSubscriber(new RestaurantSubscriber(
-                                MainActivity.this,
-                                restaurantOwner,
-                                subscriberFilters));
-
-                        Intent restaurantIntent = new Intent(MainActivity.this, RestaurantMainMenu.class);
-                        Bundle restaurantBundle = new Bundle();
-                        restaurantBundle.putSerializable("User", restaurantOwner);
-                        restaurantIntent.putExtras(restaurantBundle);
-                        startActivity(restaurantIntent);
+                        dinerIntent.putExtras(dinerBundle);
+                        startActivity(dinerIntent);
                     }
                 });
+        }else if(driver != null){
+            //Register drivers for enroute and refunded notifications
+            DriverSubscriberBuilder.Build(driver,
+                    MainActivity.this,
+                    new SubscriberBuilderCompleteListener<DriverSubscriber>() {
+                        @Override
+                        public void onBuildComplete(List<ISubscriber> subscribers) {
+                            //register new driver enroute subscriber
+                            registerNewSubscriber(subscribers.get(0));
+
+                            //register new driver refunded subscriber
+                            registerNewSubscriber(subscribers.get(1));
+
+                            Intent driverIntent = new Intent(MainActivity.this, DriverMainMenu.class);
+                            Bundle driverBundle = new Bundle();
+                            driverBundle.putSerializable("User", driver);
+                            driverIntent.putExtras(driverBundle);
+                            startActivity(driverIntent);
+                        }
+                    });
+        }else if(restaurantOwner != null){
+            //register the restaurant owner as a subscriber
+            RestaurantSubscriberBuilder.Build(restaurantOwner, MainActivity.this, new SubscriberBuilderCompleteListener<RestaurantSubscriber>() {
+                @Override
+                public void onBuildComplete(List<ISubscriber> subscribers) {
+                    //register new restaurant subscriber
+                    registerNewSubscriber(subscribers.get(0));
+
+                    Intent restaurantIntent = new Intent(MainActivity.this, RestaurantMainMenu.class);
+                    Bundle restaurantBundle = new Bundle();
+                    restaurantBundle.putSerializable("User", restaurantOwner);
+                    restaurantIntent.putExtras(restaurantBundle);
+                    startActivity(restaurantIntent);
+                }
+            });
         }
     }
 
@@ -366,8 +342,8 @@ public class MainActivity extends AppCompatActivity {
         NotificationPublisher notificationPublisher = NotificationPublisher.getInstance();
         List<ISubscriber> subscribers = notificationPublisher.getSubscribers();
 
-        for (ISubscriber subscriber : subscribers) {
-            notificationPublisher.unsubscribe(subscriber);
+        for (int index = subscribers.size() - 1; index > -1; index--) {
+            notificationPublisher.unsubscribe(subscribers.get(index));
         }
     }
 
@@ -413,7 +389,7 @@ public class MainActivity extends AppCompatActivity {
 
             @Override
             public void onCancelled(DatabaseError databaseError) {
-
+                //not implemented
             }
         });
 

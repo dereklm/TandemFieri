@@ -72,6 +72,7 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="15dp"
         android:id="@+id/diningRadio"
+        android:buttonTint="@color/blue"
         android:layout_below="@+id/userFilter"
         />
 
@@ -84,7 +85,8 @@
         android:id="@+id/restaurantRadio"
         android:layout_below="@+id/diningRadio"
         android:layout_alignLeft="@+id/diningRadio"
-        android:layout_alignStart="@+id/diningRadio" />
+        android:layout_alignStart="@+id/diningRadio"
+        android:buttonTint="@color/blue"/>
 
     <RadioButton
         android:text="@string/driver"
@@ -93,12 +95,14 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="15dp"
         android:id="@+id/driverRadio"
+        android:buttonTint="@color/blue"
         android:layout_below="@+id/restaurantRadio"
         android:layout_alignLeft="@+id/diningRadio"
         android:layout_alignStart="@+id/diningRadio" />
     </RadioGroup>
 
-    <Button
+    <com.beardedhen.androidbootstrap.BootstrapButton
+        style="@style/danger_button"
         android:text="Cancel"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -106,7 +110,8 @@
         android:layout_alignParentStart="true"
         android:layout_alignParentLeft="true"
         android:id="@+id/cancelButton" />
-    <Button
+    <com.beardedhen.androidbootstrap.BootstrapButton
+        style="@style/success_button"
         android:text="Create"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"

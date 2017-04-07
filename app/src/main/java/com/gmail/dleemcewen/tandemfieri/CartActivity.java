@@ -14,6 +14,7 @@ import android.widget.ExpandableListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.beardedhen.androidbootstrap.BootstrapButton;
 import com.braintreepayments.api.dropin.DropInActivity;
 import com.braintreepayments.api.dropin.DropInRequest;
 import com.braintreepayments.api.dropin.DropInResult;
@@ -51,7 +52,7 @@ import cz.msebera.android.httpclient.Header;
 public class CartActivity extends AppCompatActivity {
 
     private Order order;
-    private Button cancelButton, checkoutButton, paymentMethodButton;
+    private BootstrapButton cancelButton, checkoutButton, paymentMethodButton;
     private double deliveryCharge;
     private ExpandableListView cartItems;
     private OrderItemAdapter orderItemAdapter;
@@ -100,9 +101,9 @@ public class CartActivity extends AppCompatActivity {
         subtotal = (TextView) findViewById(R.id.subTotal);
         tax = (TextView) findViewById(R.id.tax);
         delivery = (TextView) findViewById(R.id.delivery_charge);
-        cancelButton = (Button) findViewById(R.id.cancel_purchase);
-        checkoutButton = (Button) findViewById(R.id.checkout);
-        paymentMethodButton = (Button) findViewById(R.id.payment_method);
+        cancelButton = (BootstrapButton) findViewById(R.id.cancel_purchase);
+        checkoutButton = (BootstrapButton) findViewById(R.id.checkout);
+        paymentMethodButton = (BootstrapButton) findViewById(R.id.payment_method);
         cartItems = (ExpandableListView) findViewById(R.id.cart_items);
         orderItemAdapter = new OrderItemAdapter(CartActivity.this, this, order.getItems());
 
@@ -231,7 +232,7 @@ public class CartActivity extends AppCompatActivity {
                                     Toast.LENGTH_LONG).show();
 
                             notificationsRepository
-                                    .sendNotification(NotificationConstants.Action.ADDED, order, uid);
+                                    .sendNotification(NotificationConstants.Action.ADDED, order, ownerId);
 
                             enableDeliveryMap();
 
@@ -255,33 +256,6 @@ public class CartActivity extends AppCompatActivity {
                     }
                 });
         //End rest api
-
-
-
-
-
-        //sent order notification to restaurant
-//        notificationsRepository
-//                .sendNotification(NotificationConstants.Action.ADDED, order)
-//                .addOnCompleteListener(CartActivity.this, new OnCompleteListener<TaskResult<Order>>() {
-//                    @Override
-//                    public void onComplete(@NonNull Task<TaskResult<Order>> task) {
-//                        if (task.isSuccessful()) {
-//                            Toast
-//                                    .makeText(CartActivity.this, "Your order has been placed successfully.", Toast.LENGTH_LONG)
-//                                    .show();
-//                        } else {
-//                            Toast
-//                                    .makeText(CartActivity.this, "An error occurred while placing your order.  Please verify the status of your order with the restaurant.", Toast.LENGTH_LONG)
-//                                    .show();
-//                        }
-//                    }
-//                });
-
-        //enable delivery map option in main menu
-//        enableDeliveryMap();
-//
-//        finish();
     }
 
     private void enableDeliveryMap(){

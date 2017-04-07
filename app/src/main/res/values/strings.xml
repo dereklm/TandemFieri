@@ -12,6 +12,8 @@
     <string name="checkout">Checkout</string>
     <string name="addToOrder">To add an item to your order, long press on the item.</string>
     <string name="createAccount">Create Account</string>
+    <string name="refund_reason">Reason for the refund</string>
+    <string name="comment_required">Comment required</string>
     <string name="signupTitle">Sign Up</string>
     <string name="hintFirstName">First Name</string>
     <string name="no_assigned_orders">You have no assigned orders.</string>
@@ -90,9 +92,7 @@
     <string name="delivery_comments">Delivery Comments</string>
     <string name="complete_delivery">Complete Delivery?</string>
     <string name="comment_not_required">Comment not required</string>
-    <string name="comment_required">Comment required</string>
     <string name="refund_order">Refund Order</string>
     <string name="change_status">Change Status</string>
     <string name="confirm_refund">Are your sure you want to refund this order?</string>
-    <string name="refund_reason">Reason for the refund</string>
 </resources>

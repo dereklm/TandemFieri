@@ -72,27 +72,29 @@ public class NotificationPublisher implements IPublish {
             List<SubscriberFilter> filters = subscriber.getFilters();
 
             if (notification.getString("notificationType").equals(subscriber.getNotificationType())) {
-                if (!filters.isEmpty()) {
-                    List<Boolean> filterResults = new ArrayList<>();
+                if (notification.getString("userId").equals(subscriber.getUser().getAuthUserID())) {
+                    if (!filters.isEmpty()) {
+                        List<Boolean> filterResults = new ArrayList<>();
 
-                    Object entity = notification.getSerializable("entity");
-                    HashMap entityHashMap = (HashMap)entity;
+                        Object entity = notification.getSerializable("entity");
+                        HashMap entityHashMap = (HashMap)entity;
 
-                    for (int index = 0; index < filters.size(); index++) {
-                        Object entityValue = entityHashMap.get(filters.get(index).getField());
+                        for (int index = 0; index < filters.size(); index++) {
+                            Object entityValue = entityHashMap.get(filters.get(index).getField());
 
-                        if (entityValue != null) {
-                            filterResults.add(filters.get(index).getValues().contains(entityValue));
+                            if (entityValue != null) {
+                                filterResults.add(filters.get(index).getValues().contains(entityValue));
+                            }
                         }
-                    }
 
-                    if (!filterResults.contains(false)) {
-                        entityHashMap.put("notificationId", notification.getString("notificationId"));
-                        entityHashMap.put("userId", notification.getString("userId"));
+                        if (!filterResults.contains(false)) {
+                            entityHashMap.put("notificationId", notification.getString("notificationId"));
+                            entityHashMap.put("userId", notification.getString("userId"));
+                            subscriber.update(notification);
+                        }
+                    } else {
                         subscriber.update(notification);
                     }
-                } else {
-                    subscriber.update(notification);
                 }
             }
         }

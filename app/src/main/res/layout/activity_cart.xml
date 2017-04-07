@@ -73,14 +73,16 @@
         android:layout_weight="1"
         >
 
-        <Button
+        <com.beardedhen.androidbootstrap.BootstrapButton
+            style="@style/danger_button"
             android:id="@+id/cancel_purchase"
             android:text="@string/cancel"
             android:layout_width="0dp"
             android:layout_weight="1"
             android:layout_height="match_parent" />
 
-        <Button
+        <com.beardedhen.androidbootstrap.BootstrapButton
+            style="@style/primary_button"
             android:id="@+id/payment_method"
             android:text="@string/payment_method"
             android:layout_width="0dp"
@@ -94,7 +96,8 @@
         android:layout_weight="1"
         >
 
-        <Button
+        <com.beardedhen.androidbootstrap.BootstrapButton
+            style="@style/success_button"
             android:id="@+id/checkout"
             android:text="@string/checkout"
             android:layout_width="0dp"
