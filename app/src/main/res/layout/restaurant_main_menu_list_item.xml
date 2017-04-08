@@ -5,15 +5,8 @@
     android:layout_height="match_parent"
     android:paddingLeft="?android:attr/expandableListPreferredChildPaddingLeft">
 
-    <Button
-        android:id="@+id/order_button"
-        android:focusable="false"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:textSize="@dimen/button_text_size"
-        android:text="@string/change_status" />
-
-    <Button
+    <com.beardedhen.androidbootstrap.BootstrapButton
+        style="@style/primary_button"
         android:id="@+id/manage_button"
         android:focusable="false"
         android:layout_width="match_parent"
@@ -21,7 +14,8 @@
         android:textSize="@dimen/button_text_size"
         android:text="@string/manageOrders" />
 
-    <Button
+    <com.beardedhen.androidbootstrap.BootstrapButton
+        style="@style/danger_button"
         android:id="@+id/refund_button"
         android:focusable="false"
         android:layout_width="match_parent"
