@@ -57,8 +57,6 @@ import java.util.List;
 
 import static android.os.Build.VERSION_CODES.M;
 import static com.google.android.gms.location.LocationServices.FusedLocationApi;
-import static com.paypal.android.sdk.onetouch.core.metadata.ah.d;
-import static com.paypal.android.sdk.onetouch.core.metadata.ah.r;
 
 public class DinerMapActivity extends FragmentActivity implements GoogleApiClient.ConnectionCallbacks,
         GoogleApiClient.OnConnectionFailedListener,
@@ -211,7 +209,7 @@ public class DinerMapActivity extends FragmentActivity implements GoogleApiClien
                             theRestaurant = restaurants.get(k);
                         }
                     }
-                            final int dayOfWeek = getDayOfWeekFromCurrentDate();
+                           final int dayOfWeek = getDayOfWeekFromCurrentDate();
 
 
                             restaurantHours
@@ -225,6 +223,7 @@ public class DinerMapActivity extends FragmentActivity implements GoogleApiClien
 
                                                 Day dayHours = deliveryHours.get(0).getDays().get(dayOfWeek);
                                                 if (dayHours.getOpen()) {
+
                                                     if (dayHours.compareOpenTimeWithCurrentTime(currentDate)) {
                                                         if (dayHours.compareClosedTimeWithCurrentTime(currentDate)) {
                                                             controlString = "OPEN";

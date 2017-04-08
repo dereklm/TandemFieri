@@ -17,12 +17,10 @@ import com.gmail.dleemcewen.tandemfieri.Entities.Restaurant;
 import com.gmail.dleemcewen.tandemfieri.Formatters.DateFormatter;
 import com.gmail.dleemcewen.tandemfieri.R;
 import com.gmail.dleemcewen.tandemfieri.Repositories.Ratings;
-import com.gmail.dleemcewen.tandemfieri.Repositories.RestaurantHours;
 import com.gmail.dleemcewen.tandemfieri.Tasks.TaskResult;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 
-import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;

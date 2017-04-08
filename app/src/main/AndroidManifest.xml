@@ -93,8 +93,8 @@
         <activity android:name=".DinerOrderHistoryActivity" />
         <activity android:name=".ViewOrderActivity" />
         <activity android:name=".ProductHistoryActivity" />
-        <activity android:name=".CompetedOrdersDriverActivity"></activity>
-
+        <activity android:name=".CompetedOrdersDriverActivity" />
+        <activity android:name=".ViewMonthlyReportActivity"></activity>
     </application>
 
 </manifest>

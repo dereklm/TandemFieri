@@ -71,4 +71,24 @@
         <item>EN ROUTE</item>
         <item>COMPLETE</item>
     </string-array>
+
+    <string-array name="month_selection">
+        <item>January</item>
+        <item>February</item>
+        <item>March</item>
+        <item>April</item>
+        <item>May</item>
+        <item>June</item>
+        <item>July</item>
+        <item>August</item>
+        <item>September</item>
+        <item>October</item>
+        <item>November</item>
+        <item>December</item>
+    </string-array>
+
+    <string-array name="year_selection">
+        <item>2017</item>
+        <item>2018</item>
+    </string-array>
 </resources>

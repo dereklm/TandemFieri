@@ -13,4 +13,6 @@
     </item>
     <item android:id="@+id/manage_restaurants"
         android:title="Manage Restaurants"/>
+    <item android:id="@+id/monthly_report"
+        android:title="Monthly Report"/>
 </menu>

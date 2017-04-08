@@ -139,6 +139,8 @@ public class RestaurantMainMenu extends AppCompatActivity {
             case R.id.manage_restaurants:
                 goToManageRestaurants();
                 return true;
+            case R.id.monthly_report:
+                getMonthlyReport();
             default:
                 return super.onOptionsItemSelected(item);
         }
@@ -181,6 +183,14 @@ public class RestaurantMainMenu extends AppCompatActivity {
     private void goToManageRestaurants(){
         Bundle bundle = new Bundle();
         Intent intent = new Intent(RestaurantMainMenu.this, ManageRestaurants.class);
+        bundle.putSerializable("User", user);
+        intent.putExtras(bundle);
+        startActivity(intent);
+    }
+
+    public void getMonthlyReport() {
+        Bundle bundle = new Bundle();
+        Intent intent = new Intent(RestaurantMainMenu.this, ViewMonthlyReportActivity.class);
         bundle.putSerializable("User", user);
         intent.putExtras(bundle);
         startActivity(intent);
