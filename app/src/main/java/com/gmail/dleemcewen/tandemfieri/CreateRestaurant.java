@@ -1,8 +1,15 @@
 package com.gmail.dleemcewen.tandemfieri;
 
 import android.content.Intent;
+import android.content.pm.PackageManager;
+import android.location.Address;
+import android.location.Location;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.ResultReceiver;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
+import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.text.SpannableString;
 import android.text.style.UnderlineSpan;
@@ -15,20 +22,28 @@ import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.beardedhen.androidbootstrap.BootstrapButton;
+import com.gmail.dleemcewen.tandemfieri.Constants.AddressConstants;
 import com.gmail.dleemcewen.tandemfieri.Entities.Restaurant;
 import com.gmail.dleemcewen.tandemfieri.Interfaces.AsyncHttpResponse;
 import com.gmail.dleemcewen.tandemfieri.Json.AddressGeocode.AddressGeocode;
 import com.gmail.dleemcewen.tandemfieri.Repositories.Restaurants;
 import com.gmail.dleemcewen.tandemfieri.RestClient.AddressToLatLng;
 import com.gmail.dleemcewen.tandemfieri.Tasks.TaskResult;
+import com.gmail.dleemcewen.tandemfieri.Utility.FetchAddressIntentService;
 import com.gmail.dleemcewen.tandemfieri.Utility.MapUtil;
 import com.gmail.dleemcewen.tandemfieri.Validator.Validator;
+import com.google.android.gms.common.ConnectionResult;
+import com.google.android.gms.common.api.GoogleApiClient;
+import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 
 import java.util.ArrayList;
 
-public class CreateRestaurant extends AppCompatActivity implements AdapterView.OnItemSelectedListener {
+public class CreateRestaurant extends AppCompatActivity implements AdapterView.OnItemSelectedListener,
+        GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener,
+        ActivityCompat.OnRequestPermissionsResultCallback{
     private Restaurants<Restaurant> restaurantsRepository;
     private TextView title;
     private TextView restaurantTypeTitle;
@@ -47,6 +62,12 @@ public class CreateRestaurant extends AppCompatActivity implements AdapterView.O
     private String restaurantOwnerId, restaurantId;
     private String state;
     private String restaurantType;
+
+    private BootstrapButton myLocation;
+    protected Location location;
+    private AddressResultReceiver mResultReceiver;
+    private GoogleApiClient googleApiClient;
+    private boolean verifiedAddr;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -88,6 +109,7 @@ public class CreateRestaurant extends AppCompatActivity implements AdapterView.O
         createRestaurant = (Button)findViewById(R.id.createRestaurant);
         cancelCreateRestaurant = (Button)findViewById(R.id.cancelRestaurant);
         restaurantTypes = (Spinner) findViewById(R.id.restaurantTypeSpinner);
+        myLocation = (BootstrapButton) findViewById(R.id.location_button);
     }
 
     /**
@@ -171,6 +193,46 @@ public class CreateRestaurant extends AppCompatActivity implements AdapterView.O
             @Override
             public void onClick(View v) {
                 finish();
+            }
+        });
+
+        if (googleApiClient == null) {
+            googleApiClient = new GoogleApiClient.Builder(this)
+                    .addConnectionCallbacks(this)
+                    .addOnConnectionFailedListener(this)
+                    .addApi(LocationServices.API)
+                    .build();
+        }
+        myLocation.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (ActivityCompat.checkSelfPermission(getApplicationContext(),
+                        android.Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED
+                        && ActivityCompat.checkSelfPermission(getApplicationContext()
+                        , android.Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+
+                    ActivityCompat.requestPermissions(CreateRestaurant.this, new String[]{android.Manifest.permission.ACCESS_FINE_LOCATION},
+                            1);
+                }
+
+                if (MapUtil.isLocationEnabled(getApplicationContext())) {
+                    try {
+                        location = LocationServices.FusedLocationApi.getLastLocation(googleApiClient);
+
+                        if (googleApiClient.isConnected() && location != null) {
+                            if (mResultReceiver == null)
+                                mResultReceiver = new AddressResultReceiver(new Handler());
+                            Intent addressIntent = new Intent(getApplicationContext(), FetchAddressIntentService.class);
+                            addressIntent.putExtra(AddressConstants.RECEIVER, mResultReceiver);
+                            addressIntent.putExtra(AddressConstants.LOCATION_DATA_EXTRA, location);
+                            startService(addressIntent);
+                        }
+                    } catch (SecurityException e) {
+                        e.printStackTrace();
+                    }
+                } else {
+                    Toast.makeText(getApplicationContext(), "Please enable location service.", Toast.LENGTH_SHORT).show();
+                }
             }
         });
     }
@@ -303,4 +365,81 @@ public class CreateRestaurant extends AppCompatActivity implements AdapterView.O
     public void onNothingSelected(AdapterView<?> parent) {
         //not implemented
     }
+
+    @Override
+    public void onConnected(@Nullable Bundle bundle) {
+        if (ActivityCompat.checkSelfPermission(this,
+                android.Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED
+                && ActivityCompat.checkSelfPermission(this
+                , android.Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+
+            ActivityCompat.requestPermissions(this, new String[]{android.Manifest.permission.ACCESS_FINE_LOCATION},
+                    1);
+
+            return;
+        }
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, String permissions[], int[] grantResults) {
+        switch (requestCode) {
+            case 1:
+                if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                    try {
+                        location = LocationServices.FusedLocationApi.getLastLocation(googleApiClient);
+                    } catch (SecurityException se) {
+                        se.printStackTrace();
+                    }
+                } else {
+                }
+                verifiedAddr = MapUtil.verifyAddress(getApplicationContext(), street, city, state, zipCode);
+                return;
+        }
+    }
+
+    @Override
+    public void onConnectionSuspended(int i) {
+
+    }
+
+    @Override
+    public void onConnectionFailed(@NonNull ConnectionResult connectionResult) {
+
+    }
+
+    public class AddressResultReceiver extends ResultReceiver {
+        public AddressResultReceiver(Handler handler) {
+            super(handler);
+        }
+
+        @Override
+        protected void onReceiveResult(int resultCode, Bundle resultData) {
+            final Address addressOutput = resultData.getParcelable(AddressConstants.RESULT_DATA_KEY);
+            if (addressOutput == null) {
+                Toast.makeText(getApplicationContext(), "Couldn't Retrieve Location.", Toast.LENGTH_SHORT).show();
+            }
+
+            String[] statesArray = getResources().getStringArray(R.array.states);
+            street.setText(addressOutput.getAddressLine(0));
+            for (int i = 0; i < statesArray.length; i++) {
+                if (addressOutput.getAdminArea().trim().equals(statesArray[i]))
+                    states.setSelection(i);
+            }
+            city.setText(addressOutput.getLocality());
+            zipCode.setText(addressOutput.getPostalCode());
+        }
+    }
+
+    @Override
+    public void onStart() {
+        super.onStart();
+        googleApiClient.connect();
+    }
+
+    @Override
+    public void onStop() {
+        super.onStop();
+        googleApiClient.disconnect();
+    }
+
 }

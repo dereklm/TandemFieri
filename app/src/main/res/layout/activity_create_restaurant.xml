@@ -59,50 +59,84 @@
         android:layout_below="@id/restaurantTypeSpinner"
         android:layout_alignParentLeft="true"
         android:layout_alignParentStart="true" />
-    <com.rengwuxian.materialedittext.MaterialEditText
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:textSize="@dimen/regular_text_size"
-        android:id="@+id/street"
-        android:hint="@string/hintStreet"
-        android:layout_below="@id/address"
-        android:layout_alignParentLeft="true"
-        android:layout_alignParentStart="true"
-        android:inputType="textPostalAddress" />
-    <com.rengwuxian.materialedittext.MaterialEditText
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:textSize="@dimen/regular_text_size"
-        android:id="@+id/city"
-        android:hint="@string/hintCity"
-        android:layout_below="@id/street"
-        android:layout_alignParentLeft="true"
-        android:layout_alignParentStart="true"
-        android:inputType="textCapWords" />
     <LinearLayout
-        android:id="@+id/cityStateContainer"
+        android:id="@+id/address_container"
         android:layout_width="match_parent"
-        android:layout_height="40dp"
-        android:orientation="horizontal"
-        android:layout_alignParentStart="true"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/address"
+        android:orientation="horizontal">
+
+        <com.rengwuxian.materialedittext.MaterialEditText
+            android:id="@+id/street"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="4"
+            android:hint="@string/hintAddress"
+            android:inputType="textPostalAddress"
+            app:met_primaryColor="@color/colorPrimary"
+            android:textSize="14sp" />
+
+        <com.beardedhen.androidbootstrap.BootstrapButton
+            android:id="@+id/location_button"
+            style="@style/primary_button"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:layout_marginBottom="@+id/street"
+            android:drawableLeft="@drawable/ic_room_black_24dp" />
+
+    </LinearLayout>
+
+    <com.rengwuxian.materialedittext.MaterialEditText
+        android:id="@+id/city"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentEnd="true"
         android:layout_alignParentLeft="true"
-        android:layout_below="@id/city">
+        android:layout_alignParentRight="true"
+        android:layout_alignParentStart="true"
+        android:layout_below="@+id/address_container"
+        android:layout_marginTop="20dp"
+        android:hint="@string/hintCity"
+        android:inputType="textPersonName"
+        app:met_primaryColor="@color/colorPrimary"
+        android:textSize="14sp" />
+
+    <LinearLayout
+        android:id="@+id/stateZipContainer"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentEnd="true"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentStart="true"
+        android:layout_below="@id/city"
+        android:layout_marginTop="20dp"
+        android:orientation="horizontal">
+
         <Spinner
             android:id="@+id/state"
-            android:hint="@string/hintState"
-            android:layout_weight="1"
-            android:textSize="@dimen/regular_text_size"
             style="@style/Base.Widget.AppCompat.Spinner.Underlined"
-            android:layout_width="wrap_content"
-            android:layout_height="match_parent"/>
-        <com.rengwuxian.materialedittext.MaterialEditText
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
             android:layout_weight="1"
-            android:textSize="@dimen/regular_text_size"
+            android:ems="10"
+            android:hint="@string/hintState"
+            android:paddingEnd="20dp"
+            android:paddingRight="20dp"
+            android:textSize="14sp" />
+
+        <com.rengwuxian.materialedittext.MaterialEditText
             android:id="@+id/zipcode"
-            android:hint="@string/hintZipcode"
-            android:inputType="number" />
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:layout_alignBaseline="@+id/state"
+            android:layout_alignBottom="@+id/state"
+            android:layout_weight="1"
+            android:ems="10"
+            android:hint="@string/hintZip"
+            android:inputType="text|number"
+            app:met_primaryColor="@color/colorPrimary"
+            android:textSize="14sp" />
     </LinearLayout>
     <LinearLayout
         android:id="@+id/restaurantDeliveryTitleContainer"
@@ -110,7 +144,7 @@
         android:layout_height="48dp"
         android:orientation="horizontal"
         android:layout_marginTop="16dp"
-        android:layout_below="@id/cityStateContainer">
+        android:layout_below="@id/stateZipContainer">
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -118,7 +152,7 @@
             android:id="@+id/delivery"
             android:text="@string/restaurantDelivery"
             android:layout_weight="2"
-            android:layout_below="@id/cityStateContainer"
+            android:layout_below="@id/stateZipContainer"
             android:layout_alignParentLeft="true"
             android:layout_alignParentStart="true" />
         <Button

@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/activity_almost_done"
     android:layout_width="match_parent"
@@ -10,7 +11,7 @@
     android:paddingTop="@dimen/activity_vertical_margin"
     tools:context="com.gmail.dleemcewen.tandemfieri.AlmostDoneActivity">
 
-    <TextView
+    <com.beardedhen.androidbootstrap.AwesomeTextView
         android:text="@string/almostDoneTitle"
         android:textSize="20sp"
         android:layout_width="wrap_content"
@@ -20,7 +21,7 @@
         android:layout_marginTop="15dp"
         android:id="@+id/almostDone" />
 
-    <EditText
+    <com.rengwuxian.materialedittext.MaterialEditText
         android:hint="@string/hintPassword"
         android:textSize="14sp"
         android:inputType="textPassword"
@@ -29,12 +30,13 @@
         android:layout_below="@+id/almostDone"
         android:layout_marginTop="30dp"
         android:id="@+id/password"
+        app:met_primaryColor="@color/colorPrimary"
         android:layout_alignParentRight="true"
         android:layout_alignParentEnd="true"
         android:layout_alignParentLeft="true"
         android:layout_alignParentStart="true" />
 
-    <EditText
+    <com.rengwuxian.materialedittext.MaterialEditText
         android:hint="@string/hintPasswordConfirm"
         android:textSize="14sp"
         android:inputType="textPassword"
@@ -43,12 +45,13 @@
         android:layout_below="@+id/password"
         android:layout_marginTop="30dp"
         android:id="@+id/confrimPassword"
+        app:met_primaryColor="@color/colorPrimary"
         android:layout_alignParentRight="true"
         android:layout_alignParentEnd="true"
         android:layout_alignParentLeft="true"
         android:layout_alignParentStart="true" />
 
-    <TextView
+    <com.beardedhen.androidbootstrap.AwesomeTextView
         android:text="@string/userFilter"
         android:textColor="#3975ff"
         android:layout_width="wrap_content"
