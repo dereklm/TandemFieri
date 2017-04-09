@@ -13,11 +13,11 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseExpandableListAdapter;
-import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.beardedhen.androidbootstrap.BootstrapButton;
 import com.gmail.dleemcewen.tandemfieri.Constants.NotificationConstants;
 import com.gmail.dleemcewen.tandemfieri.Entities.Delivery;
 import com.gmail.dleemcewen.tandemfieri.Entities.NotificationMessage;
@@ -147,7 +147,7 @@ public class RestaurantMainMenuExpandableListAdapter extends BaseExpandableListA
             convertView = layoutInflater.inflate(R.layout.restaurant_main_menu_list_item, null);
         }
 
-        Button manage_button = (Button) convertView.findViewById(R.id.manage_button);
+        BootstrapButton manage_button = (BootstrapButton) convertView.findViewById(R.id.manage_button);
         manage_button.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -160,18 +160,7 @@ public class RestaurantMainMenuExpandableListAdapter extends BaseExpandableListA
             }
         });
 
-        Button status_button = (Button) convertView.findViewById(R.id.order_button);
-//        status_button.setText("Change Status");
-        status_button.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Toast
-                        .makeText(context, "change Status for " + selectedOrder.getKey(), Toast.LENGTH_SHORT)
-                        .show();
-            }
-        });
-
-        Button refund_button = (Button) convertView.findViewById(R.id.refund_button);
+        BootstrapButton refund_button = (BootstrapButton) convertView.findViewById(R.id.refund_button);
         refund_button.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {

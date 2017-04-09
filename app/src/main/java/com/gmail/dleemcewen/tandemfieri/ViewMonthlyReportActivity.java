@@ -6,11 +6,11 @@ import android.util.SparseBooleanArray;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
-import android.widget.Button;
 import android.widget.ListView;
 import android.widget.Spinner;
 import android.widget.Toast;
 
+import com.beardedhen.androidbootstrap.BootstrapButton;
 import com.gmail.dleemcewen.tandemfieri.Adapters.MonthlyReportArrayAdapter;
 import com.gmail.dleemcewen.tandemfieri.Entities.Order;
 import com.gmail.dleemcewen.tandemfieri.Entities.User;
@@ -37,7 +37,7 @@ public class ViewMonthlyReportActivity extends AppCompatActivity {
     private Spinner monthSpinner;
     private Spinner yearSpinner;
     private ListView displayListView;
-    private Button executeButton;
+    private BootstrapButton executeButton;
     private User currentUser;
     private ArrayAdapter<String> restaurantAdapter;
     private MonthlyReportArrayAdapter monthlyReportArrayAdapter;
@@ -67,7 +67,7 @@ public class ViewMonthlyReportActivity extends AppCompatActivity {
         monthSpinner = (Spinner) findViewById(R.id.month_spinner);
         yearSpinner = (Spinner) findViewById(R.id.year_spinner);
         displayListView = (ListView)findViewById(R.id.display_sales_report);
-        executeButton = (Button)findViewById(R.id.go_button);
+        executeButton = (BootstrapButton) findViewById(R.id.go_button);
     }
 
     private void initialize() {

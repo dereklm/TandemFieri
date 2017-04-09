@@ -76,7 +76,7 @@
         android:layout_height="wrap_content"
         android:layout_below="@+id/material_text2"
         android:layout_centerHorizontal="true"
-        android:layout_marginTop="40dp"
+        android:layout_margin="30dp"
         android:id="@+id/signInButton" />
 
     <TextView
@@ -86,6 +86,6 @@
         android:layout_height="wrap_content"
         android:layout_below="@+id/signInButton"
         android:layout_centerHorizontal="true"
-        android:layout_marginTop="34dp"
+        android:layout_margin="30dp"
         android:id="@+id/createAccount" />
 </RelativeLayout>
