@@ -65,4 +65,16 @@
         android:dividerHeight="0.5dp"
         android:layout_below="@id/heading"/>
 
+    <com.beardedhen.androidbootstrap.BootstrapButton
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/csv_button_ph"
+        android:enabled="false"
+        style="@style/primary_button"
+        android:text="@string/generate_csv"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentEnd="true"
+        android:layout_alignParentRight="true"
+        />
+
 </RelativeLayout>

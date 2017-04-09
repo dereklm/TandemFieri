@@ -15,7 +15,9 @@ import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.beardedhen.androidbootstrap.BootstrapButton;
 import com.gmail.dleemcewen.tandemfieri.Adapters.ProductHistoryArrayAdapter;
+import com.gmail.dleemcewen.tandemfieri.Entities.DisplayItem;
 import com.gmail.dleemcewen.tandemfieri.Entities.Order;
 import com.gmail.dleemcewen.tandemfieri.Entities.OrderItem;
 import com.gmail.dleemcewen.tandemfieri.Entities.Restaurant;
@@ -24,6 +26,7 @@ import com.gmail.dleemcewen.tandemfieri.Filters.CriteriaAfterStartDate;
 import com.gmail.dleemcewen.tandemfieri.Filters.CriteriaBeforeEndDate;
 import com.gmail.dleemcewen.tandemfieri.Filters.CriteriaSelectedItem;
 import com.gmail.dleemcewen.tandemfieri.Interfaces.Criteria;
+import com.gmail.dleemcewen.tandemfieri.Utility.CsvUtil;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -46,6 +49,7 @@ public class ProductHistoryActivity extends AppCompatActivity implements DatePic
     private ListView listView;
     private DateListener dateListener;
     private Button showButton;
+    private BootstrapButton csvButton;
     private ShowButtonListener showButtonListener;
     private String userId;
     private Restaurant restaurant;
@@ -80,6 +84,14 @@ public class ProductHistoryActivity extends AppCompatActivity implements DatePic
         toDate = (TextView)findViewById(R.id.to_date);
         listView = (ListView)findViewById(R.id.product_list_view);
         showButton = (Button)findViewById(R.id.show_product_history);
+        csvButton = (BootstrapButton) findViewById(R.id.csv_button_ph);
+
+        csvButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                CsvUtil.emailCsv(displayItems, "", getApplicationContext());
+            }
+        });
     }
 
     private void attachListeners(){
@@ -276,6 +288,7 @@ public class ProductHistoryActivity extends AppCompatActivity implements DatePic
             }
             if(datesVerified()) {
                 retrieveData();
+                csvButton.setEnabled(true);
             }else{
                 Toast.makeText(getApplicationContext(), "Please enter a valid date range.", Toast.LENGTH_LONG);
             }

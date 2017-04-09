@@ -12,12 +12,14 @@ import android.widget.Toast;
 
 import com.beardedhen.androidbootstrap.BootstrapButton;
 import com.gmail.dleemcewen.tandemfieri.Adapters.MonthlyReportArrayAdapter;
+import com.gmail.dleemcewen.tandemfieri.Entities.DisplayItem;
 import com.gmail.dleemcewen.tandemfieri.Entities.Order;
 import com.gmail.dleemcewen.tandemfieri.Entities.User;
 import com.gmail.dleemcewen.tandemfieri.Filters.AndCriteria;
 import com.gmail.dleemcewen.tandemfieri.Filters.CriteriaAfterStartDate;
 import com.gmail.dleemcewen.tandemfieri.Filters.CriteriaBeforeEndDate;
 import com.gmail.dleemcewen.tandemfieri.Filters.CriteriaRestaurant;
+import com.gmail.dleemcewen.tandemfieri.Utility.CsvUtil;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -38,6 +40,7 @@ public class ViewMonthlyReportActivity extends AppCompatActivity {
     private Spinner yearSpinner;
     private ListView displayListView;
     private BootstrapButton executeButton;
+    private BootstrapButton csvButton;
     private User currentUser;
     private ArrayAdapter<String> restaurantAdapter;
     private MonthlyReportArrayAdapter monthlyReportArrayAdapter;
@@ -68,6 +71,7 @@ public class ViewMonthlyReportActivity extends AppCompatActivity {
         yearSpinner = (Spinner) findViewById(R.id.year_spinner);
         displayListView = (ListView)findViewById(R.id.display_sales_report);
         executeButton = (BootstrapButton) findViewById(R.id.go_button);
+        csvButton = (BootstrapButton) findViewById(R.id.csv_button);
     }
 
     private void initialize() {
@@ -80,6 +84,11 @@ public class ViewMonthlyReportActivity extends AppCompatActivity {
         executeButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                if (csvButton.getVisibility() == View.INVISIBLE) {
+                    csvButton.setVisibility(View.VISIBLE);
+                } else {
+                    csvButton.setVisibility(View.INVISIBLE);
+                }
                 executeSearch();
             }
         });
@@ -117,6 +126,13 @@ public class ViewMonthlyReportActivity extends AppCompatActivity {
             }
             @Override
             public void onNothingSelected(AdapterView<?> parent) {
+            }
+        });
+
+        csvButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                CsvUtil.emailCsv(displayList, "", getApplicationContext());
             }
         });
     }

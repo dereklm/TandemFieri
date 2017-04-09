@@ -7,7 +7,7 @@ import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.TextView;
 
-import com.gmail.dleemcewen.tandemfieri.DisplayItem;
+import com.gmail.dleemcewen.tandemfieri.Entities.DisplayItem;
 import com.gmail.dleemcewen.tandemfieri.R;
 
 import java.util.ArrayList;
