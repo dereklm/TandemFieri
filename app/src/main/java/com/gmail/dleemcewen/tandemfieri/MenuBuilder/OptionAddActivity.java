@@ -5,12 +5,12 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
-import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.RadioButton;
 import android.widget.TextView;
 
+import com.beardedhen.androidbootstrap.BootstrapButton;
 import com.gmail.dleemcewen.tandemfieri.R;
 
 public class OptionAddActivity extends AppCompatActivity {
@@ -21,7 +21,7 @@ public class OptionAddActivity extends AppCompatActivity {
     private EditText name;
     private boolean editing;
     private ItemOption option;
-    private Button selections;
+    private BootstrapButton selections;
     private boolean isAnd;
     private Context context;
 
@@ -53,8 +53,8 @@ public class OptionAddActivity extends AppCompatActivity {
         }
 
 
-        selections = (Button) findViewById(R.id.selections);
-        Button save = (Button) findViewById(R.id.saveItem);
+        selections = (BootstrapButton) findViewById(R.id.selections);
+        BootstrapButton save = (BootstrapButton) findViewById(R.id.saveItem);
 
         selections.setOnClickListener(new View.OnClickListener() {
             @Override

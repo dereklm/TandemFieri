@@ -23,8 +23,10 @@
             android:text="@string/startDate"
             android:textSize="@dimen/regular_text_size"
             android:textStyle="bold"/>
-        <EditText
-            android:layout_width="wrap_content"
+        <com.rengwuxian.materialedittext.MaterialEditText
+            android:layout_marginStart="10dp"
+            android:layout_marginLeft="10dp"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:id="@+id/startDate"
@@ -47,8 +49,10 @@
             android:text="@string/endDate"
             android:textSize="@dimen/regular_text_size"
             android:textStyle="bold"/>
-        <EditText
-            android:layout_width="wrap_content"
+        <com.rengwuxian.materialedittext.MaterialEditText
+            android:layout_marginStart="10dp"
+            android:layout_marginLeft="10dp"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:id="@+id/endDate"
@@ -57,7 +61,8 @@
             android:hint="@string/hintEndDate"
             android:textSize="@dimen/regular_text_size" />
     </LinearLayout>
-    <Button
+    <com.beardedhen.androidbootstrap.BootstrapButton
+        style="@style/primary_button"
         android:id="@+id/viewDriverRatings"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"

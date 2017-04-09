@@ -4,11 +4,11 @@ import android.content.Context;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
-import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.beardedhen.androidbootstrap.BootstrapButton;
 import com.gmail.dleemcewen.tandemfieri.R;
 import com.gmail.dleemcewen.tandemfieri.Utilities.MoneyTextWatcher;
 
@@ -48,7 +48,7 @@ public class OptionSelectionEditActivity extends AppCompatActivity {
 
         price.addTextChangedListener(new MoneyTextWatcher(price));
 
-        Button save = (Button) findViewById(R.id.saveItem);
+        BootstrapButton save = (BootstrapButton) findViewById(R.id.saveItem);
 
         save.setOnClickListener(new View.OnClickListener() {
             @Override

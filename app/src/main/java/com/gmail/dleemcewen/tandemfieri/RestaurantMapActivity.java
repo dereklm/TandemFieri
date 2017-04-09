@@ -4,9 +4,9 @@ import android.app.Activity;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.view.View;
-import android.widget.Button;
 import android.widget.Toast;
 
+import com.beardedhen.androidbootstrap.BootstrapButton;
 import com.gmail.dleemcewen.tandemfieri.Entities.Restaurant;
 import com.gmail.dleemcewen.tandemfieri.Events.ActivityEvent;
 import com.gmail.dleemcewen.tandemfieri.Utility.Conversions;
@@ -25,7 +25,7 @@ import com.shawnlin.numberpicker.NumberPicker;
 
 import org.greenrobot.eventbus.EventBus;
 
-public class RestaurantMapActivity extends Activity implements OnMapReadyCallback {
+public class RestaurantMapActivity extends Activity implements OnMapReadyCallback, GoogleMap.OnMapLoadedCallback {
 
     private GoogleMap mMap;
     private LatLng latLng;
@@ -33,7 +33,7 @@ public class RestaurantMapActivity extends Activity implements OnMapReadyCallbac
     private MapFragment mapFragment;
 
     private NumberPicker numberPicker;
-    private Button update;
+    private BootstrapButton update;
     private Restaurant restaurant;
 
     private DatabaseReference mDatabase;
@@ -52,6 +52,11 @@ public class RestaurantMapActivity extends Activity implements OnMapReadyCallbac
     public void onMapReady(GoogleMap googleMap) {
         mMap = googleMap;
 
+        googleMap.setOnMapLoadedCallback(this);
+    }
+
+    @Override
+    public void onMapLoaded() {
         MapUtil.moveCamera(mMap
                 , latLng
                 , Conversions.milesToMeters(restaurant.getDeliveryRadius())
@@ -124,6 +129,6 @@ public class RestaurantMapActivity extends Activity implements OnMapReadyCallbac
     private void findControlReferences() {
         mapFragment = (MapFragment) getFragmentManager().findFragmentById(R.id.map);
         numberPicker = (NumberPicker) findViewById(R.id.radius);
-        update = (Button) findViewById(R.id.update);
+        update = (BootstrapButton) findViewById(R.id.update);
     }
 }
