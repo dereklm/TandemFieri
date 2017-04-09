@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/activity_edit_account"
     android:layout_width="match_parent"
@@ -10,130 +11,160 @@
     android:paddingTop="@dimen/activity_vertical_margin"
     tools:context="com.gmail.dleemcewen.tandemfieri.EditAccountActivity">
 
-    <TextView
-        android:text="Edit Information"
-        android:textSize="20sp"
+    <com.beardedhen.androidbootstrap.AwesomeTextView
+        android:id="@+id/editTitle"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignParentTop="true"
         android:layout_centerHorizontal="true"
         android:layout_marginTop="15dp"
-        android:id="@+id/editTitle" />
+        android:text="Edit Information"
+        android:textSize="20sp" />
 
-    <EditText
-        android:layout_width="wrap_content"
+    <LinearLayout
+        android:id="@+id/name_Container"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:inputType="textPersonName"
-        android:hint="@string/hintFirstName"
-        android:textSize="14sp"
-        android:ems="10"
-        android:id="@+id/firstName"
+        android:layout_below="@id/editTitle"
         android:layout_marginTop="20dp"
-        android:layout_below="@+id/editTitle"
-        android:layout_alignParentLeft="true"
-        android:layout_alignParentStart="true" />
+        android:orientation="horizontal">
 
-    <EditText
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:inputType="textPersonName"
-        android:hint="@string/hintLastName"
-        android:textSize="14sp"
-        android:ems="10"
-        android:id="@+id/lastName"
-        android:layout_alignBaseline="@+id/firstName"
-        android:layout_alignBottom="@+id/firstName"
-        android:layout_alignParentRight="true"
-        android:layout_alignParentEnd="true" />
+        <com.rengwuxian.materialedittext.MaterialEditText
+            android:id="@+id/firstName"
+            android:layout_width="0sp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:ems="10"
+            android:hint="@string/hintFirstName"
+            android:inputType="textPersonName"
+            app:met_primaryColor="@color/colorPrimary"
+            android:textSize="14sp"
+            android:layout_marginRight="5sp"/>
 
-    <EditText
-        android:hint="@string/hintAddress"
-        android:textSize="14sp"
-        android:inputType="textPostalAddress"
-        android:layout_width="wrap_content"
+        <com.rengwuxian.materialedittext.MaterialEditText
+            android:id="@+id/lastName"
+            android:layout_width="0sp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:ems="10"
+            android:hint="@string/hintLastName"
+            android:inputType="textPersonName"
+            app:met_primaryColor="@color/colorPrimary"
+            android:textSize="14sp" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/address_container"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_below="@+id/firstName"
+        android:layout_below="@id/name_Container"
         android:layout_marginTop="20dp"
-        android:id="@+id/address"
-        android:layout_alignParentRight="true"
-        android:layout_alignParentEnd="true"
-        android:layout_alignParentLeft="true"
-        android:layout_alignParentStart="true" />
+        android:orientation="horizontal">
 
-    <EditText
-        android:hint="@string/hintCity"
-        android:textSize="14sp"
-        android:inputType="textPersonName"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_below="@+id/address"
-        android:layout_marginTop="20dp"
+        <com.rengwuxian.materialedittext.MaterialEditText
+            android:id="@+id/address"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="4"
+            android:hint="@string/hintAddress"
+            android:inputType="textPostalAddress"
+            app:met_primaryColor="@color/colorPrimary"
+            android:textSize="14sp" />
+
+        <com.beardedhen.androidbootstrap.BootstrapButton
+            android:id="@+id/location_button"
+            style="@style/primary_button"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:layout_marginBottom="@+id/address"
+            android:drawableLeft="@drawable/ic_room_black_24dp" />
+
+    </LinearLayout>
+
+    <com.rengwuxian.materialedittext.MaterialEditText
         android:id="@+id/city"
-        android:layout_alignParentRight="true"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
         android:layout_alignParentEnd="true"
         android:layout_alignParentLeft="true"
-        android:layout_alignParentStart="true" />
+        android:layout_alignParentRight="true"
+        android:layout_alignParentStart="true"
+        android:layout_below="@+id/address_container"
+        android:layout_marginTop="20dp"
+        android:hint="@string/hintCity"
+        android:inputType="textPersonName"
+        app:met_primaryColor="@color/colorPrimary"
+        android:textSize="14sp" />
+
     <LinearLayout
         android:id="@+id/stateZipContainer"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        android:layout_marginTop="20dp"
-        android:layout_alignParentStart="true"
+        android:layout_alignParentEnd="true"
         android:layout_alignParentLeft="true"
         android:layout_alignParentRight="true"
-        android:layout_alignParentEnd="true"
-        android:layout_below="@id/city">
+        android:layout_alignParentStart="true"
+        android:layout_below="@id/city"
+        android:layout_marginTop="20dp"
+        android:orientation="horizontal">
+
         <Spinner
-            android:layout_width="wrap_content"
-            android:layout_height="match_parent"
-            android:hint="@string/hintState"
-            android:textSize="14sp"
-            android:ems="10"
             android:id="@+id/state"
-            android:paddingRight="20dp"
-            android:paddingEnd="20dp"
-            android:layout_weight="1"
-            style="@style/Base.Widget.AppCompat.Spinner.Underlined"/>
-        <EditText
+            style="@style/Base.Widget.AppCompat.Spinner.Underlined"
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
-            android:inputType="text|number"
-            android:hint="@string/hintZip"
-            android:textSize="14sp"
-            android:ems="10"
             android:layout_weight="1"
+            android:ems="10"
+            android:hint="@string/hintState"
+            android:paddingEnd="20dp"
+            android:paddingRight="20dp"
+            android:textSize="14sp" />
+
+        <com.rengwuxian.materialedittext.MaterialEditText
             android:id="@+id/zip"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
             android:layout_alignBaseline="@+id/state"
-            android:layout_alignBottom="@+id/state" />
+            android:layout_alignBottom="@+id/state"
+            android:layout_weight="1"
+            android:ems="10"
+            android:hint="@string/hintZip"
+            android:inputType="text|number"
+            app:met_primaryColor="@color/colorPrimary"
+            android:textSize="14sp" />
     </LinearLayout>
-    <EditText
-        android:hint="@string/hintPhone"
-        android:textSize="14sp"
-        android:inputType="textPhonetic"
+
+    <com.rengwuxian.materialedittext.MaterialEditText
+        android:id="@+id/phone"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_alignParentEnd="true"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentStart="true"
         android:layout_below="@id/stateZipContainer"
         android:layout_marginTop="20dp"
-        android:id="@+id/phone"
-        android:layout_alignParentRight="true"
-        android:layout_alignParentEnd="true"
-        android:layout_alignParentLeft="true"
-        android:layout_alignParentStart="true" />
+        android:hint="@string/hintPhone"
+        android:inputType="text|number"
+        app:met_primaryColor="@color/colorPrimary"
+        android:textSize="14sp" />
 
-    <EditText
-        android:hint="@string/hintEmail"
-        android:textSize="14sp"
-        android:inputType="textEmailAddress"
+
+    <com.rengwuxian.materialedittext.MaterialEditText
+        android:id="@+id/email"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_below="@+id/phone"
-        android:layout_marginTop="20dp"
-        android:id="@+id/email"
-        android:layout_alignParentRight="true"
         android:layout_alignParentEnd="true"
         android:layout_alignParentLeft="true"
-        android:layout_alignParentStart="true" />
+        android:layout_alignParentRight="true"
+        android:layout_alignParentStart="true"
+        android:layout_below="@+id/phone"
+        android:layout_marginTop="20dp"
+        android:hint="@string/hintEmail"
+        android:inputType="textEmailAddress"
+        app:met_primaryColor="@color/colorPrimary"
+        android:textSize="14sp" />
+
 
     <com.beardedhen.androidbootstrap.BootstrapButton
         style="@style/success_button"

@@ -26,6 +26,7 @@ import com.google.firebase.database.ValueEventListener;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
@@ -165,10 +166,6 @@ public class CompetedOrdersDriverActivity extends AppCompatActivity implements D
             Toast.makeText(getApplicationContext(), "From date cannot be after To date.", Toast.LENGTH_SHORT).show();
             return false;
         }
-        if(date_from.after(current)){
-            Toast.makeText(getApplicationContext(), "From date cannot be after today's date.", Toast.LENGTH_LONG).show();
-            return false;
-        }
         return true;
     }
 
@@ -176,14 +173,30 @@ public class CompetedOrdersDriverActivity extends AppCompatActivity implements D
     public void onFinishDialog(Date date) {
         Date current = new Date();
         SimpleDateFormat formatDateJava = new SimpleDateFormat("MM/dd/yyyy", Locale.US);
+        Calendar cal = Calendar.getInstance();
         if(viewId == fromDate.getId()){
-            date_from = date;
+            cal.setTime(date);
+            cal.set(Calendar.HOUR_OF_DAY, cal.getMinimum(Calendar.HOUR_OF_DAY));
+            cal.set(Calendar.MINUTE, cal.getMinimum(Calendar.MINUTE));
+            cal.set(Calendar.SECOND, cal.getMinimum(Calendar.SECOND));
+            cal.set(Calendar.MILLISECOND, cal.getMinimum(Calendar.MILLISECOND));
+            date_from = cal.getTime();
             fromDate.setText(formatDateJava.format(date_from));
         }else if(viewId == toDate.getId()){
             if(date.after(current)){
-                date_to = current;
+                cal.setTime(current);
+                cal.set(Calendar.HOUR_OF_DAY, cal.getMaximum(Calendar.HOUR_OF_DAY));
+                cal.set(Calendar.MINUTE, cal.getMaximum(Calendar.MINUTE));
+                cal.set(Calendar.SECOND, cal.getMaximum(Calendar.SECOND));
+                cal.set(Calendar.MILLISECOND, cal.getMaximum(Calendar.MILLISECOND));
+                date_to= cal.getTime();
             }else{
-                date_to = date;
+                cal.setTime(date);
+                cal.set(Calendar.HOUR_OF_DAY, cal.getMaximum(Calendar.HOUR_OF_DAY));
+                cal.set(Calendar.MINUTE, cal.getMaximum(Calendar.MINUTE));
+                cal.set(Calendar.SECOND, cal.getMaximum(Calendar.SECOND));
+                cal.set(Calendar.MILLISECOND, cal.getMaximum(Calendar.MILLISECOND));
+                date_to= cal.getTime();
             }
             toDate.setText(formatDateJava.format(date_to));
         }

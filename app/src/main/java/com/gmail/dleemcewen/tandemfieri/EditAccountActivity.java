@@ -1,25 +1,37 @@
 package com.gmail.dleemcewen.tandemfieri;
 
+import android.Manifest;
 import android.content.Intent;
+import android.content.pm.PackageManager;
+import android.location.Address;
+import android.location.Location;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.ResultReceiver;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
+import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
-import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Spinner;
 import android.widget.Toast;
 
 import com.beardedhen.androidbootstrap.BootstrapButton;
+import com.gmail.dleemcewen.tandemfieri.Constants.AddressConstants;
 import com.gmail.dleemcewen.tandemfieri.Entities.User;
 import com.gmail.dleemcewen.tandemfieri.Formatters.StringFormatter;
 import com.gmail.dleemcewen.tandemfieri.Interfaces.AsyncHttpResponse;
 import com.gmail.dleemcewen.tandemfieri.Json.AddressGeocode.AddressGeocode;
 import com.gmail.dleemcewen.tandemfieri.Logging.LogWriter;
 import com.gmail.dleemcewen.tandemfieri.RestClient.AddressToLatLng;
+import com.gmail.dleemcewen.tandemfieri.Utility.FetchAddressIntentService;
 import com.gmail.dleemcewen.tandemfieri.Utility.MapUtil;
+import com.google.android.gms.common.ConnectionResult;
+import com.google.android.gms.common.api.GoogleApiClient;
+import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
@@ -35,7 +47,9 @@ import java.util.logging.Level;
 
 import static com.gmail.dleemcewen.tandemfieri.Validator.Validator.isValid;
 
-public class EditAccountActivity extends AppCompatActivity implements AdapterView.OnItemSelectedListener {
+public class EditAccountActivity extends AppCompatActivity implements AdapterView.OnItemSelectedListener,
+        GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener,
+        ActivityCompat.OnRequestPermissionsResultCallback {
 
     private User currentUser;
     private User changedUser;
@@ -48,7 +62,12 @@ public class EditAccountActivity extends AppCompatActivity implements AdapterVie
     private FirebaseUser fireuser;
 
     private EditText firstName, lastName, address, city, zip, phoneNumber, email;
-    private BootstrapButton saveButton, cancelButton;
+    private BootstrapButton saveButton, cancelButton, myLocation;
+
+    protected Location location;
+    private AddressResultReceiver mResultReceiver;
+    private GoogleApiClient googleApiClient;
+    private boolean verifiedAddr;
 
     private String state = "";
     private Spinner states;
@@ -85,10 +104,9 @@ public class EditAccountActivity extends AppCompatActivity implements AdapterVie
         mDatabase = FirebaseDatabase.getInstance().getReference().child("User").child(type).child(uid);
 
 
-        if(currentUser != null) {
+        if (currentUser != null) {
             LogWriter.log(getApplicationContext(), Level.INFO, "The user is " + currentUser.getEmail());
-        }
-        else{
+        } else {
             LogWriter.log(getApplicationContext(), Level.WARNING, "The user is null");
             finish();
         }
@@ -96,6 +114,7 @@ public class EditAccountActivity extends AppCompatActivity implements AdapterVie
         LogWriter.log(getApplicationContext(), Level.INFO, "The user id is " + uid);
 
         //get handles to view
+        myLocation = (BootstrapButton) findViewById(R.id.location_button);
         firstName = (EditText) findViewById(R.id.firstName);
         lastName = (EditText) findViewById(R.id.lastName);
         address = (EditText) findViewById(R.id.address);
@@ -125,7 +144,6 @@ public class EditAccountActivity extends AppCompatActivity implements AdapterVie
         int positionOfUserState = Arrays.asList(arrayOfStates).indexOf(StringFormatter.toProperCase(currentUser.getState()));
 
 
-
         //set text in fields using user's current information
         firstName.setText(currentUser.getFirstName());
         lastName.setText(currentUser.getLastName());
@@ -135,6 +153,14 @@ public class EditAccountActivity extends AppCompatActivity implements AdapterVie
         zip.setText(currentUser.getZip());
         phoneNumber.setText(currentUser.getPhoneNumber());
         email.setText(currentUser.getEmail());
+
+        if (googleApiClient == null) {
+            googleApiClient = new GoogleApiClient.Builder(this)
+                    .addConnectionCallbacks(this)
+                    .addOnConnectionFailedListener(this)
+                    .addApi(LocationServices.API)
+                    .build();
+        }
 
         //program button listeners
         //cancels the page and returns to previous page
@@ -155,29 +181,29 @@ public class EditAccountActivity extends AppCompatActivity implements AdapterVie
 
                 if (formValid()) {
                     String url = MapUtil.addressToURL(getApplicationContext()
-                            ,address.getText().toString()
-                            ,city.getText().toString()
-                            ,state
-                            ,zip.getText().toString());
+                            , address.getText().toString()
+                            , city.getText().toString()
+                            , state
+                            , zip.getText().toString());
 
                     AddressToLatLng client = AddressToLatLng.getInstance();
-                    client.verifyAddress(getApplicationContext(),url, new AsyncHttpResponse() {
+                    client.verifyAddress(getApplicationContext(), url, new AsyncHttpResponse() {
                         @Override
                         public void requestComplete(boolean success, AddressGeocode addr) {
                             if (success) {
                                 //emailIsDuplicated = false;
                                 //Is email changed?
                                 //if(!currentUser.getEmail().equals(changedUser.getEmail())){
-                                    //Toast.makeText(getApplicationContext(),"new Email has been entered" , Toast.LENGTH_LONG).show();
-                                    //yes - is email valid?
+                                //Toast.makeText(getApplicationContext(),"new Email has been entered" , Toast.LENGTH_LONG).show();
+                                //yes - is email valid?
 
-                                        //yes - check for duplicate email
-                                        //Toast.makeText(getApplicationContext(),"new email is valid." , Toast.LENGTH_LONG).show();
-                                        DatabaseReference rodb = FirebaseDatabase.getInstance().getReference().child("User");
+                                //yes - check for duplicate email
+                                //Toast.makeText(getApplicationContext(),"new email is valid." , Toast.LENGTH_LONG).show();
+                                DatabaseReference rodb = FirebaseDatabase.getInstance().getReference().child("User");
 
-                                        VEListener listener = new VEListener();
-                                        rodb.addListenerForSingleValueEvent(listener);
-                                   // }
+                                VEListener listener = new VEListener();
+                                rodb.addListenerForSingleValueEvent(listener);
+                                // }
                             } else {
                                 address.setError(FormConstants.ERROR_TAG_ADDRESS);
                                 city.setError(FormConstants.ERROR_TAG_CITY);
@@ -189,9 +215,41 @@ public class EditAccountActivity extends AppCompatActivity implements AdapterVie
                 }
             }
         });
+        myLocation.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (ActivityCompat.checkSelfPermission(getApplicationContext(),
+                        android.Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED
+                        && ActivityCompat.checkSelfPermission(getApplicationContext()
+                        , android.Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+
+                    ActivityCompat.requestPermissions(EditAccountActivity.this, new String[]{android.Manifest.permission.ACCESS_FINE_LOCATION},
+                            1);
+                }
+
+                if (MapUtil.isLocationEnabled(getApplicationContext())) {
+                    try {
+                        location = LocationServices.FusedLocationApi.getLastLocation(googleApiClient);
+
+                        if (googleApiClient.isConnected() && location != null) {
+                            if (mResultReceiver == null)
+                                mResultReceiver = new EditAccountActivity.AddressResultReceiver(new Handler());
+                            Intent addressIntent = new Intent(getApplicationContext(), FetchAddressIntentService.class);
+                            addressIntent.putExtra(AddressConstants.RECEIVER, mResultReceiver);
+                            addressIntent.putExtra(AddressConstants.LOCATION_DATA_EXTRA, location);
+                            startService(addressIntent);
+                        }
+                    } catch (SecurityException e) {
+                        e.printStackTrace();
+                    }
+                } else {
+                    Toast.makeText(getApplicationContext(), "Please enable location service.", Toast.LENGTH_SHORT).show();
+                }
+            }
+        });
     }//end onCreate
 
-    public void getChangedUserInformation(){
+    public void getChangedUserInformation() {
         changedUser = new User();
         changedUser.setFirstName(firstName.getText().toString());
         changedUser.setLastName(lastName.getText().toString());
@@ -230,7 +288,7 @@ public class EditAccountActivity extends AppCompatActivity implements AdapterVie
      */
     @Override
     public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-        state = (String)parent.getItemAtPosition(position);
+        state = (String) parent.getItemAtPosition(position);
     }
 
     /**
@@ -282,10 +340,10 @@ public class EditAccountActivity extends AppCompatActivity implements AdapterVie
                 }
             }
             //is all info valid?
-            if(!emailIsDuplicated){
+            if (!emailIsDuplicated) {
                 //Toast.makeText(getApplicationContext(),"About to save" , Toast.LENGTH_LONG).show();
                 saveUserToDatabase();
-                Toast.makeText(getApplicationContext(),msg , Toast.LENGTH_LONG).show();
+                Toast.makeText(getApplicationContext(), msg, Toast.LENGTH_LONG).show();
                 //send new user info to the proper menu activity
                 Bundle bundle1 = new Bundle();
                 Intent intent = null;
@@ -302,10 +360,10 @@ public class EditAccountActivity extends AppCompatActivity implements AdapterVie
                 intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
                 startActivity(intent);
                 finish();
-            }else{
+            } else {
                 //something is not valid
-                if(emailIsDuplicated)
-                    Toast.makeText(getApplicationContext(),msg , Toast.LENGTH_LONG).show();
+                if (emailIsDuplicated)
+                    Toast.makeText(getApplicationContext(), msg, Toast.LENGTH_LONG).show();
             }
 
         }
@@ -318,7 +376,7 @@ public class EditAccountActivity extends AppCompatActivity implements AdapterVie
     }
 
     //edits the current user's info in the database with the new User information
-    public void saveUserToDatabase(){
+    public void saveUserToDatabase() {
         mDatabase.child("firstName").setValue(changedUser.getFirstName());
         mDatabase.child("lastName").setValue(changedUser.getLastName());
         mDatabase.child("address").setValue(changedUser.getAddress());
@@ -338,6 +396,82 @@ public class EditAccountActivity extends AppCompatActivity implements AdapterVie
                         }
                     }
                 });
+    }
+
+    @Override
+    public void onConnected(@Nullable Bundle bundle) {
+        if (ActivityCompat.checkSelfPermission(this,
+                android.Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED
+                && ActivityCompat.checkSelfPermission(this
+                , android.Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+
+            ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION},
+                    1);
+
+            return;
+        }
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, String permissions[], int[] grantResults) {
+        switch (requestCode) {
+            case 1:
+                if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                    try {
+                        location = LocationServices.FusedLocationApi.getLastLocation(googleApiClient);
+                    } catch (SecurityException se) {
+                        se.printStackTrace();
+                    }
+                } else {
+                }
+                verifiedAddr = MapUtil.verifyAddress(getApplicationContext(), address, city, state, zip);
+                return;
+        }
+    }
+
+    @Override
+    public void onConnectionSuspended(int i) {
+
+    }
+
+    @Override
+    public void onConnectionFailed(@NonNull ConnectionResult connectionResult) {
+
+    }
+
+    public class AddressResultReceiver extends ResultReceiver {
+        public AddressResultReceiver(Handler handler) {
+            super(handler);
+        }
+
+        @Override
+        protected void onReceiveResult(int resultCode, Bundle resultData) {
+            final Address addressOutput = resultData.getParcelable(AddressConstants.RESULT_DATA_KEY);
+            if (addressOutput == null) {
+                Toast.makeText(getApplicationContext(), "Couldn't Retrieve Location.", Toast.LENGTH_SHORT).show();
+            }
+
+            String[] statesArray = getResources().getStringArray(R.array.states);
+            address.setText(addressOutput.getAddressLine(0));
+            for (int i = 0; i < statesArray.length; i++) {
+                if (addressOutput.getAdminArea().trim().equals(statesArray[i]))
+                    states.setSelection(i);
+            }
+            city.setText(addressOutput.getLocality());
+            zip.setText(addressOutput.getPostalCode());
+        }
+    }
+
+    @Override
+    public void onStart() {
+        super.onStart();
+        googleApiClient.connect();
+    }
+
+    @Override
+    public void onStop() {
+        super.onStop();
+        googleApiClient.disconnect();
     }
 
 }//end activity
