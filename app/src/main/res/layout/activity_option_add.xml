@@ -66,7 +66,8 @@
 
 
 
-    <Button
+    <com.beardedhen.androidbootstrap.BootstrapButton
+        style="@style/primary_button"
         android:id="@+id/selections"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -74,7 +75,8 @@
         android:layout_below="@id/itemName"
         />
 
-    <Button
+    <com.beardedhen.androidbootstrap.BootstrapButton
+        style="@style/success_button"
         android:id="@+id/saveItem"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"

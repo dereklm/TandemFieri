@@ -3,38 +3,32 @@ package com.gmail.dleemcewen.tandemfieri;
 import android.app.Activity;
 import android.content.Context;
 import android.content.DialogInterface;
-import android.content.Intent;
 import android.content.res.Resources;
+import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
-import android.os.Bundle;
 import android.text.SpannableString;
 import android.text.style.UnderlineSpan;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.AdapterView;
-import android.widget.Button;
-import android.widget.ExpandableListView;
 import android.widget.ListView;
 import android.widget.TextView;
 
+import com.beardedhen.androidbootstrap.BootstrapButton;
 import com.gmail.dleemcewen.tandemfieri.Adapters.AssignRestaurantDriversListAdapter;
 import com.gmail.dleemcewen.tandemfieri.Adapters.ManageRestaurantDriversListAdapter;
-import com.gmail.dleemcewen.tandemfieri.Adapters.ManageRestaurantExpandableListAdapter;
 import com.gmail.dleemcewen.tandemfieri.Entities.Restaurant;
 import com.gmail.dleemcewen.tandemfieri.Entities.User;
-import com.gmail.dleemcewen.tandemfieri.EventListeners.QueryCompleteListener;
 import com.gmail.dleemcewen.tandemfieri.Logging.LogWriter;
-import com.gmail.dleemcewen.tandemfieri.Repositories.Restaurants;
 import com.gmail.dleemcewen.tandemfieri.Repositories.Users;
 import com.gmail.dleemcewen.tandemfieri.Tasks.TaskResult;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.logging.Level;
 
@@ -43,7 +37,7 @@ public class ManageRestaurantDrivers extends AppCompatActivity {
     private Resources resources;
     private TextView restaurantName;
     private TextView driversCurrentlyAssignedToRestaurant;
-    private Button addDrivers;
+    private BootstrapButton addDrivers;
     private ListView restaurantDriverList;
     private ManageRestaurantDriversListAdapter listAdapter;
     private Users<User> users;
@@ -89,7 +83,7 @@ public class ManageRestaurantDrivers extends AppCompatActivity {
     private void findControlReferences() {
         restaurantName = (TextView)findViewById(R.id.restaurantName);
         driversCurrentlyAssignedToRestaurant = (TextView)findViewById(R.id.driversCurrentlyAssignedToRestaurant);
-        addDrivers = (Button)findViewById(R.id.addDrivers);
+        addDrivers = (BootstrapButton)findViewById(R.id.addDrivers);
         restaurantDriverList = (ListView)findViewById(R.id.restaurantDriverList);
     }
 

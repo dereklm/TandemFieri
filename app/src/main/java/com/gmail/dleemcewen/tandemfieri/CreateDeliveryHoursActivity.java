@@ -4,12 +4,12 @@ import android.app.DialogFragment;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
-import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.beardedhen.androidbootstrap.BootstrapButton;
 import com.gmail.dleemcewen.tandemfieri.Entities.DeliveryHours;
 import com.gmail.dleemcewen.tandemfieri.Events.ActivityEvent;
 import com.google.firebase.database.DataSnapshot;
@@ -29,7 +29,7 @@ public class CreateDeliveryHoursActivity extends AppCompatActivity implements Ti
     LinearLayout sun, mon, tue, wed, thur, fri, sat;
     CheckBox sunBox, monBox, tueBox, wedBox, thurBox, friBox, satBox;
     TextView sunOpen, sunClose, monOpen, monClose, tueOpen, tueClose, wedOpen, wedClose, thurOpen, thurClose, friOpen, friClose, satOpen, satClose;
-    Button saveButton, clearButton;
+    BootstrapButton saveButton, clearButton;
 
     DatabaseReference mDatabase;
 
@@ -133,8 +133,8 @@ public class CreateDeliveryHoursActivity extends AppCompatActivity implements Ti
     }
 
     private void getHandlers(){
-        saveButton = (Button)findViewById(R.id.save_button);
-        clearButton = (Button)findViewById(R.id.clear_button);
+        saveButton = (BootstrapButton)findViewById(R.id.save_button);
+        clearButton = (BootstrapButton)findViewById(R.id.clear_button);
 
         sun = (LinearLayout)findViewById(R.id.sunG);
         sun.setVisibility(View.INVISIBLE);

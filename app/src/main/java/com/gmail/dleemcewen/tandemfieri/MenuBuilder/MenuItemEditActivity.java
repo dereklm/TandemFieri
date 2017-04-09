@@ -5,13 +5,13 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
-import android.widget.Button;
 import android.widget.EditText;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.beardedhen.androidbootstrap.BootstrapButton;
 import com.gmail.dleemcewen.tandemfieri.R;
 import com.gmail.dleemcewen.tandemfieri.Utilities.MoneyTextWatcher;
 
@@ -23,7 +23,7 @@ public class MenuItemEditActivity extends AppCompatActivity {
     private EditText name;
     private boolean editing;
     private MenuCompenet item;
-    private Button options;
+    private BootstrapButton options;
     private boolean isCat;
     private TextView priceLable;
     private boolean added = false;
@@ -63,8 +63,8 @@ public class MenuItemEditActivity extends AppCompatActivity {
 
         price.addTextChangedListener(new MoneyTextWatcher(price));
 
-        options = (Button) findViewById(R.id.options);
-        Button save = (Button) findViewById(R.id.saveItem);
+        options = (BootstrapButton) findViewById(R.id.options);
+        BootstrapButton save = (BootstrapButton) findViewById(R.id.saveItem);
 
         options.setOnClickListener(new View.OnClickListener() {
             @Override
