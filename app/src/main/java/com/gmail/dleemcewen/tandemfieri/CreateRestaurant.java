@@ -16,7 +16,6 @@ import android.text.style.UnderlineSpan;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
-import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Spinner;
 import android.widget.TextView;
@@ -56,9 +55,9 @@ public class CreateRestaurant extends AppCompatActivity implements AdapterView.O
     private Spinner restaurantTypes;
     private EditText zipCode;
     private EditText deliveryCharge;
-    private Button deliveryHours;
-    private Button createRestaurant;
-    private Button cancelCreateRestaurant;
+    private BootstrapButton deliveryHours;
+    private BootstrapButton createRestaurant;
+    private BootstrapButton cancelCreateRestaurant;
     private String restaurantOwnerId, restaurantId;
     private String state;
     private String restaurantType;
@@ -105,9 +104,9 @@ public class CreateRestaurant extends AppCompatActivity implements AdapterView.O
         states = (Spinner)findViewById(R.id.state);
         zipCode = (EditText)findViewById(R.id.zipcode);
         deliveryCharge = (EditText)findViewById(R.id.deliveryCharge);
-        deliveryHours = (Button)findViewById(R.id.deliveryHours);
-        createRestaurant = (Button)findViewById(R.id.createRestaurant);
-        cancelCreateRestaurant = (Button)findViewById(R.id.cancelRestaurant);
+        deliveryHours = (BootstrapButton)findViewById(R.id.deliveryHours);
+        createRestaurant = (BootstrapButton)findViewById(R.id.createRestaurant);
+        cancelCreateRestaurant = (BootstrapButton)findViewById(R.id.cancelRestaurant);
         restaurantTypes = (Spinner) findViewById(R.id.restaurantTypeSpinner);
         myLocation = (BootstrapButton) findViewById(R.id.location_button);
     }

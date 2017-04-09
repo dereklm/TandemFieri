@@ -10,12 +10,12 @@ import android.text.style.UnderlineSpan;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
-import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.beardedhen.androidbootstrap.BootstrapButton;
 import com.gmail.dleemcewen.tandemfieri.Entities.Restaurant;
 import com.gmail.dleemcewen.tandemfieri.Formatters.StringFormatter;
 import com.gmail.dleemcewen.tandemfieri.Logging.LogWriter;
@@ -45,9 +45,9 @@ public class EditRestaurantActivity extends AppCompatActivity implements Adapter
     private EditText zipCode;
     private EditText deliveryCharge;
     private String state;
-    private Button deliveryHours;
-    private Button updateRestaurant;
-    private Button cancelUpdateRestaurant;
+    private BootstrapButton deliveryHours;
+    private BootstrapButton updateRestaurant;
+    private BootstrapButton cancelUpdateRestaurant;
     private String restaurantType;
 
     @Override
@@ -91,9 +91,9 @@ public class EditRestaurantActivity extends AppCompatActivity implements Adapter
         states = (Spinner)findViewById(R.id.state);
         zipCode = (EditText)findViewById(R.id.zipcode);
         deliveryCharge = (EditText)findViewById(R.id.deliveryCharge);
-        deliveryHours = (Button)findViewById(R.id.deliveryHours);
-        updateRestaurant = (Button)findViewById(R.id.createRestaurant);
-        cancelUpdateRestaurant = (Button)findViewById(R.id.cancelRestaurant);
+        deliveryHours = (BootstrapButton)findViewById(R.id.deliveryHours);
+        updateRestaurant = (BootstrapButton)findViewById(R.id.createRestaurant);
+        cancelUpdateRestaurant = (BootstrapButton)findViewById(R.id.cancelRestaurant);
         restaurantTypes = (Spinner) findViewById(R.id.restaurantTypeSpinner);
     }
 

@@ -44,6 +44,7 @@
     <Spinner
         android:id="@+id/restaurantTypeSpinner"
         android:layout_width="match_parent"
+        android:layout_margin="10dp"
         android:layout_height="wrap_content"
         android:layout_below="@id/restaurantType"
         android:layout_alignParentLeft="true"
@@ -115,28 +116,22 @@
 
         <Spinner
             android:id="@+id/state"
-            style="@style/Base.Widget.AppCompat.Spinner.Underlined"
-            android:layout_width="wrap_content"
-            android:layout_height="match_parent"
-            android:layout_weight="1"
-            android:ems="10"
             android:hint="@string/hintState"
-            android:paddingEnd="20dp"
-            android:paddingRight="20dp"
-            android:textSize="14sp" />
-
-        <com.rengwuxian.materialedittext.MaterialEditText
-            android:id="@+id/zipcode"
-            android:layout_width="wrap_content"
-            android:layout_height="match_parent"
-            android:layout_alignBaseline="@+id/state"
-            android:layout_alignBottom="@+id/state"
+            android:layout_margin="10dp"
             android:layout_weight="1"
-            android:ems="10"
-            android:hint="@string/hintZip"
-            android:inputType="text|number"
-            app:met_primaryColor="@color/colorPrimary"
-            android:textSize="14sp" />
+            android:textSize="@dimen/regular_text_size"
+            style="@style/Base.Widget.AppCompat.Spinner.Underlined"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"/>
+        <com.rengwuxian.materialedittext.MaterialEditText
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:textSize="@dimen/regular_text_size"
+            android:id="@+id/zipcode"
+            android:hint="@string/hintZipcode"
+            android:inputType="number" />
+      
     </LinearLayout>
     <LinearLayout
         android:id="@+id/restaurantDeliveryTitleContainer"
@@ -155,7 +150,8 @@
             android:layout_below="@id/stateZipContainer"
             android:layout_alignParentLeft="true"
             android:layout_alignParentStart="true" />
-        <Button
+        <com.beardedhen.androidbootstrap.BootstrapButton
+            style="@style/primary_button"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:textSize="@dimen/button_text_size"
@@ -186,7 +182,8 @@
         android:layout_alignParentStart="true"
         android:layout_alignParentLeft="true"
         android:layout_below="@id/deliveryCharge">
-        <Button
+        <com.beardedhen.androidbootstrap.BootstrapButton
+            style="@style/danger_button"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_weight="1"
@@ -194,7 +191,8 @@
             android:text="@string/cancel"
             android:textSize="@dimen/regular_text_size"
             android:id="@+id/cancelRestaurant" />
-        <Button
+        <com.beardedhen.androidbootstrap.BootstrapButton
+            style="@style/success_button"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_weight="1"
