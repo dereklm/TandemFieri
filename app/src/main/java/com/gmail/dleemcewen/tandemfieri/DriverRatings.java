@@ -4,15 +4,15 @@ import android.app.AlertDialog;
 import android.app.DatePickerDialog;
 import android.content.DialogInterface;
 import android.content.res.Resources;
+import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
-import android.os.Bundle;
 import android.view.View;
-import android.widget.Button;
 import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.ListView;
 
+import com.beardedhen.androidbootstrap.BootstrapButton;
 import com.gmail.dleemcewen.tandemfieri.Adapters.DriverRatingsListAdapter;
 import com.gmail.dleemcewen.tandemfieri.Comparators.RatingsByDriverInAscendingOrderComparator;
 import com.gmail.dleemcewen.tandemfieri.Entities.Rating;
@@ -42,7 +42,7 @@ import java.util.Set;
 public class DriverRatings extends AppCompatActivity {
     private EditText startDate;
     private EditText endDate;
-    private Button viewDriverRatings;
+    private BootstrapButton viewDriverRatings;
     private ListView ratingsList;
     private Ratings<Rating> ratingsRepository;
     private Users<User> usersRepository;
@@ -80,7 +80,7 @@ public class DriverRatings extends AppCompatActivity {
     private void findControlReferences() {
         startDate = (EditText)findViewById(R.id.startDate);
         endDate = (EditText)findViewById(R.id.endDate);
-        viewDriverRatings = (Button)findViewById(R.id.viewDriverRatings);
+        viewDriverRatings = (BootstrapButton)findViewById(R.id.viewDriverRatings);
         ratingsList = (ListView)findViewById(R.id.driverRatingsList);
     }
 

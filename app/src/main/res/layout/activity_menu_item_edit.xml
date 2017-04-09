@@ -73,7 +73,8 @@
         android:inputType="numberDecimal"
         />
 
-    <Button
+    <com.beardedhen.androidbootstrap.BootstrapButton
+        style="@style/primary_button"
         android:id="@+id/options"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -81,7 +82,8 @@
         android:layout_below="@id/price"
         />
 
-    <Button
+    <com.beardedhen.androidbootstrap.BootstrapButton
+        style="@style/success_button"
         android:id="@+id/saveItem"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"

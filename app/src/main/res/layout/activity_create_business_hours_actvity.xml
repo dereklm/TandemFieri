@@ -353,7 +353,8 @@
             android:layout_height="wrap_content"
             android:orientation="horizontal">
 
-            <Button
+            <com.beardedhen.androidbootstrap.BootstrapButton
+                style="@style/danger_button"
                 android:id="@+id/clear_button"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -361,7 +362,8 @@
                 android:layout_weight="1"
                 />
 
-            <Button
+            <com.beardedhen.androidbootstrap.BootstrapButton
+                style="@style/success_button"
                 android:id="@+id/save_button"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
