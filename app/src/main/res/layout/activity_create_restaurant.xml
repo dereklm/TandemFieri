@@ -44,6 +44,7 @@
     <Spinner
         android:id="@+id/restaurantTypeSpinner"
         android:layout_width="match_parent"
+        android:layout_margin="10dp"
         android:layout_height="wrap_content"
         android:layout_below="@id/restaurantType"
         android:layout_alignParentLeft="true"
@@ -116,6 +117,7 @@
         <Spinner
             android:id="@+id/state"
             android:hint="@string/hintState"
+            android:layout_margin="10dp"
             android:layout_weight="1"
             android:textSize="@dimen/regular_text_size"
             style="@style/Base.Widget.AppCompat.Spinner.Underlined"
