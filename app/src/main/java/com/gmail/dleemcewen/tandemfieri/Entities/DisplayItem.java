@@ -1,4 +1,4 @@
-package com.gmail.dleemcewen.tandemfieri;
+package com.gmail.dleemcewen.tandemfieri.Entities;
 
 /**
  * Created by Ruth on 3/16/2017.

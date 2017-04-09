@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/activity_view_monthly_report"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
@@ -79,15 +80,32 @@
         android:layout_below="@id/selection_spinners"
         android:visibility="invisible"/>
 
-    <com.beardedhen.androidbootstrap.BootstrapButton
-        style="@style/success_button"
-        android:id="@+id/go_button"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignParentBottom="true"
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:gravity="end|bottom"
+        android:orientation="vertical"
         android:layout_alignParentRight="true"
         android:layout_alignParentEnd="true"
-        android:text="OK"
-        android:textSize="20sp"/>
+        android:layout_alignParentBottom="true"
+        android:layout_height="wrap_content">
+
+            <com.beardedhen.androidbootstrap.BootstrapButton
+                style="@style/success_button"
+                android:id="@+id/go_button"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="OK"
+                android:textSize="20sp"/>
+
+            <com.beardedhen.androidbootstrap.BootstrapButton
+                style="@style/primary_button"
+                android:id="@+id/csv_button"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/generate_csv"
+                android:visibility="invisible"
+                />
+    </LinearLayout>
 
 </RelativeLayout>
