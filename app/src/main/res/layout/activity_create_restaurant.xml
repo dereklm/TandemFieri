@@ -93,10 +93,10 @@
             android:layout_weight="1"
             android:textSize="@dimen/regular_text_size"
             style="@style/Base.Widget.AppCompat.Spinner.Underlined"
-            android:layout_width="wrap_content"
+            android:layout_width="0dp"
             android:layout_height="match_parent"/>
         <com.rengwuxian.materialedittext.MaterialEditText
-            android:layout_width="wrap_content"
+            android:layout_width="0dp"
             android:layout_height="match_parent"
             android:layout_weight="1"
             android:textSize="@dimen/regular_text_size"
@@ -121,7 +121,8 @@
             android:layout_below="@id/cityStateContainer"
             android:layout_alignParentLeft="true"
             android:layout_alignParentStart="true" />
-        <Button
+        <com.beardedhen.androidbootstrap.BootstrapButton
+            style="@style/primary_button"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:textSize="@dimen/button_text_size"
@@ -152,7 +153,8 @@
         android:layout_alignParentStart="true"
         android:layout_alignParentLeft="true"
         android:layout_below="@id/deliveryCharge">
-        <Button
+        <com.beardedhen.androidbootstrap.BootstrapButton
+            style="@style/danger_button"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_weight="1"
@@ -160,7 +162,8 @@
             android:text="@string/cancel"
             android:textSize="@dimen/regular_text_size"
             android:id="@+id/cancelRestaurant" />
-        <Button
+        <com.beardedhen.androidbootstrap.BootstrapButton
+            style="@style/success_button"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_weight="1"
