@@ -30,6 +30,7 @@ import com.gmail.dleemcewen.tandemfieri.Json.Braintree.Transaction;
 import com.gmail.dleemcewen.tandemfieri.Logging.LogWriter;
 import com.gmail.dleemcewen.tandemfieri.ManageOrders;
 import com.gmail.dleemcewen.tandemfieri.R;
+import com.gmail.dleemcewen.tandemfieri.Utility.General;
 import com.gmail.dleemcewen.tandemfieri.Repositories.Deliveries;
 import com.gmail.dleemcewen.tandemfieri.Repositories.NotificationMessages;
 import com.gmail.dleemcewen.tandemfieri.ViewOrderActivity;
@@ -186,6 +187,12 @@ public class RestaurantMainMenuExpandableListAdapter extends BaseExpandableListA
                 .setPositiveButton(context.getString(R.string.yes),
                         new DialogInterface.OnClickListener() {
                             public void onClick(DialogInterface dialog, int id) {
+                                if (General.isEditTextEmpty(comments)) {
+                                    Toast.makeText(context, "Please enter the refund reason.", Toast.LENGTH_LONG).show();
+                                    dialog.cancel();
+                                    return;
+                                }
+
                                 mDialog = new ProgressDialog(context);
                                 mDialog.setMessage("Processing refund!");
                                 mDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
