@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.net.Uri;
 import android.support.v4.content.FileProvider;
 import android.util.Log;
+import android.widget.Toast;
 
 import com.gmail.dleemcewen.tandemfieri.Entities.DisplayItem;
 
@@ -61,6 +62,10 @@ public class CsvUtil {
     }
 
     public static void emailCsv(ArrayList<DisplayItem> items, String emailAddr, Context context) {
+        if (items.isEmpty()) {
+            Toast.makeText(context, "Please select some records.", Toast.LENGTH_SHORT).show();
+            return;
+        }
         File file = generateCsvFile(items, context);
         Uri path = FileProvider.getUriForFile(context, "com.gmail.dleemcewen.tandemfieri", file);
         Intent emailIntent = new Intent(Intent.ACTION_SEND);
