@@ -60,6 +60,33 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:textSize="15sp"
+            android:text="Refunded:"
+            android:layout_gravity="start"
+            android:layout_weight="1"
+            android:textColor="@color/bt_color_primary_dark"/>
+
+        <TextView
+            android:id="@+id/refund_amount"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:textSize="15sp"
+            android:text="amount"
+            android:layout_gravity="end"
+            android:textAlignment="textEnd"
+            android:layout_weight="1"
+            android:textColor="@color/bt_color_primary_dark"/>
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+
+        <TextView
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:textSize="15sp"
             android:text="Payment:"
             android:layout_gravity="start"
             android:layout_weight="1"
@@ -67,6 +94,33 @@
 
         <TextView
             android:id="@+id/pay_amount"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:textSize="15sp"
+            android:text="amount"
+            android:layout_gravity="end"
+            android:textAlignment="textEnd"
+            android:layout_weight="1"
+            android:textColor="@color/bt_color_primary_dark"/>
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+
+        <TextView
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:textSize="15sp"
+            android:text="Total:"
+            android:layout_gravity="start"
+            android:layout_weight="1"
+            android:textColor="@color/bt_color_primary_dark"/>
+
+        <TextView
+            android:id="@+id/total_amount"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:textSize="15sp"

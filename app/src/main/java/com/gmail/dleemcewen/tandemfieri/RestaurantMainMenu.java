@@ -269,5 +269,4 @@ public class RestaurantMainMenu extends AppCompatActivity {
             retrieveData();
         }
     }
-
 }//end Activity
