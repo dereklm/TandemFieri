@@ -26,14 +26,14 @@
             android:choiceMode="singleChoice"
             android:divider="@android:color/darker_gray"
             android:dividerHeight="0.5dp" />
-        <Button
+        <com.beardedhen.androidbootstrap.BootstrapButton
+            style="@style/primary_button"
             android:id="@+id/selectCurrentDelivery"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_below="@id/myDeliveriesList"
             android:layout_alignParentRight="true"
             android:layout_alignParentEnd="true"
-            android:text="@string/ok">
-        </Button>
+            android:text="@string/ok" />
     </RelativeLayout>
 </FrameLayout>

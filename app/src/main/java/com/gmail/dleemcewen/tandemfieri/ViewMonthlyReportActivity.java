@@ -15,6 +15,7 @@ import com.gmail.dleemcewen.tandemfieri.Adapters.MonthlyReportArrayAdapter;
 import com.gmail.dleemcewen.tandemfieri.Entities.DisplayItem;
 import com.gmail.dleemcewen.tandemfieri.Entities.Order;
 import com.gmail.dleemcewen.tandemfieri.Entities.User;
+import com.gmail.dleemcewen.tandemfieri.Enums.OrderEnum;
 import com.gmail.dleemcewen.tandemfieri.Filters.AndCriteria;
 import com.gmail.dleemcewen.tandemfieri.Filters.CriteriaAfterStartDate;
 import com.gmail.dleemcewen.tandemfieri.Filters.CriteriaBeforeEndDate;
@@ -50,7 +51,7 @@ public class ViewMonthlyReportActivity extends AppCompatActivity {
     private ArrayList<DisplayItem> displayList;
     private String monthSelected = "";
     private String yearSelected = "";
-    private boolean show = true;
+    private boolean showResults = true;
 
     private DatabaseReference mDatabase;
 
@@ -196,11 +197,16 @@ public class ViewMonthlyReportActivity extends AppCompatActivity {
         //filter orders by month
         ordersSelected = filterMonth(ordersSelected);
 
-        //accumulate order totals
+        //accumulate order totals & refund totals
+        // (use DisplayItem.total for order totals & DisplayItem.basePrice for refund amt)
         for(DisplayItem current : displayList){
             for(Order o : ordersSelected){
                 if(current.getName().equals(o.getRestaurantName())){
-                    current.setTotal(current.getTotal() + o.getTotal());
+                    if(o.getStatus().equals(OrderEnum.COMPLETE)) {
+                        current.setTotal(current.getTotal() + o.getTotal());
+                    }else if(o.getStatus().equals(OrderEnum.REFUNDED)){
+                        current.setBasePrice(current.getBasePrice() + o.getTotal());
+                    }
                 }
             }
         }
@@ -208,10 +214,12 @@ public class ViewMonthlyReportActivity extends AppCompatActivity {
         //set state of activity
         displayResults();
 
-        if(show){
-            show = false;
+        if(showResults){
+            executeButton.setText("Clear");
+            showResults = false;
         }else{
-            show = true;
+            executeButton.setText("OK");
+            showResults = true;
         }
     }
 
@@ -315,7 +323,7 @@ public class ViewMonthlyReportActivity extends AppCompatActivity {
         }
 
         //prepare view
-        if(show) {
+        if(showResults) {
             restaurantListView.setVisibility(View.INVISIBLE);
             displayListView.setVisibility(View.VISIBLE);
         }else{
