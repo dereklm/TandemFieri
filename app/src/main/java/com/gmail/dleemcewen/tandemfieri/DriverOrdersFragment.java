@@ -7,11 +7,11 @@ import android.support.annotation.NonNull;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
 import android.widget.ListView;
 import android.widget.RelativeLayout;
 import android.widget.Toast;
 
+import com.beardedhen.androidbootstrap.BootstrapButton;
 import com.gmail.dleemcewen.tandemfieri.Adapters.DriverOrdersListAdapter;
 import com.gmail.dleemcewen.tandemfieri.Entities.Delivery;
 import com.gmail.dleemcewen.tandemfieri.Entities.Order;
@@ -32,8 +32,7 @@ public class DriverOrdersFragment extends DialogFragment {
     private RelativeLayout myDeliveriesLayout;
     private ListView myDeliveriesList;
     private DriverOrdersListAdapter listAdapter;
-    private Button closeMyOrders;
-    private Button selectCurrentDelivery;
+    private BootstrapButton selectCurrentDelivery;
     private Deliveries<Delivery> deliveriesRepository;
     private List<Order> driverOrders;
     private Order currentOrder, order;
@@ -95,7 +94,7 @@ public class DriverOrdersFragment extends DialogFragment {
     private void findControlReferences(View view) {
         myDeliveriesLayout = (RelativeLayout)view.findViewById(R.id.myDeliveriesLayout);
         myDeliveriesList = (ListView)myDeliveriesLayout.findViewById(R.id.myDeliveriesList);
-        selectCurrentDelivery = (Button)myDeliveriesLayout.findViewById(R.id.selectCurrentDelivery);
+        selectCurrentDelivery = (BootstrapButton)myDeliveriesLayout.findViewById(R.id.selectCurrentDelivery);
     }
 
     /**
