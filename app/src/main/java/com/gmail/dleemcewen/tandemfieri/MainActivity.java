@@ -134,39 +134,45 @@ public class MainActivity extends AppCompatActivity {
         signInButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                String userEmail = email.getText().toString();
+                String userPassword = password.getText().toString();
 
-                mAuth.signInWithEmailAndPassword(email.getText().toString(), password.getText().toString()).addOnCompleteListener(new OnCompleteListener<AuthResult>() {
-                    @Override
-                    public void onComplete(@NonNull Task<AuthResult> task) {
-                        if (task.isSuccessful()) {
-                            if (verifiedEmailNotRequiredForLogin || task.getResult().getUser().isEmailVerified()) {
-                                Toast.makeText(getApplicationContext(), task.getResult().getUser().getEmail() + " was successfully signed in", Toast.LENGTH_LONG)
-                                      .show();
+                if (!userEmail.equals("") && !userPassword.equals("")) {
+                    mAuth.signInWithEmailAndPassword(email.getText().toString(), password.getText().toString()).addOnCompleteListener(new OnCompleteListener<AuthResult>() {
+                        @Override
+                        public void onComplete(@NonNull Task<AuthResult> task) {
+                            if (task.isSuccessful()) {
+                                if (verifiedEmailNotRequiredForLogin || task.getResult().getUser().isEmailVerified()) {
+                                    Toast.makeText(getApplicationContext(), task.getResult().getUser().getEmail() + " was successfully signed in", Toast.LENGTH_LONG)
+                                            .show();
 
-                                dBase.addListenerForSingleValueEvent(new ValueEventListener() {
-                                    @Override
-                                    public void onDataChange(DataSnapshot dataSnapshot) {
-                                        navigateToMenu(dataSnapshot);
-                                    }
+                                    dBase.addListenerForSingleValueEvent(new ValueEventListener() {
+                                        @Override
+                                        public void onDataChange(DataSnapshot dataSnapshot) {
+                                            navigateToMenu(dataSnapshot);
+                                        }
 
-                                    @Override
-                                    public void onCancelled(DatabaseError databaseError) {
+                                        @Override
+                                        public void onCancelled(DatabaseError databaseError) {
 
-                                    }
-                                });
+                                        }
+                                    });
+                                } else {
+                                    Toast.makeText(getApplicationContext(), "That user is not verified, check email for verification link.", Toast.LENGTH_LONG)
+                                            .show();
+                                }
                             } else {
-                                Toast.makeText(getApplicationContext(), "That user is not verified, check email for verification link.", Toast.LENGTH_LONG)
+                                Toast
+                                        .makeText(getApplicationContext(), "Sign in was not successful. Check login details please.", Toast.LENGTH_LONG)
                                         .show();
-                            }
-                        } else {
-                            Toast
-                                    .makeText(getApplicationContext(), "Sign in was not successful. Check login details please.", Toast.LENGTH_LONG)
-                                    .show();
-                        }//end if task.successful
-                    }//end onComplete
-                });//end sign in
-
-
+                            }//end if task.successful
+                        }//end onComplete
+                    });//end sign in
+                } else {
+                    Toast
+                        .makeText(getApplicationContext(), "Sign in was not successful. Check login details please.", Toast.LENGTH_LONG)
+                        .show();
+                }
             }//end on click
         });//end sign in button
     }//end onCreate

@@ -16,7 +16,7 @@ public final class FormConstants {
     public static final String ERROR_TAG_FIRSTNAME = "Invalid first name. Must be non-empty and contain only letters and spaces.";
     public static final String ERROR_TAG_LASTNAME = "Invalid last name. Must be non-empty and contain only letters and spaces.";
     public static final String ERROR_TAG_ADDRESS = "Invalid address. Must be non-empty and begin with an alphanumeric character.";
-    public static final String ERROR_TAG_CITY = "Invalid city. Must be non-empty.";
+    public static final String ERROR_TAG_CITY = "Invalid city. Must be non-empty and contain only letters and spaces.";
     public static final String ERROR_TAG_ZIP = "Invalid ZIP code. Must be non-empty and in the form '12345' or '123456789' if ZIP+4.";
     public static final String ERROR_TAG_PHONE = "Invalid phone number. Must be non-empty and in the form '1234567890'.";
     public static final String ERROR_TAG_EMAIL = "Invalid email. Must be of format 'name@example.com'.";

@@ -1,6 +1,6 @@
 <resources>
     <string name="productHistory">Product History</string>
-    <string name="minimum_logging_level">FINE</string>
+    <string name="minimum_logging_level">SEVERE</string>
     <string name="purchase">Purchase</string>
     <string name="app_name">Tandem Fieri</string>
     <string name="multiDex">multidex</string>
