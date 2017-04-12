@@ -8,6 +8,7 @@ import android.location.Location;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.ResultReceiver;
+import android.os.SystemClock;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.ActivityCompat;
@@ -48,6 +49,7 @@ public class CreateAccountActivity extends AppCompatActivity implements AdapterV
     private Spinner states;
     private static CreateAccountActivity activityInstance;
     private boolean verifiedAddr;
+    private long mLastClickTime = 0;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -78,6 +80,10 @@ public class CreateAccountActivity extends AppCompatActivity implements AdapterV
         myLocation.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                if (SystemClock.elapsedRealtime() - mLastClickTime < 1500){
+                    return;
+                }
+                mLastClickTime = SystemClock.elapsedRealtime();
                 if (ActivityCompat.checkSelfPermission(getApplicationContext(),
                         android.Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED
                         && ActivityCompat.checkSelfPermission(getApplicationContext()

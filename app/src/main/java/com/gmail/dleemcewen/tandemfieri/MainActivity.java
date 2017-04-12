@@ -3,6 +3,7 @@ package com.gmail.dleemcewen.tandemfieri;
 import android.content.Intent;
 import android.content.res.Resources;
 import android.os.Bundle;
+import android.os.SystemClock;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
@@ -11,17 +12,14 @@ import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.beardedhen.androidbootstrap.BootstrapButton;
 import com.gmail.dleemcewen.tandemfieri.Builders.DinerSubscriberBuilder;
 import com.gmail.dleemcewen.tandemfieri.Builders.DriverSubscriberBuilder;
 import com.gmail.dleemcewen.tandemfieri.Builders.RestaurantSubscriberBuilder;
-import com.beardedhen.androidbootstrap.BootstrapButton;
-import com.beardedhen.androidbootstrap.BootstrapEditText;
 import com.gmail.dleemcewen.tandemfieri.Entities.NotificationMessage;
 import com.gmail.dleemcewen.tandemfieri.Entities.Restaurant;
 import com.gmail.dleemcewen.tandemfieri.Entities.User;
-import com.gmail.dleemcewen.tandemfieri.Enums.OrderEnum;
 import com.gmail.dleemcewen.tandemfieri.EventListeners.SubscriberBuilderCompleteListener;
-import com.gmail.dleemcewen.tandemfieri.Filters.SubscriberFilter;
 import com.gmail.dleemcewen.tandemfieri.Interfaces.ISubscriber;
 import com.gmail.dleemcewen.tandemfieri.Json.Braintree.ClientToken;
 import com.gmail.dleemcewen.tandemfieri.Json.Braintree.CreateCustomer;
@@ -33,7 +31,6 @@ import com.gmail.dleemcewen.tandemfieri.Services.NotificationService;
 import com.gmail.dleemcewen.tandemfieri.Subscribers.DinerSubscriber;
 import com.gmail.dleemcewen.tandemfieri.Subscribers.DriverSubscriber;
 import com.gmail.dleemcewen.tandemfieri.Subscribers.RestaurantSubscriber;
-import com.gmail.dleemcewen.tandemfieri.Tasks.TaskResult;
 import com.gmail.dleemcewen.tandemfieri.Utility.BraintreeUtil;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
@@ -55,7 +52,6 @@ import com.loopj.android.http.RequestParams;
 import org.json.JSONObject;
 
 import java.io.Serializable;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
 
@@ -76,7 +72,7 @@ public class MainActivity extends AppCompatActivity {
     private DatabaseReference dataContext;
     private boolean sendNotificationMessages = false;
     private ChildEventListener notificationChildEventListener;
-
+    private long mLastClickTime = 0;
     private boolean verifiedEmailNotRequiredForLogin;
 
     @Override
@@ -134,6 +130,11 @@ public class MainActivity extends AppCompatActivity {
         signInButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                if (SystemClock.elapsedRealtime() - mLastClickTime < 2000){
+                    return;
+                }
+                mLastClickTime = SystemClock.elapsedRealtime();
+
                 String userEmail = email.getText().toString();
                 String userPassword = password.getText().toString();
 
@@ -169,6 +170,7 @@ public class MainActivity extends AppCompatActivity {
                         }//end onComplete
                     });//end sign in
                 } else {
+                    mLastClickTime = 0;
                     Toast
                         .makeText(getApplicationContext(), "Sign in was not successful. Check login details please.", Toast.LENGTH_LONG)
                         .show();

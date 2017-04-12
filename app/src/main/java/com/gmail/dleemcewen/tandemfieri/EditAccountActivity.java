@@ -8,6 +8,7 @@ import android.location.Location;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.ResultReceiver;
+import android.os.SystemClock;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.ActivityCompat;
@@ -72,6 +73,7 @@ public class EditAccountActivity extends AppCompatActivity implements AdapterVie
     private String state = "";
     private Spinner states;
 
+    private long mLastClickTime = 0;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -175,6 +177,10 @@ public class EditAccountActivity extends AppCompatActivity implements AdapterVie
         saveButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                if (SystemClock.elapsedRealtime() - mLastClickTime < 2000){
+                    return;
+                }
+                mLastClickTime = SystemClock.elapsedRealtime();
                 //collect information
                 getChangedUserInformation();
                 //userIsValid = validInput();

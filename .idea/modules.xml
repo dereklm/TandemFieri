@@ -3,6 +3,7 @@
   <component name="ProjectModuleManager">
     <modules>
       <module fileurl="file://$PROJECT_DIR$/TandemFieri.iml" filepath="$PROJECT_DIR$/TandemFieri.iml" />
+      <module fileurl="file://$PROJECT_DIR$/TandemFieri-master.iml" filepath="$PROJECT_DIR$/TandemFieri-master.iml" />
       <module fileurl="file://$PROJECT_DIR$/app/app.iml" filepath="$PROJECT_DIR$/app/app.iml" />
       <module fileurl="file://$PROJECT_DIR$/tandemfieri.iml" filepath="$PROJECT_DIR$/tandemfieri.iml" />
     </modules>

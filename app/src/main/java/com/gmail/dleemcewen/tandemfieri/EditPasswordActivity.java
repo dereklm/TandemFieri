@@ -2,6 +2,7 @@ package com.gmail.dleemcewen.tandemfieri;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.SystemClock;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
@@ -32,6 +33,8 @@ public class EditPasswordActivity extends AppCompatActivity {
 
     private EditText password, confirmPswd, oldPassword;
     private BootstrapButton saveButton, cancelButton;
+
+    private long mLastClickTime = 0;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -100,6 +103,10 @@ public class EditPasswordActivity extends AppCompatActivity {
         saveButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                if (SystemClock.elapsedRealtime() - mLastClickTime < 2000){
+                    return;
+                }
+                mLastClickTime = SystemClock.elapsedRealtime();
                 if (isValidPassword(oldPassword.getText().toString(),
                         password.getText().toString(),
                         confirmPswd.getText().toString())) {

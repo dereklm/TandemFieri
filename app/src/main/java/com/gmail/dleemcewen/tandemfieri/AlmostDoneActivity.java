@@ -2,6 +2,7 @@ package com.gmail.dleemcewen.tandemfieri;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.SystemClock;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
@@ -29,6 +30,7 @@ public class AlmostDoneActivity extends AppCompatActivity{
     private DatabaseReference mDatabase;
     public RadioButton radioDining, radioRestaurant, radioDriver;
     FirebaseAuth user = FirebaseAuth.getInstance();
+    private long mLastClickTime = 0;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -59,6 +61,10 @@ public class AlmostDoneActivity extends AppCompatActivity{
         createButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                if (SystemClock.elapsedRealtime() - mLastClickTime < 2000){
+                    return;
+                }
+                mLastClickTime = SystemClock.elapsedRealtime();
                 if (password.getText().toString()
                         .equals(confirmPassword.getText().toString())
                         && password.getText().toString().matches(".*\\w.*")
