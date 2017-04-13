@@ -96,4 +96,6 @@
     <string name="refund_order">Refund Order</string>
     <string name="change_status">Change Status</string>
     <string name="confirm_refund">Are your sure you want to refund this order?</string>
+    <string name="submit_payment">Submit Payment</string>
+    <string name="confirm_checkout">Are you sure you want to submit your payment?</string>
 </resources>

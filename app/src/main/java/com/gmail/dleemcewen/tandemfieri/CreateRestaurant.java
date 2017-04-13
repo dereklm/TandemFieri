@@ -24,6 +24,7 @@ import android.widget.Toast;
 import com.beardedhen.androidbootstrap.BootstrapButton;
 import com.gmail.dleemcewen.tandemfieri.Constants.AddressConstants;
 import com.gmail.dleemcewen.tandemfieri.Entities.Restaurant;
+import com.gmail.dleemcewen.tandemfieri.Events.ActivityEvent;
 import com.gmail.dleemcewen.tandemfieri.Interfaces.AsyncHttpResponse;
 import com.gmail.dleemcewen.tandemfieri.Json.AddressGeocode.AddressGeocode;
 import com.gmail.dleemcewen.tandemfieri.Repositories.Restaurants;
@@ -37,6 +38,8 @@ import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
+
+import org.greenrobot.eventbus.EventBus;
 
 import java.util.ArrayList;
 
@@ -171,6 +174,9 @@ public class CreateRestaurant extends AppCompatActivity implements AdapterView.O
                                                 deliveryHours.setEnabled(true);
                                                 createRestaurant.setEnabled(false);
                                                 restaurantId = restaurant.getKey();
+
+                                                EventBus.getDefault()
+                                                        .post(new ActivityEvent(ActivityEvent.Result.REFRESH_RESTAURANT_LIST));
                                             }
                                         }
                                     });

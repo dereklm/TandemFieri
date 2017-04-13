@@ -195,6 +195,7 @@ public class RestaurantMainMenuExpandableListAdapter extends BaseExpandableListA
 
                                 mDialog = new ProgressDialog(context);
                                 mDialog.setMessage("Processing refund!");
+                                mDialog.setCancelable(false);
                                 mDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
                                 mDialog.show();
 

@@ -1,7 +1,10 @@
 package com.gmail.dleemcewen.tandemfieri;
 
 import android.app.Activity;
+import android.app.AlertDialog;
+import android.app.ProgressDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
@@ -9,7 +12,6 @@ import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
-import android.widget.Button;
 import android.widget.ExpandableListView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -64,6 +66,8 @@ public class CartActivity extends AppCompatActivity {
     private String latitude, longitude;
     private Nonce nonce;
     private View mView;
+    private ProgressDialog mDialog;
+    private Context mContext;
 
     private static final int PAYMENT = 1;
 
@@ -81,6 +85,8 @@ public class CartActivity extends AppCompatActivity {
         longitude = getIntent().getStringExtra("Longitude");
         braintreeID = getIntent().getStringExtra("braintreeID");
         notificationsRepository = new NotificationMessages<>(CartActivity.this);
+
+        mContext = this;
 
         mDatabase = FirebaseDatabase.getInstance().getReference();
 
@@ -163,7 +169,7 @@ public class CartActivity extends AppCompatActivity {
                             "Please select a payment method.",
                             Toast.LENGTH_LONG).show();
                 } else {
-                    submitPayment();
+                    completeOrderDialog();
                 }
             }
         });
@@ -186,6 +192,38 @@ public class CartActivity extends AppCompatActivity {
                 return false;
             }
         });
+    }
+
+    private void completeOrderDialog() {
+        AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(this);
+
+        alertDialogBuilder
+                .setTitle(getString(R.string.submit_payment))
+                .setMessage(getString(R.string.confirm_checkout))
+                .setCancelable(false)
+                .setPositiveButton(getString(R.string.yes),
+                        new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog, int id) {
+                                dialog.dismiss();
+
+                                mDialog = new ProgressDialog(mContext);
+                                mDialog.setMessage("Submitting payment!");
+                                mDialog.setCancelable(false);
+                                mDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
+                                mDialog.show();
+
+                                submitPayment();
+                            }
+                        })
+                .setNegativeButton(getString(R.string.no),
+                        new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog, int id) {
+                                dialog.cancel();
+                            }
+                        });
+
+        AlertDialog alertDialog = alertDialogBuilder.create();
+        alertDialog.show();
     }
 
     private void submitPayment() {
@@ -235,7 +273,6 @@ public class CartActivity extends AppCompatActivity {
                                     .sendNotification(NotificationConstants.Action.ADDED, order, ownerId);
 
                             enableDeliveryMap();
-
                             finish();
                         } else {
                             Log.v("Braintree", checkout.error);
@@ -244,10 +281,14 @@ public class CartActivity extends AppCompatActivity {
                                     "Unable to complete order at this time.",
                                     Toast.LENGTH_LONG).show();
                         }
+
+                        mDialog.hide();
                     }
 
                     @Override
                     public void onFailure(int status, Header[] headers, String res, Throwable t) {
+                        mDialog.hide();
+
                         Toast.makeText(getApplicationContext(),
                                 "Unable to complete order at this time.",
                                 Toast.LENGTH_LONG).show();

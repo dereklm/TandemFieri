@@ -104,14 +104,17 @@ public class DriverOrdersFragment extends DialogFragment {
         selectCurrentDelivery.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                FirebaseDatabase
-                    .getInstance()
-                    .getReference(Delivery.class.getSimpleName())
-                    .child(driverId)
-                    .child("currentOrderId")
-                    .setValue(((DriverMainMenu)getActivity()).getCurrentOrder().getOrderId());
+                if (driverOrders != null && !driverOrders.isEmpty()
+                        && ((DriverMainMenu) getActivity()).getCurrentOrder() != null) {
+                    FirebaseDatabase
+                            .getInstance()
+                            .getReference(Delivery.class.getSimpleName())
+                            .child(driverId)
+                            .child("currentOrderId")
+                            .setValue(((DriverMainMenu) getActivity()).getCurrentOrder().getOrderId());
 
-                Toast.makeText(getActivity().getApplicationContext(), "Order Selected.", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(getActivity().getApplicationContext(), "Order Selected.", Toast.LENGTH_SHORT).show();
+                }
             }
         });
     }
