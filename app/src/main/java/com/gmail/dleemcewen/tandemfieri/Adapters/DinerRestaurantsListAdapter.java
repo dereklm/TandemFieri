@@ -170,6 +170,10 @@ public class DinerRestaurantsListAdapter extends BaseAdapter {
                 }
             }
         }
+
+        if (!hoursProcessed) {
+            setRestaurantHoursText("CLOSED. No delivery hours have been set for today.", restaurantOpenClosed, Color.argb(255, 128, 128, 128));
+        }
     }
 
     /**

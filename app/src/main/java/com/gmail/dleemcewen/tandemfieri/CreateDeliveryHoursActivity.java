@@ -119,7 +119,6 @@ public class CreateDeliveryHoursActivity extends AppCompatActivity implements Ti
         mDatabase = FirebaseDatabase.getInstance().getReference().child("DeliveryHours");
 
         restId = this.getIntent().getStringExtra("restId");
-        Toast.makeText(CreateDeliveryHoursActivity.this, restId, Toast.LENGTH_SHORT).show();
         editOrCreate = this.getIntent().getStringExtra("editOrCreate");
 
         timeListener = new TimeListener();

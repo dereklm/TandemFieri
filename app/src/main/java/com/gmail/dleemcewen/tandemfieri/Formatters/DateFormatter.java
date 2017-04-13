@@ -68,7 +68,7 @@ public class DateFormatter {
         Calendar calendar = Calendar.getInstance();
         calendar.setTime(dateValue);
 
-        String militaryTime = String.valueOf(calendar.get(Calendar.HOUR_OF_DAY)) + String.valueOf(calendar.get(Calendar.MINUTE));
+        String militaryTime = String.format(Locale.US, "%02d", calendar.get(Calendar.HOUR_OF_DAY)) + String.format(Locale.US, "%02d", calendar.get(Calendar.MINUTE));
         return Integer.valueOf(militaryTime);
     }
 
