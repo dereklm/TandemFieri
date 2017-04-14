@@ -7,7 +7,6 @@ import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
-import android.widget.Button;
 import android.widget.ExpandableListView;
 import android.widget.Spinner;
 import android.widget.Toast;
@@ -27,7 +26,6 @@ import com.gmail.dleemcewen.tandemfieri.menubuilder.OptionSelection;
 
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
 
 public class OrderMenuActivity extends AppCompatActivity implements AdapterView.OnItemSelectedListener {
@@ -118,22 +116,6 @@ public class OrderMenuActivity extends AppCompatActivity implements AdapterView.
                         }
                     }
 
-                    // ensure passed item only passes options that are selected.
-                    Iterator<OrderItemOptionGroup> groupIterator = item.getOptionGroups().iterator();
-                    while (groupIterator.hasNext()) {
-                        OrderItemOptionGroup group = groupIterator.next();
-
-                        // if option group has no child selected remove it.
-                        if (!group.isHasChildSelected()) {
-                            groupIterator.remove();
-                        } else {
-                            // group has options selected, if the options are false remove them.
-                            Iterator<OrderItemOption> optionIterator = group.getOptions().iterator();
-                            while (optionIterator.hasNext()) {
-                                if (!optionIterator.next().isSelected()) optionIterator.remove();
-                            }
-                        }
-                    }
                     order.addItem(item);
 
                     Toast.makeText(getApplicationContext(),
@@ -201,7 +183,7 @@ public class OrderMenuActivity extends AppCompatActivity implements AdapterView.
     }
 
     private void resetSelections() {
-        for (OrderItem item : order.getItems()) {
+        for (OrderItem item : items) {
             for (OrderItemOptionGroup group : item.getOptionGroups()) {
                 group.setHasChildSelected(false);
                 for (OrderItemOption option : group.getOptions()) {
@@ -209,6 +191,7 @@ public class OrderMenuActivity extends AppCompatActivity implements AdapterView.
                 }
             }
         }
+        orderItemAdapter.notifyDataSetChanged();
     }
 
     @Override
