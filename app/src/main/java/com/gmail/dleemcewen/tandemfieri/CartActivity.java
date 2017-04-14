@@ -310,10 +310,17 @@ public class CartActivity extends AppCompatActivity {
 
     private void updateTextViews() {
         NumberFormat formatter = NumberFormat.getCurrencyInstance();
-        total.setText("Total: " + formatter.format(order.getTotal()));
-        tax.setText("Tax: " + formatter.format(order.getTax()));
-        subtotal.setText("Subtotal: " + formatter.format(order.getSubTotal()));
-        delivery.setText("Delivery: " + formatter.format(deliveryCharge));
+        if (order.getItems().size() > 0) {
+            total.setText("Total: " + formatter.format(order.getTotal()));
+            tax.setText("Tax: " + formatter.format(order.getTax()));
+            subtotal.setText("Subtotal: " + formatter.format(order.getSubTotal()));
+            delivery.setText("Delivery: " + formatter.format(deliveryCharge));
+        } else {
+            total.setText("Total: " + formatter.format(0));
+            tax.setText("Tax: " + formatter.format(0));
+            subtotal.setText("Subtotal: " + formatter.format(0));
+            delivery.setText("Delivery: " + formatter.format(0));
+        }
     }
 
     private void setCorrectOptions() {
