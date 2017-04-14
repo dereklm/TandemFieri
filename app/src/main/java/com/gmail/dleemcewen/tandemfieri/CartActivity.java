@@ -26,6 +26,8 @@ import com.gmail.dleemcewen.tandemfieri.Entities.Nonce;
 import com.gmail.dleemcewen.tandemfieri.Entities.NotificationMessage;
 import com.gmail.dleemcewen.tandemfieri.Entities.Order;
 import com.gmail.dleemcewen.tandemfieri.Entities.OrderItem;
+import com.gmail.dleemcewen.tandemfieri.Entities.OrderItemOption;
+import com.gmail.dleemcewen.tandemfieri.Entities.OrderItemOptionGroup;
 import com.gmail.dleemcewen.tandemfieri.Enums.OrderEnum;
 import com.gmail.dleemcewen.tandemfieri.Json.Braintree.Checkout;
 import com.gmail.dleemcewen.tandemfieri.Logging.LogWriter;
@@ -46,6 +48,7 @@ import org.json.JSONObject;
 import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
 import java.text.NumberFormat;
+import java.util.Iterator;
 import java.util.Locale;
 import java.util.logging.Level;
 
@@ -111,6 +114,7 @@ public class CartActivity extends AppCompatActivity {
         checkoutButton = (BootstrapButton) findViewById(R.id.checkout);
         paymentMethodButton = (BootstrapButton) findViewById(R.id.payment_method);
         cartItems = (ExpandableListView) findViewById(R.id.cart_items);
+        setCorrectOptions();
         orderItemAdapter = new OrderItemAdapter(CartActivity.this, this, order.getItems());
 
         order.setDeliveryCharge(deliveryCharge);
@@ -306,10 +310,37 @@ public class CartActivity extends AppCompatActivity {
 
     private void updateTextViews() {
         NumberFormat formatter = NumberFormat.getCurrencyInstance();
-        total.setText("Total: " + formatter.format(order.getTotal()));
-        tax.setText("Tax: " + formatter.format(order.getTax()));
-        subtotal.setText("Subtotal: " + formatter.format(order.getSubTotal()));
-        delivery.setText("Delivery: " + formatter.format(deliveryCharge));
+        if (order.getItems().size() > 0) {
+            total.setText("Total: " + formatter.format(order.getTotal()));
+            tax.setText("Tax: " + formatter.format(order.getTax()));
+            subtotal.setText("Subtotal: " + formatter.format(order.getSubTotal()));
+            delivery.setText("Delivery: " + formatter.format(deliveryCharge));
+        } else {
+            total.setText("Total: " + formatter.format(0));
+            tax.setText("Tax: " + formatter.format(0));
+            subtotal.setText("Subtotal: " + formatter.format(0));
+            delivery.setText("Delivery: " + formatter.format(0));
+        }
+    }
+
+    private void setCorrectOptions() {
+        for (OrderItem item : order.getItems()) {
+            Iterator<OrderItemOptionGroup> groupIterator = item.getOptionGroups().iterator();
+            while (groupIterator.hasNext()) {
+                OrderItemOptionGroup group = groupIterator.next();
+
+                // if option group has no child selected remove it.
+                if (!group.isHasChildSelected()) {
+                    groupIterator.remove();
+                } else {
+                    // group has options selected, if the options are false remove them.
+                    Iterator<OrderItemOption> optionIterator = group.getOptions().iterator();
+                    while (optionIterator.hasNext()) {
+                        if (!optionIterator.next().isSelected()) optionIterator.remove();
+                    }
+                }
+            }
+        }
     }
 
     @Override

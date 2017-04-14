@@ -166,11 +166,9 @@ public class OrderItemAdapter extends BaseExpandableListAdapter {
 
                         // if option group was exclusive, deselect all other children.
                         if (group.isExclusive()) {
-                            List<OrderItemOption> options = group.getOptions();
-                            for (int i = 0; i < options.size(); i++) {
-                                if (i != childPosition && options.get(i).isSelected()) {
-                                    // found the option that isn't the one we clicked that is selected.
-                                    options.get(i).setSelected(false);
+                            for (OrderItemOption opt : group.getOptions()) {
+                                if ((opt.getName() != option.getName()) && opt.isSelected()) {
+                                    opt.setSelected(false);
                                     break;
                                 }
                             }
