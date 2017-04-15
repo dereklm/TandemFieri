@@ -126,6 +126,8 @@
         <com.rengwuxian.materialedittext.MaterialEditText
             android:layout_width="0dp"
             android:layout_height="match_parent"
+            android:layout_alignBaseline="@+id/state"
+            android:layout_alignBottom="@+id/state"
             android:layout_weight="1"
             android:textSize="@dimen/regular_text_size"
             android:id="@+id/zipcode"
