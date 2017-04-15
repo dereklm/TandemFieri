@@ -1,6 +1,7 @@
 package com.gmail.dleemcewen.tandemfieri;
 
 import android.app.DialogFragment;
+import android.content.res.Resources;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
@@ -10,6 +11,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.beardedhen.androidbootstrap.BootstrapButton;
+import com.gmail.dleemcewen.tandemfieri.Entities.Day;
 import com.gmail.dleemcewen.tandemfieri.Entities.DeliveryHours;
 import com.gmail.dleemcewen.tandemfieri.Events.ActivityEvent;
 import com.google.firebase.database.DataSnapshot;
@@ -32,6 +34,7 @@ public class CreateDeliveryHoursActivity extends AppCompatActivity implements Ti
     BootstrapButton saveButton, clearButton;
 
     DatabaseReference mDatabase;
+    Resources resources;
 
     int id;
     String restId, editOrCreate;
@@ -53,6 +56,7 @@ public class CreateDeliveryHoursActivity extends AppCompatActivity implements Ti
         initialize();
         getHandlers();
         attachListeners();
+        retrieveData();
     }//end on create
 
     public class TimeListener implements View.OnClickListener{
@@ -116,6 +120,7 @@ public class CreateDeliveryHoursActivity extends AppCompatActivity implements Ti
     }
 
     private void initialize(){
+        resources = this.getResources();
         mDatabase = FirebaseDatabase.getInstance().getReference().child("DeliveryHours");
 
         restId = this.getIntent().getStringExtra("restId");
@@ -220,6 +225,62 @@ public class CreateDeliveryHoursActivity extends AppCompatActivity implements Ti
 
         for(CheckBox box: boxlist){
             box.setOnClickListener(checkBoxListener);
+        }
+    }
+
+    private void retrieveData() {
+        if (editOrCreate.equals("edit")) {
+            //find the existing record
+            mDatabase.addListenerForSingleValueEvent(
+                    new ValueEventListener() {
+                        @Override
+                        public void onDataChange(DataSnapshot dataSnapshot) {
+
+                            for (DataSnapshot ps : dataSnapshot.getChildren()) {
+                                DeliveryHours deliveryHours = ps.getValue(DeliveryHours.class);
+                                if (restId != null && deliveryHours.getRestaurantId().equals(restId)) {
+                                    for (Day day : deliveryHours.getDays())
+                                    {
+                                        if (day.getOpen()) {
+                                            //Find and set the appropriate open time
+                                            for (TextView openTime : opentimes)
+                                            {
+                                                String resourceName = resources.getResourceEntryName(openTime.getId());
+                                                if (day.getName().toLowerCase().contains(resourceName.toLowerCase().replace("opentime", ""))) {
+                                                    openTime.setText(displayTime(day.getHourOpen()));
+                                                }
+                                            }
+
+                                            //Find and set the appropriate close time
+                                            for (TextView closedTime : closedtimes)
+                                            {
+                                                String resourceName = resources.getResourceEntryName(closedTime.getId());
+                                                if (day.getName().toLowerCase().contains(resourceName.toLowerCase().replace("closedtime", ""))) {
+                                                    closedTime.setText(displayTime(day.getHourClosed()));
+                                                }
+                                            }
+
+                                            //Find and check the appropriate box
+                                            for (CheckBox box : boxlist)
+                                            {
+                                                String resourceName = resources.getResourceEntryName(box.getId());
+                                                if (day.getName().toLowerCase().contains(resourceName.toLowerCase().replace("box", ""))) {
+                                                    box.setChecked(true);
+                                                    setComponents(box.getId());
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+
+                        @Override
+                        public void onCancelled(DatabaseError databaseError) {
+
+                        }
+                    }
+            );
         }
     }
 
